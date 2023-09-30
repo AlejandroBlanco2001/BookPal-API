@@ -1,0 +1,162 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  company_id                String           @id
+  name                      String           @unique
+  enable_book_scan_methodos BookScanMethod[] @default([barcode])
+  logo                      String?
+  primary_color             String?          @default("#000000")
+  secondary_color           String?          @default("#000000")
+  User                      User[]
+}
+
+model User {
+  user_id          String         @id
+  company          Company        @relation(fields: [company_id], references: [company_id])
+  company_id       String
+  first_name       String
+  second_name      String?
+  last_name        String
+  second_last_name String?
+  date_of_birth    DateTime       @db.Date
+  email            String         @unique
+  password         String         @db.VarChar(255)
+  academic_program String?
+  is_admin         Boolean        @default(false)
+  notifications    Notification[]
+  Loan             Loan[]
+}
+
+model Notification {
+  notification_id    String             @id
+  user               User               @relation(fields: [user_id], references: [user_id])
+  user_id            String
+  title              String
+  message            String
+  status             NotificationStatus @default(unread)
+  next_schedule_date DateTime
+}
+
+model Loan {
+  loan_id               String       @id
+  user                  User         @relation(fields: [user_id], references: [user_id])
+  user_id               String
+  physical_book         PhysicalBook @relation(fields: [barcode_physical_book], references: [barcode])
+  barcode_physical_book String
+  start_date            DateTime
+  end_date              DateTime
+  user_return_date      DateTime
+  status                LoanStatus   @default(active)
+  Fine                  Fine[]
+}
+
+model Fine {
+  fine_id       String     @id
+  loan          Loan       @relation(fields: [loan_id], references: [loan_id])
+  loan_id       String
+  amount        Float      @default(0)
+  status        FineStatus @default(unpaid)
+  pay_date      DateTime
+  has_been_paid Boolean    @default(false)
+}
+
+model PhysicalBook {
+  physica_book_id   String      @id
+  barcode           String      @unique
+  reference_book    Book        @relation(fields: [reference_id], references: [book_id])
+  reference_id      String
+  title             String
+  edition           String?
+  dewey_code        String      @unique
+  creation_date     DateTime
+  isbn              String?     @unique
+  isbn13            String?     @unique
+  publisher         String?
+  publication_date  DateTime?
+  language          String?
+  status            BookStatus  @default(available)
+  bibliographic_gps String?     @unique
+  Loan              Loan[]
+  Inventory         Inventory[]
+}
+
+model Reference {
+  reference_id   String @id
+  numerical_id   String @unique
+  reference_name String @unique
+  Book           Book[]
+}
+
+model Subject {
+  subject_id   String         @id
+  subect_name  String         @unique
+  Subject_Book Subject_Book[]
+}
+
+model Subject_Book {
+  subject_book_id String  @id
+  subject         Subject @relation(fields: [subject_id], references: [subject_id])
+  subject_id      String
+  book            Book    @relation(fields: [book_id], references: [book_id])
+  book_id         String
+}
+
+model Book {
+  book_id        String         @id
+  reference      Reference      @relation(fields: [reference_id], references: [reference_id])
+  reference_id   String
+  author         String
+  original_title String?
+  publish_date   DateTime?      @db.Date
+  PhysicalBook   PhysicalBook[]
+  Subject_Book   Subject_Book[]
+}
+
+model Inventory {
+  inventory_id          String       @id
+  physical_book         PhysicalBook @relation(fields: [physical_book_barcode], references: [barcode])
+  physical_book_barcode String
+  creation_date         DateTime     @default(now())
+  last_update           DateTime     @default(now())
+  quantity              Int
+  minimum_quantity      Int          @default(0)
+  maximum_quantity      Int
+  reorder_quantity      Int?
+}
+
+enum NotificationStatus {
+  unread
+  read
+  deleted
+}
+
+enum LoanStatus {
+  active
+  returned
+  overdue
+}
+
+enum FineStatus {
+  paid
+  unpaid
+}
+
+enum BookStatus {
+  available
+  unavailable
+}
+
+enum BookScanMethod {
+  barcode
+  rfid
+}

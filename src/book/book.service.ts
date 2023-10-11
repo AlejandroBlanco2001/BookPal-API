@@ -1,12 +1,46 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Book, Prisma } from '@prisma/client';
-
+import { PhysicalBook, Prisma } from '@prisma/client';
 @Injectable()
 export class BookService {
-  constructor(private prsima: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
-  async findAll(params: Prisma.BookFindManyArgs): Promise<Book[]> {
-    return this.prsima.book.findMany(params);
+  async createPhysicalBook(
+    data: Prisma.PhysicalBookCreateInput,
+  ): Promise<PhysicalBook> {
+    return this.prisma.physicalBook.create({
+      data,
+    });
+  }
+
+  async updatePhysicalBook(params: {
+    where: Prisma.PhysicalBookWhereUniqueInput;
+    data: Prisma.PhysicalBookUpdateInput;
+  }): Promise<PhysicalBook> {
+    const { where, data } = params;
+    return this.prisma.physicalBook.update({
+      data,
+      where,
+    });
+  }
+
+  async physicalBook(
+    physicalBookWhereUniqueInput: Prisma.PhysicalBookWhereUniqueInput,
+  ): Promise<PhysicalBook | null> {
+    return this.prisma.physicalBook.findUnique({
+      where: physicalBookWhereUniqueInput,
+    });
+  }
+
+  async physicalBooks(
+    params: Prisma.PhysicalBookFindManyArgs,
+  ): Promise<PhysicalBook[]> {
+    const { where, skip, take, orderBy } = params;
+    return this.prisma.physicalBook.findMany({
+      where,
+      skip,
+      take,
+      orderBy,
+    });
   }
 }

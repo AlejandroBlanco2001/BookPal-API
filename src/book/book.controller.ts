@@ -1,16 +1,22 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { BookService } from './book.service';
+import { PhysicalBook as PhysicalBookModel, Prisma } from '@prisma/client';
 
 @Controller('book')
 export class BookController {
-  constructor(private readonly bookService: BookService) {}
+  constructor(private readonly physicalBookService: BookService) {}
+
+  @Get(':barcode')
+  getBook(
+    @Param('barcode') barcode: string,
+  ): Promise<PhysicalBookModel | null> {
+    return this.physicalBookService.physicalBook({ barcode: barcode });
+  }
 
   @Get()
-  getBooks(params: any) {
-    return {
-      items: this.bookService.findAll(params),
-      status: 'success',
-      message: 'Books retrieved successfully',
-    };
+  getBooks(
+    params: Prisma.PhysicalBookFindManyArgs,
+  ): Promise<PhysicalBookModel[]> {
+    return this.physicalBookService.physicalBooks(params);
   }
 }

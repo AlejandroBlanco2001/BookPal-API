@@ -11,9 +11,9 @@ datasource db {
 }
 
 model Company {
-  company_id                String           @id
+  id                        String           @id
   name                      String           @unique
-  enable_book_scan_methodos BookScanMethod[] @default([barcode])
+  book_scan_methods         BookScanMethod[] @default([barcode])
   logo                      String?
   primary_color             String?          @default("#000000")
   secondary_color           String?          @default("#000000")
@@ -21,8 +21,8 @@ model Company {
 }
 
 model User {
-  user_id          String         @id
-  company          Company        @relation(fields: [company_id], references: [company_id])
+  id               String         @id
+  company          Company        @relation(fields: [company_id], references: [id])
   company_id       String
   first_name       String
   second_name      String?
@@ -38,8 +38,8 @@ model User {
 }
 
 model Notification {
-  notification_id    String             @id
-  user               User               @relation(fields: [user_id], references: [user_id])
+  id                 String             @id
+  user               User               @relation(fields: [user_id], references: [id])
   user_id            String
   title              String
   message            String
@@ -48,32 +48,31 @@ model Notification {
 }
 
 model Loan {
-  loan_id               String       @id
-  user                  User         @relation(fields: [user_id], references: [user_id])
+  id                    String       @id
+  user                  User         @relation(fields: [user_id], references: [id])
   user_id               String
-  physical_book         PhysicalBook @relation(fields: [barcode_physical_book], references: [barcode])
-  barcode_physical_book String
+  physical_book         PhysicalBook @relation(fields: [physical_book_barcode], references: [barcode])
+  physical_book_barcode String
   start_date            DateTime
-  end_date              DateTime
-  user_return_date      DateTime
+  due_date              DateTime
+  return_date      DateTime
   status                LoanStatus   @default(active)
   Fine                  Fine[]
 }
 
 model Fine {
-  fine_id       String     @id
-  loan          Loan       @relation(fields: [loan_id], references: [loan_id])
+  id            String     @id
+  loan          Loan       @relation(fields: [loan_id], references: [id])
   loan_id       String
   amount        Float      @default(0)
   status        FineStatus @default(unpaid)
   pay_date      DateTime
-  has_been_paid Boolean    @default(false)
 }
 
 model PhysicalBook {
-  physica_book_id   String      @id
+  id                String      @id
   barcode           String      @unique
-  reference_book    Book        @relation(fields: [reference_id], references: [book_id])
+  reference_book    Book        @relation(fields: [reference_id], references: [id])
   reference_id      String
   title             String
   edition           String?
@@ -82,7 +81,7 @@ model PhysicalBook {
   isbn              String?     @unique
   isbn13            String?     @unique
   publisher         String?
-  publication_date  DateTime?
+  publish_date      DateTime?
   language          String?
   status            BookStatus  @default(available)
   bibliographic_gps String?     @unique
@@ -91,29 +90,29 @@ model PhysicalBook {
 }
 
 model Reference {
-  reference_id   String @id
+  id             String @id
   numerical_id   String @unique
   reference_name String @unique
   Book           Book[]
 }
 
 model Subject {
-  subject_id   String         @id
-  subect_name  String         @unique
-  Subject_Book Subject_Book[]
+  id            String         @id
+  subject_name  String         @unique
+  Subject_Book  Subject_Book[]
 }
 
 model Subject_Book {
-  subject_book_id String  @id
-  subject         Subject @relation(fields: [subject_id], references: [subject_id])
-  subject_id      String
-  book            Book    @relation(fields: [book_id], references: [book_id])
-  book_id         String
+  id         String  @id
+  subject    Subject @relation(fields: [subject_id], references: [id])
+  subject_id String
+  book       Book    @relation(fields: [book_id], references: [id])
+  book_id    String
 }
 
 model Book {
-  book_id        String         @id
-  reference      Reference      @relation(fields: [reference_id], references: [reference_id])
+  id             String         @id
+  reference      Reference      @relation(fields: [reference_id], references: [id])
   reference_id   String
   author         String
   original_title String?
@@ -123,7 +122,7 @@ model Book {
 }
 
 model Inventory {
-  inventory_id          String       @id
+  id                    String       @id
   physical_book         PhysicalBook @relation(fields: [physical_book_barcode], references: [barcode])
   physical_book_barcode String
   creation_date         DateTime     @default(now())

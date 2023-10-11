@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { UserNotFoundException } from '../exceptions/userNotFound.exception';
+import { user as UserFactory } from '../utils/factory';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -32,12 +33,43 @@ describe('UserController', () => {
 
   describe('updateUser', () => {
     it('should update a user for an id', async () => {
-      const 
+      const updateUser = UserFactory().custom({
+        first_name: 'Isaac',
+      });
+      UserServiceMock.updateUser.mockResolvedValue(updateUser);
+      expect(await controller.updateUserByID(updateUser, '1')).toEqual(
+        updateUser,
+      );
     });
 
-    it('should update a user for an email', async () => {});
+    it('should update a user for an email', async () => {
+      const updateUser = UserFactory().custom({
+        first_name: 'Isaac',
+      });
+      UserServiceMock.updateUser.mockResolvedValue(updateUser);
+      expect(
+        await controller.updateUserByID(updateUser, 'test@gmail.com'),
+      ).toEqual(updateUser);
+    });
 
-    it('should throw an exception if the user is not found', async () => {});
+    it('should throw an exception if the user is not found', async () => {
+      const updateUser = UserFactory().custom({
+        first_name: 'Isaac',
+      });
+      try {
+        UserServiceMock.updateUser.mockResolvedValue(null);
+        controller.updateUserByID(updateUser, '-1');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UserNotFoundException);
+      }
+
+      try {
+        UserServiceMock.updateUser.mockResolvedValue(null);
+        controller.updateUserByID(updateUser, 'not@gmail.com');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UserNotFoundException);
+      }
+    });
   });
 
   describe('getUserBy', () => {

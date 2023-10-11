@@ -44,7 +44,7 @@ export function company(): CompanyFactory {
     basic: () => ({
       id: '1',
       name: 'Test Company',
-      enable_book_scan_methods: ['barcode', 'rfid'],
+      book_scan_methods: ['barcode', 'rfid'],
       logo: 'https://www.google.com',
       primary_color: '#000000',
       secondary_color: '#ffffff',

@@ -13,11 +13,34 @@ exports.BookService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 let BookService = class BookService {
-    constructor(prsima) {
-        this.prsima = prsima;
+    constructor(prisma) {
+        this.prisma = prisma;
     }
-    async findAll(params) {
-        return this.prsima.book.findMany(params);
+    async createPhysicalBook(data) {
+        return this.prisma.physicalBook.create({
+            data,
+        });
+    }
+    async updatePhysicalBook(params) {
+        const { where, data } = params;
+        return this.prisma.physicalBook.update({
+            data,
+            where,
+        });
+    }
+    async physicalBook(physicalBookWhereUniqueInput) {
+        return this.prisma.physicalBook.findUnique({
+            where: physicalBookWhereUniqueInput,
+        });
+    }
+    async physicalBooks(params) {
+        const { where, skip, take, orderBy } = params;
+        return this.prisma.physicalBook.findMany({
+            where,
+            skip,
+            take,
+            orderBy,
+        });
     }
 };
 exports.BookService = BookService;

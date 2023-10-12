@@ -1,16 +1,8 @@
 import { BookService } from './book.service';
+import { PhysicalBook as PhysicalBookModel, Prisma } from '@prisma/client';
 export declare class BookController {
-    private readonly bookService;
-    constructor(bookService: BookService);
-    getBooks(params: any): {
-        items: Promise<{
-            book_id: string;
-            reference_id: string;
-            author: string;
-            original_title: string | null;
-            publish_date: Date | null;
-        }[]>;
-        status: string;
-        message: string;
-    };
+    private readonly physicalBookService;
+    constructor(physicalBookService: BookService);
+    getBook(barcode: string): Promise<PhysicalBookModel | null>;
+    getBooks(params: Prisma.PhysicalBookFindManyArgs): Promise<PhysicalBookModel[]>;
 }

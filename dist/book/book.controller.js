@@ -8,28 +8,38 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BookController = void 0;
 const common_1 = require("@nestjs/common");
 const book_service_1 = require("./book.service");
+const client_1 = require("@prisma/client");
 let BookController = class BookController {
-    constructor(bookService) {
-        this.bookService = bookService;
+    constructor(physicalBookService) {
+        this.physicalBookService = physicalBookService;
+    }
+    getBook(barcode) {
+        return this.physicalBookService.physicalBook({ barcode: barcode });
     }
     getBooks(params) {
-        return {
-            items: this.bookService.findAll(params),
-            status: 'success',
-            message: 'Books retrieved successfully',
-        };
+        return this.physicalBookService.physicalBooks(params);
     }
 };
 exports.BookController = BookController;
 __decorate([
+    (0, common_1.Get)(':barcode'),
+    __param(0, (0, common_1.Param)('barcode')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], BookController.prototype, "getBook", null);
+__decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], BookController.prototype, "getBooks", null);
 exports.BookController = BookController = __decorate([
     (0, common_1.Controller)('book'),

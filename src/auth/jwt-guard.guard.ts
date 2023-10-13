@@ -14,7 +14,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) {
+    if (
+      isPublic ||
+      context.getArgs()[0].headers['x-api-key'] === process.env.API_KEY
+    ) {
       return true;
     }
     return super.canActivate(context);

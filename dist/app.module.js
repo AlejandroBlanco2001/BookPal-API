@@ -18,14 +18,27 @@ const book_module_1 = require("./book/book.module");
 const user_module_1 = require("./user/user.module");
 const user_controller_1 = require("./user/user.controller");
 const user_service_1 = require("./user/user.service");
+const auth_module_1 = require("./auth/auth.module");
+const core_1 = require("@nestjs/core");
+const jwt_guard_guard_1 = require("./auth/jwt-guard.guard");
+const security_module_1 = require("./utils/security/security.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, book_module_1.BookModule, user_module_1.UserModule],
+        imports: [prisma_module_1.PrismaModule, book_module_1.BookModule, user_module_1.UserModule, auth_module_1.AuthModule, security_module_1.SecurityModule],
         controllers: [app_controller_1.AppController, book_controller_1.BookController, user_controller_1.UserController],
-        providers: [app_service_1.AppService, book_service_1.BookService, user_service_1.UserService, prisma_service_1.PrismaService],
+        providers: [
+            app_service_1.AppService,
+            book_service_1.BookService,
+            user_service_1.UserService,
+            prisma_service_1.PrismaService,
+            {
+                provide: core_1.APP_GUARD,
+                useClass: jwt_guard_guard_1.JwtAuthGuard,
+            },
+        ],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

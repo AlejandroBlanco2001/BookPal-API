@@ -46,4 +46,6 @@ build/config\.gypi
 .npmrc
 pnpm-lock.yaml
 
+# Environment variables
 .env
+src/auth/constants.ts

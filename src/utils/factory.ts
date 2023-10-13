@@ -18,7 +18,7 @@ export function user(): UserFactory {
   const userCompany = company().basic();
   return {
     basic: () => ({
-      id: '1',
+      id: 1,
       company: {
         connect: { id: userCompany.id },
       },
@@ -42,7 +42,7 @@ export function user(): UserFactory {
 export function company(): CompanyFactory {
   return {
     basic: () => ({
-      id: '1',
+      id: 1,
       name: 'Test Company',
       book_scan_methods: ['barcode', 'rfid'],
       logo: 'https://www.google.com',

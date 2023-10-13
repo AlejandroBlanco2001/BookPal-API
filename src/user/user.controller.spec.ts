@@ -37,7 +37,7 @@ describe('UserController', () => {
         first_name: 'Isaac',
       });
       UserServiceMock.updateUser.mockResolvedValue(updateUser);
-      expect(await controller.updateUserByID(updateUser, '1')).toEqual(
+      expect(await controller.updateUserByID(updateUser, 1)).toEqual(
         updateUser,
       );
     });
@@ -48,7 +48,7 @@ describe('UserController', () => {
       });
       UserServiceMock.updateUser.mockResolvedValue(updateUser);
       expect(
-        await controller.updateUserByID(updateUser, 'test@gmail.com'),
+        await controller.updateUserByEmail(updateUser, 'test@gmail.com'),
       ).toEqual(updateUser);
     });
 
@@ -58,14 +58,14 @@ describe('UserController', () => {
       });
       try {
         UserServiceMock.updateUser.mockResolvedValue(null);
-        controller.updateUserByID(updateUser, '-1');
+        controller.updateUserByID(updateUser, -1);
       } catch (error) {
         expect(error).toBeInstanceOf(UserNotFoundException);
       }
 
       try {
         UserServiceMock.updateUser.mockResolvedValue(null);
-        controller.updateUserByID(updateUser, 'not@gmail.com');
+        controller.updateUserByEmail(updateUser, 'not@gmail.com');
       } catch (error) {
         expect(error).toBeInstanceOf(UserNotFoundException);
       }
@@ -74,7 +74,7 @@ describe('UserController', () => {
 
   describe('getUserBy', () => {
     it('should return a user for an id', async () => {
-      const userID = '1';
+      const userID = 1;
       UserServiceMock.user.mockResolvedValue({ id: '1' });
       expect(await controller.getUserByID(userID)).toEqual({ id: userID });
     });
@@ -88,7 +88,7 @@ describe('UserController', () => {
     });
 
     it('should throw an exception if the user is not found', async () => {
-      const userID = '1';
+      const userID = 1;
       try {
         UserServiceMock.user.mockResolvedValue({ id: '2' });
         controller.getUserByID(userID);

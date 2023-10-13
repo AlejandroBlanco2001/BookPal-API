@@ -5,7 +5,7 @@ function user() {
     const userCompany = company().basic();
     return {
         basic: () => ({
-            id: '1',
+            id: 1,
             company: {
                 connect: { id: userCompany.id },
             },
@@ -29,7 +29,7 @@ exports.user = user;
 function company() {
     return {
         basic: () => ({
-            id: '1',
+            id: 1,
             name: 'Test Company',
             book_scan_methods: ['barcode', 'rfid'],
             logo: 'https://www.google.com',

@@ -13,8 +13,17 @@ import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-guard.guard';
 import { SecurityModule } from './utils/security/security.module';
+import { ConfigModule } from '@nestjs/config';
+
 @Module({
-  imports: [PrismaModule, BookModule, UserModule, AuthModule, SecurityModule],
+  imports: [
+    PrismaModule,
+    BookModule,
+    UserModule,
+    AuthModule,
+    SecurityModule,
+    ConfigModule.forRoot(),
+  ],
   controllers: [AppController, BookController, UserController],
   providers: [
     AppService,

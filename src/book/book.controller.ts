@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { BookService } from './book.service';
 import { PhysicalBook as PhysicalBookModel, Prisma } from '@prisma/client';
 
@@ -15,8 +15,8 @@ export class BookController {
 
   @Get()
   getBooks(
-    params: Prisma.PhysicalBookFindManyArgs,
+    @Query() query: Prisma.PhysicalBookFindManyArgs,
   ): Promise<PhysicalBookModel[]> {
-    return this.physicalBookService.physicalBooks(params);
+    return this.physicalBookService.physicalBooks(query);
   }
 }

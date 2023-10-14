@@ -4,7 +4,7 @@ import { company as companyFactory } from '../utils/factory';
 import { Company } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserNotFoundException } from '../exceptions/userNotFound.exception';
-
+import { user as UserFactory } from '../utils/factory';
 describe('UserService', () => {
   let service: UserService;
   const company: Company = companyFactory().basic();
@@ -35,32 +35,18 @@ describe('UserService', () => {
   });
 
   it('should create a user', async () => {
-    // TODO - add some user factory to build the user data
-    const userData = {
-      id: '1',
-      company: {
-        connect: { id: company.id },
-      },
-      company_id: company.id,
-      email: 'test@gmail.com',
-      password: 'test_password',
-      first_name: 'John',
-      second_name: null,
-      last_name: 'Doe',
-      second_last_name: null,
-      date_of_birth: new Date('1990-01-01'),
-      is_admin: false,
-      academic_program: null,
-    };
+    const userDataInput = UserFactory().basic();
 
     const userCreated = {
-      ...userData,
-      company: company,
+      ...userDataInput,
+      company: {
+        connect: { id: userDataInput.company_id },
+      },
     };
 
     prismaServiceMock.user.create.mockResolvedValue(userCreated);
 
-    const result = await service.createUser(userData);
+    const result = await service.createUser(userCreated);
 
     expect(result).toEqual(userCreated);
   });
@@ -80,7 +66,7 @@ describe('UserService', () => {
 
     it('by id', async () => {
       const userData = {
-        id: '1',
+        id: 1,
       };
 
       prismaServiceMock.user.findUnique.mockResolvedValue(userData);
@@ -92,7 +78,7 @@ describe('UserService', () => {
 
     it('by id and company id', async () => {
       const userData = {
-        id: '1',
+        id: 1,
         company_id: company.id,
       };
 
@@ -105,7 +91,7 @@ describe('UserService', () => {
 
     it('and throw an exception if the user is not found', async () => {
       const userData = {
-        id: '23',
+        id: 23,
         company_id: company.id,
       };
 

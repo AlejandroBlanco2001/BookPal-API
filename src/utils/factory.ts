@@ -10,7 +10,7 @@ type CompanyFactory = {
 };
 
 type UserFactory = {
-  basic: () => Partial<User>;
+  basic: () => User;
   custom: (customProps: Partial<User>) => Partial<User>;
 };
 
@@ -22,6 +22,7 @@ export function user(): UserFactory {
       company: {
         connect: { id: userCompany.id },
       },
+      profile_image: 'example.png',
       company_id: userCompany.id,
       email: 'test@gmail.com',
       password: 'test_password',

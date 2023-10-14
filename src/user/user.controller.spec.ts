@@ -3,6 +3,7 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { UserNotFoundException } from '../exceptions/userNotFound.exception';
 import { user as UserFactory } from '../utils/factory';
+import { SecurityService } from '../utils/security/security.service';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -17,6 +18,7 @@ describe('UserController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
       providers: [
+        SecurityService,
         {
           provide: UserService,
           useValue: UserServiceMock,
@@ -75,7 +77,7 @@ describe('UserController', () => {
   describe('getUserBy', () => {
     it('should return a user for an id', async () => {
       const userID = 1;
-      UserServiceMock.user.mockResolvedValue({ id: '1' });
+      UserServiceMock.user.mockResolvedValue({ id: 1 });
       expect(await controller.getUserByID(userID)).toEqual({ id: userID });
     });
 
@@ -90,7 +92,7 @@ describe('UserController', () => {
     it('should throw an exception if the user is not found', async () => {
       const userID = 1;
       try {
-        UserServiceMock.user.mockResolvedValue({ id: '2' });
+        UserServiceMock.user.mockResolvedValue({ id: 2 });
         controller.getUserByID(userID);
       } catch (error) {
         expect(error).toBeInstanceOf(UserNotFoundException);

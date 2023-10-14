@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BookController } from './book/book.controller';
-import { BookService } from './book/book.service';
+import { PhyiscalBookController } from './physicalBook/physicalBook.controller';
+import { PhysicalBookService } from './physicalBook/physicalBook.service';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
-import { BookModule } from './book/book.module';
+import { PhysicalBookModule } from './physicalBook/physicalBook.module';
 import { UserModule } from './user/user.module';
 import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
@@ -14,20 +14,22 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-guard.guard';
 import { SecurityModule } from './utils/security/security.module';
 import { ConfigModule } from '@nestjs/config';
+import { CompanyModule } from './company/company.module';
 
 @Module({
   imports: [
     PrismaModule,
-    BookModule,
+    PhysicalBookModule,
     UserModule,
     AuthModule,
     SecurityModule,
     ConfigModule.forRoot(),
+    CompanyModule,
   ],
-  controllers: [AppController, BookController, UserController],
+  controllers: [AppController, PhyiscalBookController, UserController],
   providers: [
     AppService,
-    BookService,
+    PhysicalBookService,
     UserService,
     PrismaService,
     {

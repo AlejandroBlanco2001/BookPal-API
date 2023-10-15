@@ -56,7 +56,7 @@ model Loan {
   physical_book_barcode String
   start_date            DateTime
   due_date              DateTime
-  return_date      DateTime
+  return_date           DateTime?
   status                LoanStatus   @default(active)
   Fine                  Fine[]
 }

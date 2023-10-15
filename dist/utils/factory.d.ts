@@ -7,7 +7,7 @@ type CompanyFactory = {
     basic: () => Company;
 };
 type UserFactory = {
-    basic: () => Partial<User>;
+    basic: () => User;
     custom: (customProps: Partial<User>) => Partial<User>;
 };
 export declare function user(): UserFactory;

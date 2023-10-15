@@ -9,6 +9,7 @@ function user() {
             company: {
                 connect: { id: userCompany.id },
             },
+            profile_image: 'example.png',
             company_id: userCompany.id,
             email: 'test@gmail.com',
             password: 'test_password',

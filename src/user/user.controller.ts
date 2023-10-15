@@ -33,7 +33,7 @@ export class UserController {
 
   @Get('id/:id')
   getUserByID(@Param('id') id: number): Promise<UserModel | null> {
-    return this.userService.user({ id: Number(id) });
+    return this.userService.user({ id: id });
   }
 
   @Get('email/:email')
@@ -51,7 +51,7 @@ export class UserController {
     @Body('data') data: Prisma.UserUpdateInput,
     @Param('id') id: number,
   ): Promise<UserModel> {
-    return this.userService.updateUser(data, { id: Number(id) });
+    return this.userService.updateUser(data, { id: id });
   }
 
   @Put('email/:email')

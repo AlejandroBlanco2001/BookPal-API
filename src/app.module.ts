@@ -15,6 +15,10 @@ import { JwtAuthGuard } from './auth/jwt-guard.guard';
 import { SecurityModule } from './utils/security/security.module';
 import { ConfigModule } from '@nestjs/config';
 import { CompanyModule } from './company/company.module';
+import { LoanModule } from './loan/loan.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronjobsModule } from './cronjobs/cronjobs.module';
+import { FineModule } from './fine/fine.module';
 
 @Module({
   imports: [
@@ -23,8 +27,12 @@ import { CompanyModule } from './company/company.module';
     UserModule,
     AuthModule,
     SecurityModule,
-    ConfigModule.forRoot(),
     CompanyModule,
+    LoanModule,
+    ScheduleModule.forRoot(),
+    ConfigModule.forRoot(),
+    CronjobsModule,
+    FineModule,
   ],
   controllers: [AppController, PhyiscalBookController, UserController],
   providers: [

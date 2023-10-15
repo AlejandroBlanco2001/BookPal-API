@@ -93,8 +93,10 @@ model PhysicalBook {
 
 model Reference {
   id             Int @id @default(autoincrement())
-  numerical_id   String @unique
   reference_name String @unique
+  limit_of_books_per_user Int
+  amount_of_days_per_loan Int
+  amount_of_money_per_day Float
   Book           Book[]
 }
 

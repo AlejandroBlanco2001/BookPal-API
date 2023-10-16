@@ -10,9 +10,13 @@ import {
 import { LoanService } from './loan.service';
 import { CreateLoanDto } from './dto/create-loan-dto';
 import { LoanStatus } from '@prisma/client';
+import { ReferenceService } from 'src/reference/reference.service';
 @Controller('loan')
 export class LoanController {
-  constructor(public readonly loanService: LoanService) {}
+  constructor(
+    public readonly loanService: LoanService,
+    public readonly referenceService: ReferenceService,
+  ) {}
 
   @Get(':id')
   getLoanByID(@Param('id') id: string) {
@@ -20,12 +24,14 @@ export class LoanController {
   }
 
   @Post()
-  createLoan(@Request() req: any, @Body() createLoanDto: CreateLoanDto) {
+  async createLoan(@Request() req: any, @Body() createLoanDto: CreateLoanDto) {
+    const due_date = await this.referenceService.getDueDate({
+      reference_name: createLoanDto.physical_book_collection_name,
+    });
     const data = {
-      ...createLoanDto,
       status: LoanStatus.active,
       start_date: new Date(),
-      due_date: new Date(), // TODO: calculate due date based on loan type
+      due_date: due_date,
       user: {
         connect: {
           id: req.user.id,
@@ -39,7 +45,7 @@ export class LoanController {
       },
       physical_book_barcode: createLoanDto.physical_book_barcode,
     };
-    return this.loanService.createLoan(req.user.id, data);
+    return await this.loanService.createLoan(req.user.id, data);
   }
 
   @Put('return/:id')

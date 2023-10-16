@@ -19,6 +19,7 @@ exports.PhysicalBookModule = PhysicalBookModule = __decorate([
         controllers: [physicalBook_controller_1.PhyiscalBookController],
         providers: [physicalBook_service_1.PhysicalBookService],
         imports: [prisma_module_1.PrismaModule],
+        exports: [physicalBook_service_1.PhysicalBookService],
     })
 ], PhysicalBookModule);
 //# sourceMappingURL=physicalBook.module.js.map

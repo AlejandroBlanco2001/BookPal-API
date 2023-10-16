@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
 const loan_service_1 = require("../loan/loan.service");
 const prisma_service_1 = require("../prisma/prisma.service");
+const constant_1 = require("../utils/constant");
 let FineService = class FineService {
     constructor(loanService, prisma) {
         this.loanService = loanService;
@@ -48,20 +49,23 @@ let FineService = class FineService {
         const fines = await this.prisma.fine.findMany({
             where: {
                 status: client_1.FineStatus.unpaid,
+                last_update_date: {
+                    gt: new Date(),
+                },
             },
         });
         const date = new Date();
         fines.forEach(async (fine) => {
             const loan = await this.loanService.loan({ id: fine.loan_id });
             const due_date = new Date(loan.due_date);
-            const oneDay = 24 * 60 * 60 * 1000;
-            const diffTime = Math.floor(Math.abs(due_date.getTime() - date.getTime()) / oneDay);
-            if (due_date < date) {
+            const diffTime = Math.ceil(Math.abs(due_date.getTime() - date.getTime()) / constant_1.ONE_DAY_IN_MILLISECONDS);
+            if (diffTime > 0) {
                 await this.updateFine({
                     where: { id: fine.id },
                     data: {
                         status: client_1.FineStatus.unpaid,
-                        amount: fine.amount + diffTime * 1000,
+                        amount: fine.amount * diffTime,
+                        last_update_date: new Date(),
                     },
                 });
             }

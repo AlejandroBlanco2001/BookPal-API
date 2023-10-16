@@ -28,6 +28,7 @@ const loan_module_1 = require("./loan/loan.module");
 const schedule_1 = require("@nestjs/schedule");
 const cronjobs_module_1 = require("./cronjobs/cronjobs.module");
 const fine_module_1 = require("./fine/fine.module");
+const reference_service_1 = require("./reference/reference.service");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -56,6 +57,7 @@ exports.AppModule = AppModule = __decorate([
                 provide: core_1.APP_GUARD,
                 useClass: jwt_guard_guard_1.JwtAuthGuard,
             },
+            reference_service_1.ReferenceService,
         ],
     })
 ], AppModule);

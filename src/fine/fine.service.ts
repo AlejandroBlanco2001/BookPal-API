@@ -1,8 +1,8 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { FineStatus, Prisma } from '@prisma/client';
-import { LoanService } from 'src/loan/loan.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-
+import { LoanService } from '../loan/loan.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { ONE_DAY_IN_MILLISECONDS } from '../utils/constant';
 @Injectable()
 export class FineService {
   constructor(
@@ -44,22 +44,25 @@ export class FineService {
     const fines = await this.prisma.fine.findMany({
       where: {
         status: FineStatus.unpaid,
+        last_update_date: {
+          gt: new Date(),
+        },
       },
     });
     const date = new Date();
     fines.forEach(async (fine) => {
       const loan = await this.loanService.loan({ id: fine.loan_id });
       const due_date = new Date(loan!.due_date);
-      const oneDay = 24 * 60 * 60 * 1000;
-      const diffTime = Math.floor(
-        Math.abs(due_date.getTime() - date.getTime()) / oneDay,
+      const diffTime = Math.ceil(
+        Math.abs(due_date.getTime() - date.getTime()) / ONE_DAY_IN_MILLISECONDS,
       );
-      if (due_date < date) {
+      if (diffTime > 0) {
         await this.updateFine({
           where: { id: fine.id },
           data: {
             status: FineStatus.unpaid,
-            amount: fine.amount + diffTime * 1000,
+            amount: fine.amount * diffTime,
+            last_update_date: new Date(),
           },
         });
       }

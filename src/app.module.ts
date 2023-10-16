@@ -19,6 +19,7 @@ import { LoanModule } from './loan/loan.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronjobsModule } from './cronjobs/cronjobs.module';
 import { FineModule } from './fine/fine.module';
+import { ReferenceService } from './reference/reference.service';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { FineModule } from './fine/fine.module';
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+    ReferenceService,
   ],
 })
 export class AppModule {}

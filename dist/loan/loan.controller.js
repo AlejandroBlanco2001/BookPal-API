@@ -17,19 +17,23 @@ const common_1 = require("@nestjs/common");
 const loan_service_1 = require("./loan.service");
 const create_loan_dto_1 = require("./dto/create-loan-dto");
 const client_1 = require("@prisma/client");
+const reference_service_1 = require("../reference/reference.service");
 let LoanController = class LoanController {
-    constructor(loanService) {
+    constructor(loanService, referenceService) {
         this.loanService = loanService;
+        this.referenceService = referenceService;
     }
     getLoanByID(id) {
         return this.loanService.loan({ id: Number(id) });
     }
-    createLoan(req, createLoanDto) {
+    async createLoan(req, createLoanDto) {
+        const due_date = await this.referenceService.getDueDate({
+            reference_name: createLoanDto.physical_book_collection_name,
+        });
         const data = {
-            ...createLoanDto,
             status: client_1.LoanStatus.active,
             start_date: new Date(),
-            due_date: new Date(),
+            due_date: due_date,
             user: {
                 connect: {
                     id: req.user.id,
@@ -43,7 +47,7 @@ let LoanController = class LoanController {
             },
             physical_book_barcode: createLoanDto.physical_book_barcode,
         };
-        return this.loanService.createLoan(req.user.id, data);
+        return await this.loanService.createLoan(req.user.id, data);
     }
     returnLoan(id) {
         return this.loanService.updateLoan({
@@ -69,7 +73,7 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, create_loan_dto_1.CreateLoanDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], LoanController.prototype, "createLoan", null);
 __decorate([
     (0, common_1.Put)('return/:id'),
@@ -80,6 +84,7 @@ __decorate([
 ], LoanController.prototype, "returnLoan", null);
 exports.LoanController = LoanController = __decorate([
     (0, common_1.Controller)('loan'),
-    __metadata("design:paramtypes", [loan_service_1.LoanService])
+    __metadata("design:paramtypes", [loan_service_1.LoanService,
+        reference_service_1.ReferenceService])
 ], LoanController);
 //# sourceMappingURL=loan.controller.js.map

@@ -12,6 +12,8 @@ const loan_controller_1 = require("./loan.controller");
 const loan_service_1 = require("./loan.service");
 const prisma_module_1 = require("../prisma/prisma.module");
 const fine_module_1 = require("../fine/fine.module");
+const physicalBook_service_1 = require("../physicalBook/physicalBook.service");
+const reference_service_1 = require("../reference/reference.service");
 let LoanModule = class LoanModule {
 };
 exports.LoanModule = LoanModule;
@@ -19,7 +21,7 @@ exports.LoanModule = LoanModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule, fine_module_1.FineModule],
         controllers: [loan_controller_1.LoanController],
-        providers: [loan_service_1.LoanService],
+        providers: [loan_service_1.LoanService, physicalBook_service_1.PhysicalBookService, reference_service_1.ReferenceService],
         exports: [loan_service_1.LoanService],
     })
 ], LoanModule);

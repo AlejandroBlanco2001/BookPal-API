@@ -13,6 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoanController = void 0;
+const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const loan_service_1 = require("./loan.service");
 const create_loan_dto_1 = require("./dto/create-loan-dto");
@@ -62,6 +63,7 @@ let LoanController = class LoanController {
 exports.LoanController = LoanController;
 __decorate([
     (0, common_1.Get)(':id'),
+    openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -69,6 +71,7 @@ __decorate([
 ], LoanController.prototype, "getLoanByID", null);
 __decorate([
     (0, common_1.Post)(),
+    openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -77,6 +80,7 @@ __decorate([
 ], LoanController.prototype, "createLoan", null);
 __decorate([
     (0, common_1.Put)('return/:id'),
+    openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

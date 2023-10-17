@@ -13,10 +13,12 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PhyiscalBookController = void 0;
+const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const physicalBook_service_1 = require("./physicalBook.service");
 const client_1 = require("@prisma/client");
 const custom_decorators_1 = require("../utils/custom_decorators");
+const swagger_1 = require("@nestjs/swagger");
 let PhyiscalBookController = class PhyiscalBookController {
     constructor(physicalBookService) {
         this.physicalBookService = physicalBookService;
@@ -35,6 +37,8 @@ exports.PhyiscalBookController = PhyiscalBookController;
 __decorate([
     (0, custom_decorators_1.Public)(),
     (0, common_1.Get)(':barcode'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get a physical book by barcode' }),
+    openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Param)('barcode')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -43,6 +47,8 @@ __decorate([
 __decorate([
     (0, custom_decorators_1.Public)(),
     (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get a physical book by ID' }),
+    openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -51,12 +57,15 @@ __decorate([
 __decorate([
     (0, custom_decorators_1.Public)(),
     (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all physical books' }),
+    openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PhyiscalBookController.prototype, "getPhysicalBooks", null);
 exports.PhyiscalBookController = PhyiscalBookController = __decorate([
+    (0, swagger_1.ApiTags)('physical-book'),
     (0, common_1.Controller)('physical-book'),
     __metadata("design:paramtypes", [physicalBook_service_1.PhysicalBookService])
 ], PhyiscalBookController);

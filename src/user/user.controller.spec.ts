@@ -4,6 +4,7 @@ import { UserService } from './user.service';
 import { UserNotFoundException } from '../exceptions/userNotFound.exception';
 import { user as UserFactory } from '../utils/factory';
 import { SecurityService } from '../utils/security/security.service';
+import { UpdateUserDTO } from './dto/update-user-dto';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -39,9 +40,9 @@ describe('UserController', () => {
         first_name: 'Isaac',
       });
       UserServiceMock.updateUser.mockResolvedValue(updateUser);
-      expect(await controller.updateUserByID(updateUser, 1)).toEqual(
-        updateUser,
-      );
+      expect(
+        await controller.updateUserByID(updateUser as UpdateUserDTO, 1),
+      ).toEqual(updateUser);
     });
 
     it('should update a user for an email', async () => {
@@ -60,7 +61,7 @@ describe('UserController', () => {
       });
       try {
         UserServiceMock.updateUser.mockResolvedValue(null);
-        controller.updateUserByID(updateUser, -1);
+        controller.updateUserByID(updateUser as UpdateUserDTO, -1);
       } catch (error) {
         expect(error).toBeInstanceOf(UserNotFoundException);
       }

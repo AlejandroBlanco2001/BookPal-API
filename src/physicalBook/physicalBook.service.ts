@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PhysicalBook, Prisma } from '@prisma/client';
+import { PhysicalBookNotFound } from 'src/exceptions/physicalBookNotFound.exception';
+import { GenericError } from 'src/exceptions/genericError.exception';
 @Injectable()
 export class PhysicalBookService {
   constructor(private prisma: PrismaService) {}
@@ -8,9 +10,17 @@ export class PhysicalBookService {
   async createPhysicalBook(
     data: Prisma.PhysicalBookCreateInput,
   ): Promise<PhysicalBook> {
-    return this.prisma.physicalBook.create({
-      data,
-    });
+    try {
+      return this.prisma.physicalBook.create({
+        data,
+      });
+    } catch (error: any) {
+      throw new GenericError(
+        'PhysicalBookService',
+        error.message,
+        'createPhysicalBook',
+      );
+    }
   }
 
   async updatePhysicalBook(params: {
@@ -18,29 +28,49 @@ export class PhysicalBookService {
     data: Prisma.PhysicalBookUpdateInput;
   }): Promise<PhysicalBook> {
     const { where, data } = params;
-    return this.prisma.physicalBook.update({
-      data,
-      where,
-    });
+    try {
+      return this.prisma.physicalBook.update({
+        data,
+        where,
+      });
+    } catch (error: any) {
+      throw new GenericError(
+        'PhysicalBookService',
+        error.message,
+        'updatePhysicalBook',
+      );
+    }
   }
 
   async physicalBook(
     physicalBookWhereUniqueInput: Prisma.PhysicalBookWhereUniqueInput,
   ): Promise<PhysicalBook | null> {
-    return this.prisma.physicalBook.findUnique({
-      where: physicalBookWhereUniqueInput,
-    });
+    try {
+      return this.prisma.physicalBook.findUnique({
+        where: physicalBookWhereUniqueInput,
+      });
+    } catch (error) {
+      throw new PhysicalBookNotFound(physicalBookWhereUniqueInput);
+    }
   }
 
   async physicalBooks(
     params: Prisma.PhysicalBookFindManyArgs,
   ): Promise<PhysicalBook[]> {
     const { where, skip, take, orderBy } = params;
-    return this.prisma.physicalBook.findMany({
-      where,
-      skip,
-      take,
-      orderBy,
-    });
+    try {
+      return this.prisma.physicalBook.findMany({
+        where,
+        skip,
+        take,
+        orderBy,
+      });
+    } catch (error: any) {
+      throw new GenericError(
+        'PhysicalBookService',
+        error.message,
+        'physicalBooks',
+      );
+    }
   }
 }

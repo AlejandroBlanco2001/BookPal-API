@@ -9,16 +9,33 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateLoanDto = void 0;
+exports.UpdateCompanyDTO = void 0;
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
-class CreateLoanDto {
+class UpdateCompanyDTO {
 }
-exports.CreateLoanDto = CreateLoanDto;
+exports.UpdateCompanyDTO = UpdateCompanyDTO;
 __decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsNumber)(),
     (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", Number)
-], CreateLoanDto.prototype, "physical_book_barcode", void 0);
-//# sourceMappingURL=create-loan-dto.js.map
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCompanyDTO.prototype, "logo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsHexColor)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCompanyDTO.prototype, "primary_color", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsHexColor)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCompanyDTO.prototype, "secondary_color", void 0);
+//# sourceMappingURL=update-company-dto.js.map

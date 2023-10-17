@@ -13,10 +13,12 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CompanyController = void 0;
+const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
-const client_1 = require("@prisma/client");
 const company_service_1 = require("./company.service");
 const company_guard_1 = require("./company.guard");
+const swagger_1 = require("@nestjs/swagger");
+const update_company_dto_1 = require("./dto/update-company-dto");
 let CompanyController = class CompanyController {
     constructor(companyService) {
         this.companyService = companyService;
@@ -35,20 +37,24 @@ exports.CompanyController = CompanyController;
 __decorate([
     (0, common_1.UseGuards)(company_guard_1.CompanyGuard),
     (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update a company' }),
+    openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [Number, update_company_dto_1.UpdateCompanyDTO]),
     __metadata("design:returntype", void 0)
 ], CompanyController.prototype, "updateCompany", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], CompanyController.prototype, "getCompany", null);
 exports.CompanyController = CompanyController = __decorate([
+    (0, swagger_1.ApiTags)('company'),
     (0, common_1.Controller)('company'),
     __metadata("design:paramtypes", [company_service_1.CompanyService])
 ], CompanyController);

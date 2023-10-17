@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import { UserNotFoundException } from '../exceptions/userNotFound.exception';
+import { GenericError } from 'src/exceptions/genericError.exception';
 
 @Injectable()
 export class UserService {
@@ -39,8 +40,12 @@ export class UserService {
   }
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
-    return this.prisma.user.create({
-      data,
-    });
+    try {
+      return this.prisma.user.create({
+        data,
+      });
+    } catch (error) {
+      throw new GenericError('UserService', error, 'createUser');
+    }
   }
 }

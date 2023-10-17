@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const client_1 = require("@prisma/client");
 const userNotFound_exception_1 = require("../exceptions/userNotFound.exception");
+const genericError_exception_1 = require("../exceptions/genericError.exception");
 let UserService = class UserService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -44,9 +45,14 @@ let UserService = class UserService {
         }
     }
     async createUser(data) {
-        return this.prisma.user.create({
-            data,
-        });
+        try {
+            return this.prisma.user.create({
+                data,
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('UserService', error, 'createUser');
+        }
     }
 };
 exports.UserService = UserService;

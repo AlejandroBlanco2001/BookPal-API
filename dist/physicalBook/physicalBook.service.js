@@ -12,35 +12,57 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PhysicalBookService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const physicalBookNotFound_exception_1 = require("../exceptions/physicalBookNotFound.exception");
+const genericError_exception_1 = require("../exceptions/genericError.exception");
 let PhysicalBookService = class PhysicalBookService {
     constructor(prisma) {
         this.prisma = prisma;
     }
     async createPhysicalBook(data) {
-        return this.prisma.physicalBook.create({
-            data,
-        });
+        try {
+            return this.prisma.physicalBook.create({
+                data,
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('PhysicalBookService', error.message, 'createPhysicalBook');
+        }
     }
     async updatePhysicalBook(params) {
         const { where, data } = params;
-        return this.prisma.physicalBook.update({
-            data,
-            where,
-        });
+        try {
+            return this.prisma.physicalBook.update({
+                data,
+                where,
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('PhysicalBookService', error.message, 'updatePhysicalBook');
+        }
     }
     async physicalBook(physicalBookWhereUniqueInput) {
-        return this.prisma.physicalBook.findUnique({
-            where: physicalBookWhereUniqueInput,
-        });
+        try {
+            return this.prisma.physicalBook.findUnique({
+                where: physicalBookWhereUniqueInput,
+            });
+        }
+        catch (error) {
+            throw new physicalBookNotFound_exception_1.PhysicalBookNotFound(physicalBookWhereUniqueInput);
+        }
     }
     async physicalBooks(params) {
         const { where, skip, take, orderBy } = params;
-        return this.prisma.physicalBook.findMany({
-            where,
-            skip,
-            take,
-            orderBy,
-        });
+        try {
+            return this.prisma.physicalBook.findMany({
+                where,
+                skip,
+                take,
+                orderBy,
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('PhysicalBookService', error.message, 'physicalBooks');
+        }
     }
 };
 exports.PhysicalBookService = PhysicalBookService;

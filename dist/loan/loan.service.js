@@ -21,6 +21,8 @@ const fine_service_1 = require("../fine/fine.service");
 const userUnpaidFines_exception_1 = require("../exceptions/userUnpaidFines.exception");
 const physicalBook_service_1 = require("../physicalBook/physicalBook.service");
 const reference_service_1 = require("../reference/reference.service");
+const genericError_exception_1 = require("../exceptions/genericError.exception");
+const loanNotFound_exceptions_1 = require("../exceptions/loanNotFound.exceptions");
 let LoanService = class LoanService {
     constructor(fineService, physicalBookService, referenceService, prisma) {
         this.fineService = fineService;
@@ -29,61 +31,80 @@ let LoanService = class LoanService {
         this.prisma = prisma;
     }
     async loan(loanWhereUniqueInput) {
-        return this.prisma.loan.findUnique({
+        const loan = await this.prisma.loan.findUnique({
             where: loanWhereUniqueInput,
         });
+        if (!loan) {
+            throw new loanNotFound_exceptions_1.LoanNotFound(loanWhereUniqueInput);
+        }
+        return loan;
     }
     async createLoan(user_id, data) {
-        const unpaidFines = await this.fineService.getFinesByUserID({
-            id: user_id,
-            status: client_1.FineStatus.unpaid,
-        });
-        if (unpaidFines.length > 0) {
-            throw new userUnpaidFines_exception_1.UserUnpaidFines();
+        try {
+            const unpaidFines = await this.fineService.getFinesByUserID({
+                id: user_id,
+                status: client_1.FineStatus.unpaid,
+            });
+            if (unpaidFines.length > 0) {
+                throw new userUnpaidFines_exception_1.UserUnpaidFines();
+            }
+            return this.prisma.loan.create({
+                data,
+            });
         }
-        return this.prisma.loan.create({
-            data,
-        });
+        catch (error) {
+            throw new genericError_exception_1.GenericError('LoanService', error.message, 'createLoan');
+        }
     }
     async updateLoan(params) {
         const { where, data } = params;
-        return this.prisma.loan.update({
-            data,
-            where,
-        });
+        try {
+            return this.prisma.loan.update({
+                data,
+                where,
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('LoanService', error.message, 'updateLoan');
+        }
     }
     async updateLoanStatus() {
-        const loans = await this.prisma.loan.findMany({
-            where: {
-                status: client_2.LoanStatus.active,
-            },
-        });
-        const today = new Date();
-        loans.forEach(async (loan) => {
-            const dueDate = new Date(loan.due_date);
-            const physicalBook = await this.physicalBookService.physicalBook({
-                barcode: loan.physical_book_barcode,
+        try {
+            const loans = await this.prisma.loan.findMany({
+                where: {
+                    status: client_2.LoanStatus.active,
+                },
             });
-            const collection = await this.referenceService.reference({
-                id: physicalBook.reference_id,
-            });
-            if (dueDate < today && loan.status === client_2.LoanStatus.active) {
-                await this.fineService.fine({
-                    last_update_date: new Date(),
-                    amount: collection?.amount_of_money_per_day,
-                    loan: {
-                        connect: {
-                            id: loan.id,
+            const today = new Date();
+            loans.forEach(async (loan) => {
+                const dueDate = new Date(loan.due_date);
+                const physicalBook = await this.physicalBookService.physicalBook({
+                    barcode: loan.physical_book_barcode,
+                });
+                const collection = await this.referenceService.reference({
+                    id: physicalBook.reference_id,
+                });
+                if (dueDate < today && loan.status === client_2.LoanStatus.active) {
+                    await this.fineService.fine({
+                        last_update_date: new Date(),
+                        amount: collection?.amount_of_money_per_day,
+                        loan: {
+                            connect: {
+                                id: loan.id,
+                            },
                         },
-                    },
-                    status: client_1.FineStatus.unpaid,
-                });
-                await this.updateLoan({
-                    where: { id: loan.id },
-                    data: { status: client_2.LoanStatus.overdue },
-                });
-            }
-        });
+                        status: client_1.FineStatus.unpaid,
+                    });
+                    await this.updateLoan({
+                        where: { id: loan.id },
+                        data: { status: client_2.LoanStatus.overdue },
+                    });
+                }
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('LoanService', error.message, 'updateLoanStatus');
+        }
     }
 };
 exports.LoanService = LoanService;

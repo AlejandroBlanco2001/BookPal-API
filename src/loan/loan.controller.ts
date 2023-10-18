@@ -11,6 +11,9 @@ import { LoanService } from './loan.service';
 import { CreateLoanDto } from './dto/create-loan-dto';
 import { LoanStatus } from '@prisma/client';
 import { ReferenceService } from 'src/reference/reference.service';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+
+@ApiTags('loan')
 @Controller('loan')
 export class LoanController {
   constructor(
@@ -19,11 +22,13 @@ export class LoanController {
   ) {}
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get a loan by ID' })
   getLoanByID(@Param('id') id: string) {
     return this.loanService.loan({ id: Number(id) });
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create a new loan' })
   async createLoan(@Request() req: any, @Body() createLoanDto: CreateLoanDto) {
     const due_date = await this.referenceService.getDueDate({
       reference_name: createLoanDto.physical_book_collection_name,
@@ -49,6 +54,7 @@ export class LoanController {
   }
 
   @Put('return/:id')
+  @ApiOperation({ summary: 'Return a loan' })
   returnLoan(@Param('id') id: string) {
     return this.loanService.updateLoan({
       where: { id: Number(id) },

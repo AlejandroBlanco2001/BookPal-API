@@ -2,7 +2,7 @@ import { Prisma, Loan } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { FineService } from '../fine/fine.service';
 import { PhysicalBookService } from '../physicalBook/physicalBook.service';
-import { ReferenceService } from 'src/reference/reference.service';
+import { ReferenceService } from '../reference/reference.service';
 export declare class LoanService {
     private fineService;
     private physicalBookService;

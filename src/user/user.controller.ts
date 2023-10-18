@@ -15,7 +15,6 @@ import { SecurityService } from '../utils/security/security.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDTO } from './dto/create-user-dto';
 import { UpdateUserDTO } from './dto/update-user-dto';
-
 @ApiTags('user')
 @Controller('user')
 export class UserController {
@@ -64,7 +63,9 @@ export class UserController {
   }
 
   @Get('profile')
-  @ApiOperation({ summary: 'Get the profile of the current logged user' })
+  @ApiOperation({
+    summary: 'Get the profile of the current logged user',
+  })
   getUserProfile(@Request() req: any): Promise<UserModel | null> {
     return req.user;
   }

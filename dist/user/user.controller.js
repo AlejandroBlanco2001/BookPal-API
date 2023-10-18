@@ -95,7 +95,9 @@ __decorate([
 ], UserController.prototype, "getUserByEmail", null);
 __decorate([
     (0, common_1.Get)('profile'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get the profile of the current logged user' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get the profile of the current logged user',
+    }),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),

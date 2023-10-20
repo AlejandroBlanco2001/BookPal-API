@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { LoanService } from '../loan/loan.service';
 import { FineService } from 'src/fine/fine.service';
-const EVERY_30_MINUTES_BETWEEN_7AM_AND_8PM = '0 */30 7-19 * * *';
+const EVERY_10_MINUTES_BETWEEN_7AM_AND_8PM = '0 */10 7-19 * * *';
 
 @Injectable()
 export class CronjobsService {
@@ -12,7 +12,7 @@ export class CronjobsService {
     private loanService: LoanService,
     private fineService: FineService,
   ) {}
-  @Cron(EVERY_30_MINUTES_BETWEEN_7AM_AND_8PM)
+  @Cron(EVERY_10_MINUTES_BETWEEN_7AM_AND_8PM)
   updateLoanStatus() {
     this.logger.debug('Updating loan status...');
     try {

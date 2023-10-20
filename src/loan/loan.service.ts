@@ -36,6 +36,7 @@ export class LoanService {
     data: Prisma.LoanCreateInput,
   ): Promise<Loan> {
     try {
+      // CHECK IF THE BOOK EXIST AND IS AVAILABLE
       const unpaidFines = await this.fineService.getFinesByUserID({
         id: user_id,
         status: FineStatus.unpaid,
@@ -82,7 +83,7 @@ export class LoanService {
         const collection = await this.referenceService.reference({
           id: physicalBook!.reference_id,
         });
-        if (dueDate < today && loan.status === LoanStatus.active) {
+        if (dueDate < today) {
           await this.fineService.fine({
             last_update_date: new Date(),
             amount: collection?.amount_of_money_per_day,

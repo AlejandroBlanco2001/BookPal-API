@@ -8,4 +8,5 @@ export declare class CompanyService {
         data: Prisma.CompanyUpdateInput;
     }): Promise<Company>;
     company(companyWhereUniqueInput: Prisma.CompanyWhereUniqueInput): Promise<Company | null>;
+    companies(): Promise<Company[]>;
 }

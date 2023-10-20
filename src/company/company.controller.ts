@@ -45,7 +45,14 @@ export class CompanyController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get a company by ID' })
   getCompany(@Param('id') id: number) {
     return this.companyService.company({ id: id });
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all companies' })
+  getCompanies() {
+    return this.companyService.companies();
   }
 }

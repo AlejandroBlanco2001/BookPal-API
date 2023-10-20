@@ -1,5 +1,4 @@
 import {
-  IsDateString,
   IsEmail,
   IsNotEmpty,
   IsOptional,
@@ -16,36 +15,6 @@ export class UpdateUserDTO {
   @IsNotEmpty()
   @IsOptional()
   profile_image?: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  first_name: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  second_name: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  last_name: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  second_last_name: string;
-
-  @ApiProperty()
-  @IsDateString()
-  @IsNotEmpty()
-  @IsOptional()
-  date_of_birth: Date;
 
   @ApiProperty()
   @IsEmail()

@@ -15,7 +15,7 @@ const common_1 = require("@nestjs/common");
 const schedule_1 = require("@nestjs/schedule");
 const loan_service_1 = require("../loan/loan.service");
 const fine_service_1 = require("../fine/fine.service");
-const EVERY_30_MINUTES_BETWEEN_7AM_AND_8PM = '0 */30 7-19 * * *';
+const EVERY_10_MINUTES_BETWEEN_7AM_AND_8PM = '0 */10 7-19 * * *';
 let CronjobsService = CronjobsService_1 = class CronjobsService {
     constructor(loanService, fineService) {
         this.loanService = loanService;
@@ -45,7 +45,7 @@ let CronjobsService = CronjobsService_1 = class CronjobsService {
 };
 exports.CronjobsService = CronjobsService;
 __decorate([
-    (0, schedule_1.Cron)(EVERY_30_MINUTES_BETWEEN_7AM_AND_8PM),
+    (0, schedule_1.Cron)(EVERY_10_MINUTES_BETWEEN_7AM_AND_8PM),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)

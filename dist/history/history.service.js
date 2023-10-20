@@ -9,16 +9,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateLoanDto = void 0;
-const class_validator_1 = require("class-validator");
-const swagger_1 = require("@nestjs/swagger");
-class CreateLoanDto {
-}
-exports.CreateLoanDto = CreateLoanDto;
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsNumber)(),
-    (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", String)
-], CreateLoanDto.prototype, "physical_book_barcode", void 0);
-//# sourceMappingURL=create-loan-dto.js.map
+exports.HistoryService = void 0;
+const common_1 = require("@nestjs/common");
+const prisma_service_1 = require("../prisma/prisma.service");
+let HistoryService = class HistoryService {
+    constructor(prismaService) {
+        this.prismaService = prismaService;
+    }
+    async history() {
+        return await this.prismaService.history.findMany();
+    }
+    async createHistoryPoint(data) {
+        await this.prismaService.history.create({ data });
+    }
+};
+exports.HistoryService = HistoryService;
+exports.HistoryService = HistoryService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+], HistoryService);
+//# sourceMappingURL=history.service.js.map

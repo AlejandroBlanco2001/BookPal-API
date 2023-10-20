@@ -10,7 +10,7 @@ export class PhyiscalBookController {
   constructor(private readonly physicalBookService: PhysicalBookService) {}
 
   @Public()
-  @Get(':barcode')
+  @Get('barcode/:barcode')
   @ApiOperation({ summary: 'Get a physical book by barcode' })
   getPhysicalBookByBarcode(
     @Param('barcode') barcode: string,
@@ -19,7 +19,7 @@ export class PhyiscalBookController {
   }
 
   @Public()
-  @Get(':id')
+  @Get('id/:id')
   @ApiOperation({ summary: 'Get a physical book by ID' })
   getPhysicalBookByID(
     @Param('id') id: string,

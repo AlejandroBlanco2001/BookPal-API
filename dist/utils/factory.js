@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.book = exports.company = exports.user = void 0;
+exports.book = exports.reference = exports.physicalBook = exports.company = exports.user = void 0;
 function user() {
     const userCompany = company().basic();
     return {
@@ -40,16 +40,48 @@ function company() {
     };
 }
 exports.company = company;
-function book() {
-    let customBook = {};
+function physicalBook() {
     return {
         basic: () => ({
             barcode: '1234567890123',
             title: 'The Hobbit',
+            reference: reference().basic(),
         }),
         custom: (customProps) => {
-            customBook = { ...customBook, ...customProps };
-            return customBook;
+            return { ...physicalBook().basic(), ...customProps };
+        },
+    };
+}
+exports.physicalBook = physicalBook;
+function reference() {
+    return {
+        basic: () => {
+            return {
+                id: 1,
+                reference_name: 'General',
+                amount_of_money_per_day: 1000,
+                amount_of_days_per_loan: 7,
+                amount_of_loans_per_user: 3,
+                limit_of_books_per_user: 20,
+            };
+        },
+    };
+}
+exports.reference = reference;
+function book() {
+    const referenceObj = reference().basic();
+    return {
+        basic: () => ({
+            id: 1,
+            title: 'The Hobbit',
+            author: 'J.R.R. Tolkien',
+            original_title: 'The Hobbit',
+            publish_date: new Date('1937-09-21'),
+            reference_id: referenceObj.id,
+            reference: referenceObj,
+        }),
+        custom: (customProps) => {
+            return { ...book().basic(), ...customProps };
         },
     };
 }

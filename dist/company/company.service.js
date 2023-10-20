@@ -13,16 +13,22 @@ exports.CompanyService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const companyNotFound_exception_1 = require("../exceptions/companyNotFound.exception");
+const genericError_exception_1 = require("../exceptions/genericError.exception");
 let CompanyService = class CompanyService {
     constructor(prisma) {
         this.prisma = prisma;
     }
     async updateCompany(params) {
         const { where, data } = params;
-        return this.prisma.company.update({
-            data,
-            where,
-        });
+        try {
+            return await this.prisma.company.update({
+                data,
+                where,
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('CompanyService', error.message, 'updateCompany');
+        }
     }
     async company(companyWhereUniqueInput) {
         const company = await this.prisma.company.findUnique({
@@ -32,6 +38,14 @@ let CompanyService = class CompanyService {
             throw new companyNotFound_exception_1.CompanyNotFound();
         }
         return company;
+    }
+    async companies() {
+        try {
+            return await this.prisma.company.findMany();
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('CompanyService', error.message, 'companies');
+        }
     }
 };
 exports.CompanyService = CompanyService;

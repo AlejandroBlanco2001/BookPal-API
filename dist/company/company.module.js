@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const company_controller_1 = require("./company.controller");
 const company_service_1 = require("./company.service");
 const prisma_module_1 = require("../prisma/prisma.module");
+const history_service_1 = require("../history/history.service");
 let CompanyModule = class CompanyModule {
 };
 exports.CompanyModule = CompanyModule;
@@ -18,7 +19,7 @@ exports.CompanyModule = CompanyModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule],
         controllers: [company_controller_1.CompanyController],
-        providers: [company_service_1.CompanyService],
+        providers: [company_service_1.CompanyService, history_service_1.HistoryService],
     })
 ], CompanyModule);
 //# sourceMappingURL=company.module.js.map

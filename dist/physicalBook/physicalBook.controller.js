@@ -36,7 +36,7 @@ let PhyiscalBookController = class PhyiscalBookController {
 exports.PhyiscalBookController = PhyiscalBookController;
 __decorate([
     (0, custom_decorators_1.Public)(),
-    (0, common_1.Get)(':barcode'),
+    (0, common_1.Get)('barcode/:barcode'),
     (0, swagger_1.ApiOperation)({ summary: 'Get a physical book by barcode' }),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Param)('barcode')),
@@ -46,7 +46,7 @@ __decorate([
 ], PhyiscalBookController.prototype, "getPhysicalBookByBarcode", null);
 __decorate([
     (0, custom_decorators_1.Public)(),
-    (0, common_1.Get)(':id'),
+    (0, common_1.Get)('id/:id'),
     (0, swagger_1.ApiOperation)({ summary: 'Get a physical book by ID' }),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Param)('id')),

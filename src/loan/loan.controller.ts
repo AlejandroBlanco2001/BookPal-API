@@ -45,7 +45,7 @@ export class LoanController {
       user_id: req.user.id,
       physical_book: {
         connect: {
-          id: createLoanDto.physical_book_barcode,
+          barcode: createLoanDto.physical_book_barcode,
         },
       },
       physical_book_barcode: createLoanDto.physical_book_barcode,

@@ -84,7 +84,7 @@ let LoanService = class LoanService {
                 const collection = await this.referenceService.reference({
                     id: physicalBook.reference_id,
                 });
-                if (dueDate < today && loan.status === client_2.LoanStatus.active) {
+                if (dueDate < today) {
                     await this.fineService.fine({
                         last_update_date: new Date(),
                         amount: collection?.amount_of_money_per_day,

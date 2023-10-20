@@ -33,4 +33,12 @@ export class CompanyService {
     }
     return company;
   }
+
+  async companies(): Promise<Company[]> {
+    try {
+      return await this.prisma.company.findMany();
+    } catch (error: any) {
+      throw new GenericError('CompanyService', error.message, 'companies');
+    }
+  }
 }

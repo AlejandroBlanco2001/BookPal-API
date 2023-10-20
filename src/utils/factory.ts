@@ -1,6 +1,6 @@
-import { Company, PhysicalBook, User } from '@prisma/client';
+import { Book, Company, PhysicalBook, Reference, User } from '@prisma/client';
 
-type BookFactory = {
+type PhysicalBookFactory = {
   basic: () => Partial<PhysicalBook>;
   custom: (customProps: Partial<PhysicalBook>) => Partial<PhysicalBook>;
 };
@@ -12,6 +12,15 @@ type CompanyFactory = {
 type UserFactory = {
   basic: () => User;
   custom: (customProps: Partial<User>) => Partial<User>;
+};
+
+type BookFactory = {
+  basic: () => Book;
+  custom: (customProps: Partial<Book>) => Partial<Book>;
+};
+
+type ReferenceFactory = {
+  basic: () => Reference;
 };
 
 export function user(): UserFactory {
@@ -53,16 +62,48 @@ export function company(): CompanyFactory {
   };
 }
 
-export function book(): BookFactory {
-  let customBook: Partial<PhysicalBook> = {};
+export function physicalBook(): PhysicalBookFactory {
   return {
     basic: () => ({
       barcode: '1234567890123',
       title: 'The Hobbit',
+      reference: reference().basic(), // Call the reference function
     }),
     custom: (customProps: Partial<PhysicalBook>) => {
-      customBook = { ...customBook, ...customProps };
-      return customBook;
+      return { ...physicalBook().basic(), ...customProps };
+    },
+  };
+}
+
+export function reference(): ReferenceFactory {
+  return {
+    basic: () => {
+      return {
+        id: 1,
+        reference_name: 'General',
+        amount_of_money_per_day: 1000,
+        amount_of_days_per_loan: 7,
+        amount_of_loans_per_user: 3,
+        limit_of_books_per_user: 20,
+      };
+    },
+  };
+}
+
+export function book(): BookFactory {
+  const referenceObj: Reference = reference().basic();
+  return {
+    basic: () => ({
+      id: 1,
+      title: 'The Hobbit',
+      author: 'J.R.R. Tolkien',
+      original_title: 'The Hobbit',
+      publish_date: new Date('1937-09-21'),
+      reference_id: referenceObj.id,
+      reference: referenceObj,
+    }),
+    custom: (customProps: Partial<Book>) => {
+      return { ...book().basic(), ...customProps };
     },
   };
 }

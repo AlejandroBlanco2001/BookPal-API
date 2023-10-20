@@ -36,6 +36,7 @@ model User {
   is_admin         Boolean        @default(false)
   notifications    Notification[]
   Loan             Loan[]
+  History          History[]
 }
 
 model Notification {
@@ -62,13 +63,13 @@ model Loan {
 }
 
 model Fine {
-  id       Int        @id @default(autoincrement())
-  loan     Loan       @relation(fields: [loan_id], references: [id])
-  loan_id  Int
-  amount   Float      @default(0)
-  status   FineStatus @default(unpaid)
-  pay_date DateTime?
-  last_update_date DateTime @default(now())
+  id               Int        @id @default(autoincrement())
+  loan             Loan       @relation(fields: [loan_id], references: [id])
+  loan_id          Int
+  amount           Float      @default(0)
+  status           FineStatus @default(unpaid)
+  pay_date         DateTime?
+  last_update_date DateTime   @default(now())
 }
 
 model PhysicalBook {
@@ -139,6 +140,23 @@ model Inventory {
   minimum_quantity      Int          @default(0)
   maximum_quantity      Int
   reorder_quantity      Int?
+}
+
+model History {
+  id         Int           @id @default(autoincrement())
+  model_name String
+  model_id   Int
+  action     HistoryAction
+  user       User          @relation(fields: [user_id], references: [id])
+  user_id    Int
+  date       DateTime      @default(now())
+  data       String?
+}
+
+enum HistoryAction {
+  create
+  update
+  delete
 }
 
 enum NotificationStatus {

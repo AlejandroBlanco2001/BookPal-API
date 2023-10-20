@@ -5,6 +5,6 @@ export class CreateLoanDto {
   @IsNotEmpty()
   @IsNumber()
   @ApiProperty()
-  physical_book_barcode: number;
+  physical_book_barcode: string;
   physical_book_collection_name: string;
 }

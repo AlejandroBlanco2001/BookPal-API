@@ -20,6 +20,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { CronjobsModule } from './cronjobs/cronjobs.module';
 import { FineModule } from './fine/fine.module';
 import { ReferenceService } from './reference/reference.service';
+import { HistoryController } from './history/history.controller';
+import { HistoryService } from './history/history.service';
 
 @Module({
   imports: [
@@ -35,7 +37,7 @@ import { ReferenceService } from './reference/reference.service';
     CronjobsModule,
     FineModule,
   ],
-  controllers: [AppController, PhyiscalBookController, UserController],
+  controllers: [AppController, PhyiscalBookController, UserController, HistoryController],
   providers: [
     AppService,
     PhysicalBookService,
@@ -46,6 +48,7 @@ import { ReferenceService } from './reference/reference.service';
       useClass: JwtAuthGuard,
     },
     ReferenceService,
+    HistoryService,
   ],
 })
 export class AppModule {}

@@ -36,7 +36,6 @@ export class LoanService {
     data: Prisma.LoanCreateInput,
   ): Promise<Loan> {
     try {
-      // CHECK IF THE BOOK EXIST AND IS AVAILABLE
       const unpaidFines = await this.fineService.getFinesByUserID({
         id: user_id,
         status: FineStatus.unpaid,

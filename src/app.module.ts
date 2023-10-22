@@ -22,6 +22,7 @@ import { FineModule } from './fine/fine.module';
 import { ReferenceService } from './reference/reference.service';
 import { HistoryController } from './history/history.controller';
 import { HistoryService } from './history/history.service';
+import { InventoryService } from './inventory/inventory.service';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { HistoryService } from './history/history.service';
     },
     ReferenceService,
     HistoryService,
+    InventoryService,
   ],
 })
 export class AppModule {}

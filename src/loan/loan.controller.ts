@@ -12,8 +12,6 @@ import { CreateLoanDto } from './dto/create-loan-dto';
 import { LoanStatus } from '@prisma/client';
 import { ReferenceService } from '../reference/reference.service';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { InventoryService } from '../inventory/inventory.service';
-import { PhysicalBookNotAvailable } from '../exceptions/physicalBookNotAvailable.exception';
 
 @ApiTags('loan')
 @Controller('loan')
@@ -21,7 +19,6 @@ export class LoanController {
   constructor(
     public readonly loanService: LoanService,
     public readonly referenceService: ReferenceService,
-    public readonly inventoryService: InventoryService,
   ) {}
 
   @Get(':id')
@@ -33,13 +30,6 @@ export class LoanController {
   @Post()
   @ApiOperation({ summary: 'Create a new loan' })
   async createLoan(@Request() req: any, @Body() createLoanDto: CreateLoanDto) {
-    const is_book_available =
-      await this.inventoryService.isPhysicalBookAvailable({
-        physical_book_barcode: createLoanDto.physical_book_barcode,
-      });
-    if (!is_book_available) {
-      throw new PhysicalBookNotAvailable(createLoanDto.physical_book_barcode);
-    }
     const due_date = await this.referenceService.getDueDate({
       reference_name: createLoanDto.physical_book_collection_name,
     });

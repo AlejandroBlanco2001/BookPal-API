@@ -8,6 +8,8 @@ import { PhysicalBookService } from '../physicalBook/physicalBook.service';
 import { ReferenceService } from '../reference/reference.service';
 import { GenericError } from '../exceptions/genericError.exception';
 import { LoanNotFound } from '../exceptions/loanNotFound.exceptions';
+import { InventoryService } from '../inventory/inventory.service';
+import { PhysicalBookNotAvailable } from '../exceptions/physicalBookNotAvailable.exception';
 
 @Injectable()
 export class LoanService {
@@ -16,6 +18,7 @@ export class LoanService {
     private fineService: FineService,
     private physicalBookService: PhysicalBookService,
     private referenceService: ReferenceService,
+    private inventoryService: InventoryService,
     private prisma: PrismaService,
   ) {}
 
@@ -36,6 +39,15 @@ export class LoanService {
     data: Prisma.LoanCreateInput,
   ): Promise<Loan> {
     try {
+      const is_book_available =
+        await this.inventoryService.isPhysicalBookAvailable({
+          physical_book_barcode: data.physical_book.connect?.barcode as string,
+        });
+      if (!is_book_available) {
+        throw new PhysicalBookNotAvailable(
+          data.physical_book.connect?.barcode as string,
+        );
+      }
       const unpaidFines = await this.fineService.getFinesByUserID({
         id: user_id,
         status: FineStatus.unpaid,
@@ -57,7 +69,13 @@ export class LoanService {
   }): Promise<Loan> {
     const { where, data } = params;
     try {
-      return this.prisma.loan.update({
+      const is_fine_payed = await this.fineService.getFineByLoanID({
+        id: where.id,
+      });
+      if (is_fine_payed!.status === FineStatus.unpaid) {
+        throw new UserUnpaidFines();
+      }
+      return await this.prisma.loan.update({
         data,
         where,
       });

@@ -14,7 +14,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       context.getHandler(),
       context.getClass(),
     ]);
-    // FIX ME: - this is a hack to allow the API to be called from the frontend, just change it to an AND when deploy please
     if (
       isPublic ||
       context.getArgs()[0].headers['x-api-key'] === process.env.API_KEY

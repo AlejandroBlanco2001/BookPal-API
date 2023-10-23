@@ -121,4 +121,14 @@ export class LoanService {
       throw new GenericError('LoanService', error.message, 'updateLoanStatus');
     }
   }
+
+  async getLoanByUserID(data: Prisma.LoanWhereInput): Promise<Loan[]> {
+    try {
+      return await this.prisma.loan.findMany({
+        where: data,
+      });
+    } catch (error: any) {
+      throw new GenericError('LoanService', error.message, 'getLoanByUserID');
+    }
+  }
 }

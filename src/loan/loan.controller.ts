@@ -27,6 +27,12 @@ export class LoanController {
     return this.loanService.loan({ id: Number(id) });
   }
 
+  @Get('/user/:id')
+  @ApiOperation({ summary: 'Get a user loans' })
+  getUserLoans(@Param('id') id: string) {
+    return this.loanService.getLoanByUserID({ user_id: Number(id) });
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a new loan' })
   async createLoan(@Request() req: any, @Body() createLoanDto: CreateLoanDto) {

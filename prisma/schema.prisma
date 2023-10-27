@@ -74,25 +74,26 @@ model Fine {
 
 model PhysicalBook {
   id                Int         @id @default(autoincrement())
+  serial_number     String      
   barcode           String      @unique
   reference_book    Book        @relation(fields: [reference_id], references: [id])
   reference_id      Int
   collection        Reference   @relation(fields: [collection_id], references: [id])
   collection_id     Int
+  author            String
   book_cover        String      @default("https://firebasestorage.googleapis.com/v0/b/bookpal-4f333.appspot.com/o/books%2Fno_cover.jpg?alt=media&token=fa8c05d0-724e-4bd2-acb2-f1731a15d60c&_gl=1*1k7glp8*_ga*ODQ3MjYwMjYuMTY5NTQ5NzMxNg..*_ga_CW55HF8NVT*MTY5NzIzNTA4NC45LjEuMTY5NzIzNTE2NS41OC4wLjA.")
   title             String
   edition           String?
   dewey_code        String      @unique
   creation_date     DateTime
-  isbn              String?     @unique
-  isbn13            String?     @unique
+  isbn              String?     
+  isbn13            String?     
   publisher         String?
   publish_date      DateTime?
   language          String?
   status            BookStatus  @default(available)
   bibliographic_gps String?     @unique
   Loan              Loan[]
-  Inventory         Inventory[]
 }
 
 model Reference {
@@ -132,8 +133,7 @@ model Book {
 
 model Inventory {
   id                    Int          @id @default(autoincrement())
-  physical_book         PhysicalBook @relation(fields: [physical_book_barcode], references: [barcode])
-  physical_book_barcode String
+  physical_book_serial_number String
   creation_date         DateTime     @default(now())
   last_update           DateTime     @default(now())
   quantity              Int

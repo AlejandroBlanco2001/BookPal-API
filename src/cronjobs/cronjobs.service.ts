@@ -33,4 +33,15 @@ export class CronjobsService {
     }
     this.logger.debug('Finished updating fine amount to pay.');
   }
+
+  @Cron(CronExpression.EVERY_DAY_AT_1AM)
+  sendNotifications() {
+    this.logger.debug('Sending notifications...');
+    try {
+      // this.fineService.sendNotifications();
+    } catch (err) {
+      console.log(err);
+    }
+    this.logger.debug('Finished sending notifications.');
+  }
 }

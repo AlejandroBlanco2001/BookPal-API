@@ -21,7 +21,7 @@ export class InventoryService {
     try {
       return this.prisma.inventory.findMany({
         where: {
-          physical_book_barcode: physicalBookId,
+          physical_book_serial_number: physicalBookId,
         },
       });
     } catch (error: any) {
@@ -53,7 +53,7 @@ export class InventoryService {
   }): Promise<Inventory> {
     const { where, data } = params;
     try {
-      return this.prisma.inventory.update({
+      return await this.prisma.inventory.update({
         data,
         where,
       });
@@ -67,7 +67,7 @@ export class InventoryService {
   }
 
   async isPhysicalBookAvailable(where: {
-    physical_book_barcode: string;
+    physical_book_serial_number: string;
   }): Promise<boolean> {
     try {
       const inventory = await this.prisma.inventory.findFirst({
@@ -75,13 +75,29 @@ export class InventoryService {
       });
       return (
         inventory!.quantity > 0 &&
-        inventory!.quantity > inventory!.minimum_quantity
+        inventory!.quantity - 1 > inventory!.minimum_quantity
       );
     } catch (error: any) {
       throw new GenericError(
         'InventoryService',
         error.message,
         'isPhysicalBookAvailable',
+      );
+    }
+  }
+
+  async inventoryByPhyiscalSerialNumber(where: {
+    physical_book_serial_number: string;
+  }): Promise<Inventory | null> {
+    try {
+      return this.prisma.inventory.findFirstOrThrow({
+        where,
+      });
+    } catch (error: any) {
+      throw new GenericError(
+        'InventoryService',
+        error.message,
+        'inventoryByPhyiscalSerialNumber',
       );
     }
   }

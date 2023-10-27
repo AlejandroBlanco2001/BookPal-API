@@ -22,4 +22,13 @@ export class ReferenceService {
     date.setDate(date.getDate() + reference!.amount_of_days_per_loan);
     return date;
   }
+
+  async getMaxLoans(
+    referenceWhereUniqueInput: Prisma.ReferenceWhereUniqueInput,
+  ) {
+    const reference = await this.prisma.reference.findUnique({
+      where: referenceWhereUniqueInput,
+    });
+    return reference!.limit_of_books_per_user;
+  }
 }

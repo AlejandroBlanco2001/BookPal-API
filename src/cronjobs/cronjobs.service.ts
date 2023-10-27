@@ -34,6 +34,7 @@ export class CronjobsService {
     this.logger.debug('Finished updating fine amount to pay.');
   }
 
+  // TODO - send notifications to users
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   sendNotifications() {
     this.logger.debug('Sending notifications...');

@@ -10,6 +10,7 @@ import { GenericError } from '../exceptions/genericError.exception';
 import { LoanNotFound } from '../exceptions/loanNotFound.exceptions';
 import { InventoryService } from '../inventory/inventory.service';
 import { PhysicalBookNotAvailable } from '../exceptions/physicalBookNotAvailable.exception';
+import { MaximumLoansPerCollection } from '../exceptions/maximumLoansPerCollection.exception';
 
 @Injectable()
 export class LoanService {
@@ -28,6 +29,7 @@ export class LoanService {
     const loan = await this.prisma.loan.findUnique({
       where: loanWhereUniqueInput,
     });
+
     if (!loan) {
       throw new LoanNotFound(loanWhereUniqueInput);
     }
@@ -39,22 +41,62 @@ export class LoanService {
     data: Prisma.LoanCreateInput,
   ): Promise<Loan> {
     try {
+      const physicalBook = await this.physicalBookService.physicalBook({
+        barcode: data.physical_book.connect?.barcode as string,
+      });
+
       const is_book_available =
         await this.inventoryService.isPhysicalBookAvailable({
-          physical_book_barcode: data.physical_book.connect?.barcode as string,
+          physical_book_serial_number: physicalBook?.serial_number as string,
         });
+
       if (!is_book_available) {
         throw new PhysicalBookNotAvailable(
           data.physical_book.connect?.barcode as string,
         );
       }
+
       const unpaidFines = await this.fineService.getFinesByUserID({
         id: user_id,
         status: FineStatus.unpaid,
       });
+
       if (unpaidFines.length > 0) {
         throw new UserUnpaidFines();
       }
+
+      const max_number_of_collection = await this.referenceService.getMaxLoans({
+        reference_name: physicalBook?.collection_id.toString(),
+      });
+
+      const user_loans = await this.getLoanByUserID({
+        user_id: user_id,
+      });
+
+      const user_loans_barcode = user_loans.map(
+        (loan: Loan) => loan.physical_book_barcode,
+      );
+
+      const user_loans_books = await this.physicalBookService.physicalBooks({
+        where: {
+          serial_number: {
+            in: user_loans_barcode,
+          },
+        },
+      });
+
+      if (user_loans_books.length > max_number_of_collection) {
+        throw new MaximumLoansPerCollection();
+      }
+
+      const inventory =
+        await this.inventoryService.inventoryByPhyiscalSerialNumber({
+          physical_book_serial_number: physicalBook?.serial_number as string,
+        });
+
+      inventory!.quantity = inventory!.quantity - 1;
+      inventory!.last_update = new Date();
+
       return this.prisma.loan.create({
         data,
       });

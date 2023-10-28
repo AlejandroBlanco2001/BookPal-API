@@ -56,10 +56,12 @@ export class LoanService {
         );
       }
 
-      const unpaidFines = await this.fineService.getFinesByUserID({
-        id: user_id,
-        status: FineStatus.unpaid,
-      });
+      const unpaidFines = await this.fineService.getFinesByUserID(
+        {
+          status: FineStatus.unpaid,
+        },
+        user_id,
+      );
 
       if (unpaidFines.length > 0) {
         throw new UserUnpaidFines();
@@ -111,7 +113,7 @@ export class LoanService {
   }): Promise<Loan> {
     const { where, data } = params;
     try {
-      const is_fine_payed = await this.fineService.getFineByLoanID({
+      const is_fine_payed = await this.fineService.getFine({
         id: where.id,
       });
       if (is_fine_payed!.status === FineStatus.unpaid) {

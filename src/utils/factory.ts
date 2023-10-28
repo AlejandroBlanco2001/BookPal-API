@@ -1,4 +1,12 @@
-import { Book, Company, PhysicalBook, Reference, User } from '@prisma/client';
+import {
+  Book,
+  Company,
+  Fine,
+  Loan,
+  PhysicalBook,
+  Reference,
+  User,
+} from '@prisma/client';
 
 type PhysicalBookFactory = {
   basic: () => Partial<PhysicalBook>;
@@ -21,6 +29,16 @@ type BookFactory = {
 
 type ReferenceFactory = {
   basic: () => Reference;
+};
+
+type FineFactory = {
+  basic: () => Fine;
+  custom: (customProps: Partial<Fine>) => Partial<Fine>;
+};
+
+type LoanFactory = {
+  basic: () => Loan;
+  custom: (customProps: Partial<Loan>) => Partial<Loan>;
 };
 
 export function user(): UserFactory {
@@ -63,11 +81,12 @@ export function company(): CompanyFactory {
 }
 
 export function physicalBook(): PhysicalBookFactory {
+  const referenceObj = reference().basic();
   return {
     basic: () => ({
       barcode: '1234567890123',
       title: 'The Hobbit',
-      reference: reference().basic(), // Call the reference function
+      reference: referenceObj,
     }),
     custom: (customProps: Partial<PhysicalBook>) => {
       return { ...physicalBook().basic(), ...customProps };
@@ -104,6 +123,49 @@ export function book(): BookFactory {
     }),
     custom: (customProps: Partial<Book>) => {
       return { ...book().basic(), ...customProps };
+    },
+  };
+}
+
+export function loan(): LoanFactory {
+  const userObj = user().basic();
+  const physicalBookObj = physicalBook().basic();
+  const referenceObj = reference().basic();
+  return {
+    basic: () => ({
+      id: 1,
+      status: 'active',
+      due_date: new Date(),
+      user_id: userObj.id,
+      user: userObj,
+      physical_book_barcode: physicalBookObj.barcode as string,
+      physical_book: physicalBookObj,
+      reference_id: referenceObj.id,
+      reference: referenceObj,
+      start_date: new Date(),
+      return_date: new Date(),
+    }),
+
+    custom: (customProps: Partial<Loan>) => {
+      return { ...loan().basic(), ...customProps };
+    },
+  };
+}
+
+export function fine(): FineFactory {
+  const loanObj = loan().basic();
+  return {
+    basic: () => ({
+      id: 1,
+      amount: 1000,
+      status: 'unpaid',
+      pay_date: new Date(),
+      last_update_date: new Date(),
+      loan_id: loanObj.id,
+      loan: loanObj,
+    }),
+    custom: (customProps: Partial<Fine>) => {
+      return { ...fine().basic(), ...customProps };
     },
   };
 }

@@ -23,6 +23,8 @@ import { ReferenceService } from './reference/reference.service';
 import { HistoryController } from './history/history.controller';
 import { HistoryService } from './history/history.service';
 import { InventoryService } from './inventory/inventory.service';
+import { NotificationController } from './notification/notification.controller';
+import { NotificationService } from './notification/notification.service';
 
 @Module({
   imports: [
@@ -38,7 +40,7 @@ import { InventoryService } from './inventory/inventory.service';
     CronjobsModule,
     FineModule,
   ],
-  controllers: [AppController, PhyiscalBookController, UserController, HistoryController],
+  controllers: [AppController, PhyiscalBookController, UserController, HistoryController, NotificationController],
   providers: [
     AppService,
     PhysicalBookService,
@@ -51,6 +53,7 @@ import { InventoryService } from './inventory/inventory.service';
     ReferenceService,
     HistoryService,
     InventoryService,
+    NotificationService,
   ],
 })
 export class AppModule {}

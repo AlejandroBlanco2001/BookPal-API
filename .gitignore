@@ -49,3 +49,4 @@ pnpm-lock.yaml
 # Environment variables
 .env
 src/auth/constants.ts
+bookpal-91ceb-firebase-adminsdk-yr83d-1af3c3ea22.json

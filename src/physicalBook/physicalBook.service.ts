@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PhysicalBook, Prisma } from '@prisma/client';
-import { PhysicalBookNotFound } from 'src/exceptions/physicalBookNotFound.exception';
-import { GenericError } from 'src/exceptions/genericError.exception';
+import { PhysicalBookNotFound } from '../exceptions/physicalBookNotFound.exception';
+import { GenericError } from '../exceptions/genericError.exception';
 @Injectable()
 export class PhysicalBookService {
   constructor(private prisma: PrismaService) {}

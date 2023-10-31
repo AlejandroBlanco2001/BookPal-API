@@ -29,11 +29,12 @@ let UserController = class UserController {
     }
     async createUser(data) {
         const hashed_password = await this.securityService.hashPassword(data.password);
+        const { company_id, ...rest } = data;
         const user = await this.userService.createUser({
-            ...data,
+            ...rest,
             company: {
                 connect: {
-                    id: data.company_id,
+                    id: company_id,
                 },
             },
             password: hashed_password,

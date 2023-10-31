@@ -40,7 +40,13 @@ import { NotificationService } from './notification/notification.service';
     CronjobsModule,
     FineModule,
   ],
-  controllers: [AppController, PhyiscalBookController, UserController, HistoryController, NotificationController],
+  controllers: [
+    AppController,
+    PhyiscalBookController,
+    UserController,
+    HistoryController,
+    NotificationController,
+  ],
   providers: [
     AppService,
     PhysicalBookService,

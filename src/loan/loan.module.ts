@@ -5,7 +5,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { FineModule } from '../fine/fine.module';
 import { PhysicalBookService } from '../physicalBook/physicalBook.service';
 import { ReferenceService } from '../reference/reference.service';
-import { InventoryService } from 'src/inventory/inventory.service';
+import { InventoryService } from '../inventory/inventory.service';
 
 @Module({
   imports: [PrismaModule, FineModule],

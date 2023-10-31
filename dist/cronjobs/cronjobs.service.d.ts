@@ -7,4 +7,5 @@ export declare class CronjobsService {
     constructor(loanService: LoanService, fineService: FineService);
     updateLoanStatus(): void;
     updateFineAmountToPay(): void;
+    sendNotifications(): void;
 }

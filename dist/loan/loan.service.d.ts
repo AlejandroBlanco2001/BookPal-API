@@ -3,12 +3,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { FineService } from '../fine/fine.service';
 import { PhysicalBookService } from '../physicalBook/physicalBook.service';
 import { ReferenceService } from '../reference/reference.service';
+import { InventoryService } from '../inventory/inventory.service';
 export declare class LoanService {
     private fineService;
     private physicalBookService;
     private referenceService;
+    private inventoryService;
     private prisma;
-    constructor(fineService: FineService, physicalBookService: PhysicalBookService, referenceService: ReferenceService, prisma: PrismaService);
+    constructor(fineService: FineService, physicalBookService: PhysicalBookService, referenceService: ReferenceService, inventoryService: InventoryService, prisma: PrismaService);
     loan(loanWhereUniqueInput: Prisma.LoanWhereUniqueInput): Promise<Loan | null>;
     createLoan(user_id: number, data: Prisma.LoanCreateInput): Promise<Loan>;
     updateLoan(params: {
@@ -16,4 +18,5 @@ export declare class LoanService {
         data: Prisma.LoanUpdateInput;
     }): Promise<Loan>;
     updateLoanStatus(): Promise<void>;
+    getLoanByUserID(data: Prisma.LoanWhereInput): Promise<Loan[]>;
 }

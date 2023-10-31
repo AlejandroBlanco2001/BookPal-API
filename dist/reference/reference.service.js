@@ -12,14 +12,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReferenceService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const genericError_exception_1 = require("../exceptions/genericError.exception");
+const referenceNotFound_exception_1 = require("../exceptions/referenceNotFound.exception");
 let ReferenceService = class ReferenceService {
     constructor(prisma) {
         this.prisma = prisma;
     }
     async reference(referenceWhereUniqueInput) {
-        return this.prisma.reference.findUnique({
-            where: referenceWhereUniqueInput,
-        });
+        let reference;
+        try {
+            reference = await this.prisma.reference.findUnique({
+                where: referenceWhereUniqueInput,
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('ReferenceService', error.message, 'reference');
+        }
+        if (!reference) {
+            throw new referenceNotFound_exception_1.ReferenceNotFound(referenceWhereUniqueInput);
+        }
+        return reference;
     }
     async getDueDate(referenceWhereUniqueInput) {
         const reference = await this.prisma.reference.findUnique({
@@ -28,6 +40,12 @@ let ReferenceService = class ReferenceService {
         const date = new Date();
         date.setDate(date.getDate() + reference.amount_of_days_per_loan);
         return date;
+    }
+    async getMaxLoans(referenceWhereUniqueInput) {
+        const reference = await this.prisma.reference.findUnique({
+            where: referenceWhereUniqueInput,
+        });
+        return reference.limit_of_books_per_user;
     }
 };
 exports.ReferenceService = ReferenceService;

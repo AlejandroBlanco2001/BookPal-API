@@ -28,6 +28,9 @@ let LoanController = class LoanController {
     getLoanByID(id) {
         return this.loanService.loan({ id: Number(id) });
     }
+    getUserLoans(id) {
+        return this.loanService.getLoanByUserID({ user_id: Number(id) });
+    }
     async createLoan(req, createLoanDto) {
         const due_date = await this.referenceService.getDueDate({
             reference_name: createLoanDto.physical_book_collection_name,
@@ -71,6 +74,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], LoanController.prototype, "getLoanByID", null);
+__decorate([
+    (0, common_1.Get)('/user/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get a user loans' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], LoanController.prototype, "getUserLoans", null);
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new loan' }),

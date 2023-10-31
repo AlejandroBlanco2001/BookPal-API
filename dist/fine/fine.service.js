@@ -18,32 +18,72 @@ const client_1 = require("@prisma/client");
 const loan_service_1 = require("../loan/loan.service");
 const prisma_service_1 = require("../prisma/prisma.service");
 const constant_1 = require("../utils/constant");
+const genericError_exception_1 = require("../exceptions/genericError.exception");
+const fineNotFound_exception_1 = require("../exceptions/fineNotFound.exception");
 let FineService = class FineService {
     constructor(loanService, prisma) {
         this.loanService = loanService;
         this.prisma = prisma;
     }
     async fine(data) {
-        return this.prisma.fine.create({
-            data,
-        });
+        try {
+            return this.prisma.fine.create({
+                data,
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('FineService', error.message, 'fine');
+        }
     }
-    async getFineByLoanID(data) {
-        return this.prisma.fine.findUnique({
-            where: data,
-        });
+    async getFine(data) {
+        let fine;
+        try {
+            fine = await this.prisma.fine.findUnique({ where: data });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('FineService', error.message, 'getFine');
+        }
+        if (!fine) {
+            throw new fineNotFound_exception_1.FineNotFound();
+        }
+        return fine;
     }
-    async getFinesByUserID(data) {
-        return this.prisma.fine.findMany({
-            where: data,
-        });
+    async getFinesByUserID(data, user_id) {
+        let fines = [];
+        try {
+            const loans_user = await this.loanService.getLoanByUserID({
+                user_id,
+            });
+            const loans_user_id = loans_user.map((loan) => loan.id);
+            fines = await this.prisma.fine.findMany({
+                where: {
+                    AND: [
+                        {
+                            loan_id: {
+                                in: loans_user_id,
+                            },
+                        },
+                        data,
+                    ],
+                },
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('FineService', error.message, 'getFinesByUserID');
+        }
+        return fines;
     }
     async updateFine(params) {
         const { where, data } = params;
-        return this.prisma.fine.update({
-            data,
-            where,
-        });
+        try {
+            return this.prisma.fine.update({
+                data,
+                where,
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('FineService', error.message, 'updateFine');
+        }
     }
     async updateFineAmountToPay() {
         const fines = await this.prisma.fine.findMany({

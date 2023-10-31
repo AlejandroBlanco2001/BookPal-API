@@ -31,6 +31,9 @@ const fine_module_1 = require("./fine/fine.module");
 const reference_service_1 = require("./reference/reference.service");
 const history_controller_1 = require("./history/history.controller");
 const history_service_1 = require("./history/history.service");
+const inventory_service_1 = require("./inventory/inventory.service");
+const notification_controller_1 = require("./notification/notification.controller");
+const notification_service_1 = require("./notification/notification.service");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -49,7 +52,13 @@ exports.AppModule = AppModule = __decorate([
             cronjobs_module_1.CronjobsModule,
             fine_module_1.FineModule,
         ],
-        controllers: [app_controller_1.AppController, physicalBook_controller_1.PhyiscalBookController, user_controller_1.UserController, history_controller_1.HistoryController],
+        controllers: [
+            app_controller_1.AppController,
+            physicalBook_controller_1.PhyiscalBookController,
+            user_controller_1.UserController,
+            history_controller_1.HistoryController,
+            notification_controller_1.NotificationController,
+        ],
         providers: [
             app_service_1.AppService,
             physicalBook_service_1.PhysicalBookService,
@@ -61,6 +70,8 @@ exports.AppModule = AppModule = __decorate([
             },
             reference_service_1.ReferenceService,
             history_service_1.HistoryService,
+            inventory_service_1.InventoryService,
+            notification_service_1.NotificationService,
         ],
     })
 ], AppModule);

@@ -23,11 +23,15 @@ const physicalBook_service_1 = require("../physicalBook/physicalBook.service");
 const reference_service_1 = require("../reference/reference.service");
 const genericError_exception_1 = require("../exceptions/genericError.exception");
 const loanNotFound_exceptions_1 = require("../exceptions/loanNotFound.exceptions");
+const inventory_service_1 = require("../inventory/inventory.service");
+const physicalBookNotAvailable_exception_1 = require("../exceptions/physicalBookNotAvailable.exception");
+const maximumLoansPerCollection_exception_1 = require("../exceptions/maximumLoansPerCollection.exception");
 let LoanService = class LoanService {
-    constructor(fineService, physicalBookService, referenceService, prisma) {
+    constructor(fineService, physicalBookService, referenceService, inventoryService, prisma) {
         this.fineService = fineService;
         this.physicalBookService = physicalBookService;
         this.referenceService = referenceService;
+        this.inventoryService = inventoryService;
         this.prisma = prisma;
     }
     async loan(loanWhereUniqueInput) {
@@ -41,13 +45,43 @@ let LoanService = class LoanService {
     }
     async createLoan(user_id, data) {
         try {
-            const unpaidFines = await this.fineService.getFinesByUserID({
-                id: user_id,
-                status: client_1.FineStatus.unpaid,
+            const physicalBook = await this.physicalBookService.physicalBook({
+                barcode: data.physical_book.connect?.barcode,
             });
+            const is_book_available = await this.inventoryService.isPhysicalBookAvailable({
+                physical_book_serial_number: physicalBook?.serial_number,
+            });
+            if (!is_book_available) {
+                throw new physicalBookNotAvailable_exception_1.PhysicalBookNotAvailable(data.physical_book.connect?.barcode);
+            }
+            const unpaidFines = await this.fineService.getFinesByUserID({
+                status: client_1.FineStatus.unpaid,
+            }, user_id);
             if (unpaidFines.length > 0) {
                 throw new userUnpaidFines_exception_1.UserUnpaidFines();
             }
+            const max_number_of_collection = await this.referenceService.getMaxLoans({
+                reference_name: physicalBook?.collection_id.toString(),
+            });
+            const user_loans = await this.getLoanByUserID({
+                user_id: user_id,
+            });
+            const user_loans_barcode = user_loans.map((loan) => loan.physical_book_barcode);
+            const user_loans_books = await this.physicalBookService.physicalBooks({
+                where: {
+                    serial_number: {
+                        in: user_loans_barcode,
+                    },
+                },
+            });
+            if (user_loans_books.length > max_number_of_collection) {
+                throw new maximumLoansPerCollection_exception_1.MaximumLoansPerCollection();
+            }
+            const inventory = await this.inventoryService.inventoryByPhyiscalSerialNumber({
+                physical_book_serial_number: physicalBook?.serial_number,
+            });
+            inventory.quantity = inventory.quantity - 1;
+            inventory.last_update = new Date();
             return this.prisma.loan.create({
                 data,
             });
@@ -59,7 +93,13 @@ let LoanService = class LoanService {
     async updateLoan(params) {
         const { where, data } = params;
         try {
-            return this.prisma.loan.update({
+            const is_fine_payed = await this.fineService.getFine({
+                id: where.id,
+            });
+            if (is_fine_payed.status === client_1.FineStatus.unpaid) {
+                throw new userUnpaidFines_exception_1.UserUnpaidFines();
+            }
+            return await this.prisma.loan.update({
                 data,
                 where,
             });
@@ -106,6 +146,16 @@ let LoanService = class LoanService {
             throw new genericError_exception_1.GenericError('LoanService', error.message, 'updateLoanStatus');
         }
     }
+    async getLoanByUserID(data) {
+        try {
+            return await this.prisma.loan.findMany({
+                where: data,
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('LoanService', error.message, 'getLoanByUserID');
+        }
+    }
 };
 exports.LoanService = LoanService;
 exports.LoanService = LoanService = __decorate([
@@ -114,6 +164,7 @@ exports.LoanService = LoanService = __decorate([
     __metadata("design:paramtypes", [fine_service_1.FineService,
         physicalBook_service_1.PhysicalBookService,
         reference_service_1.ReferenceService,
+        inventory_service_1.InventoryService,
         prisma_service_1.PrismaService])
 ], LoanService);
 //# sourceMappingURL=loan.service.js.map

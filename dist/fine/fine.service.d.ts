@@ -13,15 +13,15 @@ export declare class FineService {
         pay_date: Date | null;
         last_update_date: Date;
     }>;
-    getFineByLoanID(data: Prisma.FineWhereUniqueInput): Promise<{
+    getFine(data: Prisma.FineWhereUniqueInput): Promise<{
         id: number;
         loan_id: number;
         amount: number;
         status: import(".prisma/client").$Enums.FineStatus;
         pay_date: Date | null;
         last_update_date: Date;
-    } | null>;
-    getFinesByUserID(data: Prisma.FineWhereUniqueInput): Promise<{
+    }>;
+    getFinesByUserID(data: Prisma.FineWhereInput, user_id: number): Promise<{
         id: number;
         loan_id: number;
         amount: number;

@@ -7,7 +7,6 @@ import {
   IsOptional,
   IsString,
   IsStrongPassword,
-  IsUrl,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -19,7 +18,6 @@ export class CreateUserDTO {
 
   @ApiProperty()
   @IsString()
-  @IsUrl()
   @IsOptional()
   profile_image: string;
 

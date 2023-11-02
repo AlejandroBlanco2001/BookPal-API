@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HistoryService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const genericError_exception_1 = require("../exceptions/genericError.exception");
 let HistoryService = class HistoryService {
     constructor(prismaService) {
         this.prismaService = prismaService;
@@ -20,7 +21,12 @@ let HistoryService = class HistoryService {
         return await this.prismaService.history.findMany();
     }
     async createHistoryPoint(data) {
-        await this.prismaService.history.create({ data });
+        try {
+            await this.prismaService.history.create({ data });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('HistoryService', error.message, 'createHistoryPoint');
+        }
     }
 };
 exports.HistoryService = HistoryService;

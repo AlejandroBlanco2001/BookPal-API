@@ -30,14 +30,6 @@ let CompanyController = class CompanyController {
             where: { id: id },
             data: updateCompanyDto,
         });
-        this.history.createHistoryPoint({
-            action: 'update',
-            model_name: 'company',
-            model_id: company.id,
-            user: req.user.id,
-            date: new Date(),
-            data: JSON.stringify(updateCompanyDto),
-        });
         return company;
     }
     getCompany(id) {

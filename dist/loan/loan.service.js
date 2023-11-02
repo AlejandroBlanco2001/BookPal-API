@@ -26,12 +26,14 @@ const loanNotFound_exceptions_1 = require("../exceptions/loanNotFound.exceptions
 const inventory_service_1 = require("../inventory/inventory.service");
 const physicalBookNotAvailable_exception_1 = require("../exceptions/physicalBookNotAvailable.exception");
 const maximumLoansPerCollection_exception_1 = require("../exceptions/maximumLoansPerCollection.exception");
+const notification_service_1 = require("../notification/notification.service");
 let LoanService = class LoanService {
-    constructor(fineService, physicalBookService, referenceService, inventoryService, prisma) {
+    constructor(fineService, physicalBookService, referenceService, inventoryService, notificationService, prisma) {
         this.fineService = fineService;
         this.physicalBookService = physicalBookService;
         this.referenceService = referenceService;
         this.inventoryService = inventoryService;
+        this.notificationService = notificationService;
         this.prisma = prisma;
     }
     async loan(loanWhereUniqueInput) {
@@ -82,7 +84,19 @@ let LoanService = class LoanService {
             });
             inventory.quantity = inventory.quantity - 1;
             inventory.last_update = new Date();
-            return this.prisma.loan.create({
+            const notificationDate = new Date(data.due_date);
+            notificationDate.setDate(notificationDate.getDate() - 1);
+            await this.notificationService.createNotification({
+                message: 'You loan return date is coming soon!',
+                title: 'Book Pal',
+                next_schedule_date: notificationDate.toString(),
+                user: {
+                    connect: {
+                        id: user_id,
+                    },
+                },
+            });
+            return await this.prisma.loan.create({
                 data,
             });
         }
@@ -165,6 +179,7 @@ exports.LoanService = LoanService = __decorate([
         physicalBook_service_1.PhysicalBookService,
         reference_service_1.ReferenceService,
         inventory_service_1.InventoryService,
+        notification_service_1.NotificationService,
         prisma_service_1.PrismaService])
 ], LoanService);
 //# sourceMappingURL=loan.service.js.map

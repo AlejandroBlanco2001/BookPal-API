@@ -11,6 +11,7 @@ import { LoanNotFound } from '../exceptions/loanNotFound.exceptions';
 import { InventoryService } from '../inventory/inventory.service';
 import { PhysicalBookNotAvailable } from '../exceptions/physicalBookNotAvailable.exception';
 import { MaximumLoansPerCollection } from '../exceptions/maximumLoansPerCollection.exception';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class LoanService {
@@ -20,6 +21,7 @@ export class LoanService {
     private physicalBookService: PhysicalBookService,
     private referenceService: ReferenceService,
     private inventoryService: InventoryService,
+    private notificationService: NotificationService,
     private prisma: PrismaService,
   ) {}
 
@@ -99,7 +101,22 @@ export class LoanService {
       inventory!.quantity = inventory!.quantity - 1;
       inventory!.last_update = new Date();
 
-      return this.prisma.loan.create({
+      const notificationDate = new Date(data.due_date);
+
+      notificationDate.setDate(notificationDate.getDate() - 1);
+
+      await this.notificationService.createNotification({
+        message: 'You loan return date is coming soon!',
+        title: 'Book Pal',
+        next_schedule_date: notificationDate.toString(),
+        user: {
+          connect: {
+            id: user_id,
+          },
+        },
+      });
+
+      return await this.prisma.loan.create({
         data,
       });
     } catch (error: any) {

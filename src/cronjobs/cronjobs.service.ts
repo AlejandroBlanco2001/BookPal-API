@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { LoanService } from '../loan/loan.service';
-import { FineService } from 'src/fine/fine.service';
+import { NotificationService } from '../notification/notification.service';
+import { FineService } from '../fine/fine.service';
 const EVERY_10_MINUTES_BETWEEN_7AM_AND_8PM = '0 */10 7-19 * * *';
 
 @Injectable()
@@ -11,12 +12,13 @@ export class CronjobsService {
   constructor(
     private loanService: LoanService,
     private fineService: FineService,
+    private notificationService: NotificationService,
   ) {}
   @Cron(EVERY_10_MINUTES_BETWEEN_7AM_AND_8PM)
-  updateLoanStatus() {
+  async updateLoanStatus() {
     this.logger.debug('Updating loan status...');
     try {
-      this.loanService.updateLoanStatus();
+      await this.loanService.updateLoanStatus();
     } catch (err) {
       console.log(err);
     }
@@ -24,22 +26,29 @@ export class CronjobsService {
   }
 
   @Cron(CronExpression.EVERY_10_MINUTES)
-  updateFineAmountToPay() {
+  async updateFineAmountToPay() {
     this.logger.debug('Updating fine amount to pay...');
     try {
-      this.fineService.updateFineAmountToPay();
+      await this.fineService.updateFineAmountToPay();
     } catch (err) {
       console.log(err);
     }
     this.logger.debug('Finished updating fine amount to pay.');
   }
 
-  // TODO - send notifications to users
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
-  sendNotifications() {
+  async sendNotifications() {
     this.logger.debug('Sending notifications...');
     try {
-      // this.fineService.sendNotifications();
+      const notifications_to_send =
+        await this.notificationService.notifications();
+      notifications_to_send.forEach(async (notification) => {
+        await this.notificationService.sendPushNotification({
+          body: notification.message,
+          title: notification.title,
+          token: notification.user_token,
+        });
+      });
     } catch (err) {
       console.log(err);
     }

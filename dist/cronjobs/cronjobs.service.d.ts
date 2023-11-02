@@ -1,11 +1,13 @@
 import { LoanService } from '../loan/loan.service';
-import { FineService } from 'src/fine/fine.service';
+import { NotificationService } from '../notification/notification.service';
+import { FineService } from '../fine/fine.service';
 export declare class CronjobsService {
     private loanService;
     private fineService;
+    private notificationService;
     private readonly logger;
-    constructor(loanService: LoanService, fineService: FineService);
-    updateLoanStatus(): void;
-    updateFineAmountToPay(): void;
-    sendNotifications(): void;
+    constructor(loanService: LoanService, fineService: FineService, notificationService: NotificationService);
+    updateLoanStatus(): Promise<void>;
+    updateFineAmountToPay(): Promise<void>;
+    sendNotifications(): Promise<void>;
 }

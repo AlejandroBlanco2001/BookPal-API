@@ -33,6 +33,7 @@ export class CompanyController {
       where: { id: id },
       data: updateCompanyDto,
     });
+    /* TODO: Uncomment this when the history service is ready
     this.history.createHistoryPoint({
       action: 'update',
       model_name: 'company',
@@ -41,6 +42,7 @@ export class CompanyController {
       date: new Date(),
       data: JSON.stringify(updateCompanyDto),
     });
+    */
     return company;
   }
 

@@ -49,4 +49,28 @@ export class UserService {
       throw new GenericError('UserService', error, 'createUser');
     }
   }
+
+  async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
+    try {
+      return await this.prisma.user.delete({
+        where,
+      });
+    } catch (error) {
+      throw new GenericError('UserService', error, 'deleteUser');
+    }
+  }
+
+  async softDeleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
+    try {
+      return await this.prisma.user.update({
+        data: {
+          deleted_at: new Date(),
+          is_deleted: true,
+        },
+        where,
+      });
+    } catch (error) {
+      throw new GenericError('UserService', error, 'softDeleteUser');
+    }
+  }
 }

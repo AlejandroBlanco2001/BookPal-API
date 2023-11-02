@@ -10,6 +10,7 @@ import {
   ValidationPipe,
   UsePipes,
   Logger,
+  Delete,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Prisma, User as UserModel } from '@prisma/client';
@@ -61,14 +62,16 @@ export class UserController {
 
   @Get('id/:id')
   @ApiOperation({ summary: 'Get a user by ID' })
-  getUserByID(@Param('id') id: number): Promise<UserModel | null> {
-    return this.userService.user({ id: id });
+  async getUserByID(@Param('id') id: number): Promise<UserModel | null> {
+    return await this.userService.user({ id: id });
   }
 
   @Get('email/:email')
   @ApiOperation({ summary: 'Get a user by email' })
-  getUserByEmail(@Param('email') email: string): Promise<UserModel | null> {
-    return this.userService.user({ email: email });
+  async getUserByEmail(
+    @Param('email') email: string,
+  ): Promise<UserModel | null> {
+    return await this.userService.user({ email: email });
   }
 
   @Get('profile')
@@ -81,19 +84,31 @@ export class UserController {
 
   @Put('id/:id')
   @ApiOperation({ summary: 'Update a user by ID' })
-  updateUserByID(
+  async updateUserByID(
     @Body() data: UpdateUserDTO,
     @Param('id') id: number,
   ): Promise<UserModel> {
-    return this.userService.updateUser(data, { id: id });
+    return await this.userService.updateUser(data, { id: id });
   }
 
   @Put('email/:email')
   @ApiOperation({ summary: 'Update a user by email' })
-  updateUserByEmail(
+  async updateUserByEmail(
     @Body('data') data: Prisma.UserUpdateInput,
     @Param('email') email: string,
   ): Promise<UserModel> {
-    return this.userService.updateUser(data, { email: email });
+    return await this.userService.updateUser(data, { email: email });
+  }
+
+  @Delete('email/:email')
+  @ApiOperation({ summary: 'Delete a user by email' })
+  async deleteUserByEmail(@Param('email') email: string): Promise<UserModel> {
+    return await this.userService.deleteUser({ email: email });
+  }
+
+  @Put('soft-delete/id/:id')
+  @ApiOperation({ summary: 'Soft delete a user by ID' })
+  async softDeleteUserByID(@Param('id') id: number): Promise<UserModel> {
+    return await this.userService.softDeleteUser({ id: id });
   }
 }

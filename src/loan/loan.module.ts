@@ -6,9 +6,10 @@ import { FineModule } from '../fine/fine.module';
 import { PhysicalBookService } from '../physicalBook/physicalBook.service';
 import { ReferenceService } from '../reference/reference.service';
 import { InventoryService } from '../inventory/inventory.service';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
-  imports: [PrismaModule, FineModule],
+  imports: [PrismaModule, FineModule, NotificationModule],
   controllers: [LoanController],
   providers: [
     LoanService,

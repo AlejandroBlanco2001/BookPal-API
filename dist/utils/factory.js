@@ -11,6 +11,7 @@ function user() {
             },
             profile_image: 'example.png',
             company_id: userCompany.id,
+            phone_token: 'test_token',
             email: 'test@gmail.com',
             password: 'test_password',
             first_name: 'John',

@@ -25,6 +25,7 @@ import { HistoryService } from './history/history.service';
 import { InventoryService } from './inventory/inventory.service';
 import { NotificationController } from './notification/notification.controller';
 import { NotificationService } from './notification/notification.service';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { NotificationService } from './notification/notification.service';
     ConfigModule.forRoot(),
     CronjobsModule,
     FineModule,
+    NotificationModule,
   ],
   controllers: [
     AppController,

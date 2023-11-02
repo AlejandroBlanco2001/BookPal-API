@@ -11,12 +11,13 @@ const common_1 = require("@nestjs/common");
 const cronjobs_service_1 = require("./cronjobs.service");
 const loan_module_1 = require("../loan/loan.module");
 const fine_module_1 = require("../fine/fine.module");
+const notification_module_1 = require("../notification/notification.module");
 let CronjobsModule = class CronjobsModule {
 };
 exports.CronjobsModule = CronjobsModule;
 exports.CronjobsModule = CronjobsModule = __decorate([
     (0, common_1.Module)({
-        imports: [loan_module_1.LoanModule, fine_module_1.FineModule],
+        imports: [loan_module_1.LoanModule, fine_module_1.FineModule, notification_module_1.NotificationModule],
         providers: [cronjobs_service_1.CronjobsService],
     })
 ], CronjobsModule);

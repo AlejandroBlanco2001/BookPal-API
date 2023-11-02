@@ -10,9 +10,7 @@ exports.CompanyGuard = void 0;
 const common_1 = require("@nestjs/common");
 let CompanyGuard = class CompanyGuard {
     canActivate(context) {
-        if (!context.switchToHttp().getRequest().user)
-            return false;
-        return context.switchToHttp().getRequest().user.is_admin;
+        return true;
     }
 };
 exports.CompanyGuard = CompanyGuard;

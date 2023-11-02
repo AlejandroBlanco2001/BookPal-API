@@ -15,12 +15,13 @@ const fine_module_1 = require("../fine/fine.module");
 const physicalBook_service_1 = require("../physicalBook/physicalBook.service");
 const reference_service_1 = require("../reference/reference.service");
 const inventory_service_1 = require("../inventory/inventory.service");
+const notification_module_1 = require("../notification/notification.module");
 let LoanModule = class LoanModule {
 };
 exports.LoanModule = LoanModule;
 exports.LoanModule = LoanModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, fine_module_1.FineModule],
+        imports: [prisma_module_1.PrismaModule, fine_module_1.FineModule, notification_module_1.NotificationModule],
         controllers: [loan_controller_1.LoanController],
         providers: [
             loan_service_1.LoanService,

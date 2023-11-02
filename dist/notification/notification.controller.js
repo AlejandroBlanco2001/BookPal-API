@@ -6,17 +6,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CompanyGuard = void 0;
+exports.NotificationController = void 0;
+const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
-let CompanyGuard = class CompanyGuard {
-    canActivate(context) {
-        if (!context.switchToHttp().getRequest().user)
-            return true;
-        return true;
-    }
+let NotificationController = class NotificationController {
 };
-exports.CompanyGuard = CompanyGuard;
-exports.CompanyGuard = CompanyGuard = __decorate([
-    (0, common_1.Injectable)()
-], CompanyGuard);
-//# sourceMappingURL=company.guard.js.map
+exports.NotificationController = NotificationController;
+exports.NotificationController = NotificationController = __decorate([
+    (0, common_1.Controller)('notification')
+], NotificationController);
+//# sourceMappingURL=notification.controller.js.map

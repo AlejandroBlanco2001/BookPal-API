@@ -1,0 +1,1 @@
+{"version":3,"file":"physicalBookNotAvailable.exception.js","sourceRoot":"","sources":["../../src/exceptions/physicalBookNotAvailable.exception.ts"],"names":[],"mappings":";;;AAAA,2CAA2D;AAE3D,MAAa,wBAAyB,SAAQ,sBAAa;IACzD,YAAY,mBAA2B;QACrC,KAAK,CACH,yBAAyB,mBAAmB,iDAAiD,EAC7F,mBAAU,CAAC,WAAW,CACvB,CAAC;IACJ,CAAC;CACF;AAPD,4DAOC"}

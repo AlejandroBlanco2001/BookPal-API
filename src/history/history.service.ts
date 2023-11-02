@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { GenericError } from 'src/exceptions/genericError.exception';
 
 @Injectable()
 export class HistoryService {
@@ -11,6 +12,14 @@ export class HistoryService {
   }
 
   async createHistoryPoint(data: Prisma.HistoryCreateInput) {
-    await this.prismaService.history.create({ data });
+    try {
+      await this.prismaService.history.create({ data });
+    } catch (error: any) {
+      throw new GenericError(
+        'HistoryService',
+        error.message,
+        'createHistoryPoint',
+      );
+    }
   }
 }

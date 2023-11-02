@@ -7,6 +7,9 @@ import {
   Post,
   Request,
   HttpStatus,
+  ValidationPipe,
+  UsePipes,
+  Logger,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Prisma, User as UserModel } from '@prisma/client';
@@ -15,9 +18,12 @@ import { SecurityService } from '../utils/security/security.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDTO } from './dto/create-user-dto';
 import { UpdateUserDTO } from './dto/update-user-dto';
+
 @ApiTags('user')
 @Controller('user')
 export class UserController {
+  private readonly logger = new Logger(UserController.name);
+
   constructor(
     private readonly userService: UserService,
     private securityService: SecurityService,
@@ -25,6 +31,7 @@ export class UserController {
 
   @Public()
   @Post('/')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -35,6 +42,7 @@ export class UserController {
       data.password,
     );
     const { company_id, ...rest } = data;
+    this.logger.log(`Creating user with email ${rest.email}`);
     const user = await this.userService.createUser({
       ...rest,
       company: {

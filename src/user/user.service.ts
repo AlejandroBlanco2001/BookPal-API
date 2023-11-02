@@ -41,9 +41,10 @@ export class UserService {
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
     try {
-      return this.prisma.user.create({
+      const user = await this.prisma.user.create({
         data,
       });
+      return user;
     } catch (error) {
       throw new GenericError('UserService', error, 'createUser');
     }

@@ -61,6 +61,7 @@ export function user(): UserFactory {
       date_of_birth: new Date('1990-01-01'),
       is_admin: false,
       academic_program: null,
+      is_deleted: false,
     }),
     custom: (customProps: Partial<User>) => {
       return { ...user().basic(), ...customProps };

@@ -62,6 +62,7 @@ export function user(): UserFactory {
       is_admin: false,
       academic_program: null,
       is_deleted: false,
+      deleted_at: new Date(),
     }),
     custom: (customProps: Partial<User>) => {
       return { ...user().basic(), ...customProps };

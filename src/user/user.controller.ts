@@ -53,11 +53,7 @@ export class UserController {
       },
       password: hashed_password,
     });
-    return {
-      status: HttpStatus.CREATED,
-      user: user,
-      message: 'The user has been successfully created.',
-    };
+    return user;
   }
 
   @Get('id/:id')

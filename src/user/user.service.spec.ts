@@ -13,6 +13,8 @@ describe('UserService', () => {
     user: {
       create: jest.fn(),
       findUnique: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
     },
   };
 
@@ -101,6 +103,23 @@ describe('UserService', () => {
       } catch (error: any) {
         expect(error).toBeInstanceOf(UserNotFoundException);
       }
+    });
+  });
+
+  describe('should delete an user', () => {
+    describe('with soft delete', () => {
+      it('by email address', async () => {
+        const userToSoftDelete = UserFactory().basic();
+        prismaServiceMock.user.update.mockResolvedValue({
+          deleted_at: new Date(),
+          is_deleted: true,
+        });
+        const result = await service.softDeleteUser({
+          email: userToSoftDelete.email,
+        });
+        expect(result.is_deleted).toBeTruthy();
+        expect(result.deleted_at).toBeDefined();
+      });
     });
   });
 });

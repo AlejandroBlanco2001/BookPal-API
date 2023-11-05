@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import { UserNotFoundException } from '../exceptions/userNotFound.exception';
-import { GenericError } from 'src/exceptions/genericError.exception';
+import { GenericError } from '../exceptions/genericError.exception';
 
 @Injectable()
 export class UserService {

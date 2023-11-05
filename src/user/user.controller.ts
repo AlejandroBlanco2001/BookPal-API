@@ -43,7 +43,6 @@ export class UserController {
       data.password,
     );
     const { company_id, ...rest } = data;
-    this.logger.log(`Creating user with email ${rest.email}`);
     const user = await this.userService.createUser({
       ...rest,
       company: {

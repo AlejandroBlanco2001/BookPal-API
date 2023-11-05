@@ -3,8 +3,10 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Company, Prisma } from '@prisma/client';
 import { CompanyNotFound } from '../exceptions/companyNotFound.exception';
 import { GenericError } from 'src/exceptions/genericError.exception';
+import { Logger } from '@nestjs/common/services';
 @Injectable()
 export class CompanyService {
+  private readonly logger = new Logger(CompanyService.name);
   constructor(private prisma: PrismaService) {}
 
   async updateCompany(params: {

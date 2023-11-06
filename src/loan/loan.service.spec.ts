@@ -6,6 +6,7 @@ import {
   fine as FineFactory,
   inventory as InventoryFactory,
   notification as NotificationFactory,
+  reference as ReferenceFactory,
 } from '../utils/factory';
 import { ReferenceService } from '../reference/reference.service';
 import { FineService } from '../fine/fine.service';
@@ -53,6 +54,8 @@ describe('LoanService', () => {
 
   const mockInventory = InventoryFactory().basic();
 
+  const mockReference = ReferenceFactory().basic();
+
   beforeAll(() => {
     clock = sinon.useFakeTimers({
       now: new Date('2020-01-01T00:00:00.000Z'),
@@ -77,15 +80,17 @@ describe('LoanService', () => {
   const ReferenceServiceMock = {
     getDueDate: jest.fn().mockResolvedValueOnce(new Date()),
     getMaxLoans: jest.fn().mockResolvedValue(3),
+    reference: jest.fn().mockResolvedValue(mockReference),
   };
 
   const FineServiceMock = {
     getFine: jest.fn().mockResolvedValue(mockFine),
     getFinesByUserID: jest.fn().mockResolvedValue([]),
+    fine: jest.fn().mockResolvedValue(mockFine),
   };
 
   const PhyiscalBookServiceMock = {
-    physicalBook: jest.fn().mockResolvedValueOnce(mockPhysicalBook),
+    physicalBook: jest.fn().mockResolvedValue(mockPhysicalBook),
     physicalBooks: jest.fn().mockResolvedValue([]),
   };
 

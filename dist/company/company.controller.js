@@ -21,9 +21,9 @@ const swagger_1 = require("@nestjs/swagger");
 const update_company_dto_1 = require("./dto/update-company-dto");
 const history_service_1 = require("../history/history.service");
 let CompanyController = class CompanyController {
-    constructor(companyService, history) {
+    constructor(companyService, historyService) {
         this.companyService = companyService;
-        this.history = history;
+        this.historyService = historyService;
     }
     async updateCompany(req, id, updateCompanyDto) {
         const company = await this.companyService.updateCompany({

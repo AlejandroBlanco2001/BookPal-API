@@ -65,7 +65,7 @@ export class LoanService {
         user_id,
       );
 
-      if (unpaidFines.length > 0) {
+      if (unpaidFines?.length > 0) {
         throw new UserUnpaidFines();
       }
 
@@ -86,10 +86,11 @@ export class LoanService {
           serial_number: {
             in: user_loans_barcode,
           },
+          collection_id: physicalBook?.collection_id,
         },
       });
 
-      if (user_loans_books.length > max_number_of_collection) {
+      if (user_loans_books?.length > max_number_of_collection) {
         throw new MaximumLoansPerCollection();
       }
 
@@ -102,7 +103,6 @@ export class LoanService {
       inventory!.last_update = new Date();
 
       const notificationDate = new Date(data.due_date);
-
       notificationDate.setDate(notificationDate.getDate() - 1);
 
       await this.notificationService.createNotification({
@@ -120,7 +120,10 @@ export class LoanService {
         data,
       });
     } catch (error: any) {
-      throw new GenericError('LoanService', error.message, 'createLoan');
+      if (error instanceof GenericError) {
+        throw new GenericError('LoanService', error.message, 'createLoan');
+      }
+      throw error;
     }
   }
 
@@ -185,9 +188,10 @@ export class LoanService {
 
   async getLoanByUserID(data: Prisma.LoanWhereInput): Promise<Loan[]> {
     try {
-      return await this.prisma.loan.findMany({
+      const loans = await this.prisma.loan.findMany({
         where: data,
       });
+      return loans;
     } catch (error: any) {
       throw new GenericError('LoanService', error.message, 'getLoanByUserID');
     }

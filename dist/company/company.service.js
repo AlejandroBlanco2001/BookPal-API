@@ -8,15 +8,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var CompanyService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CompanyService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const companyNotFound_exception_1 = require("../exceptions/companyNotFound.exception");
 const genericError_exception_1 = require("../exceptions/genericError.exception");
-let CompanyService = class CompanyService {
+const services_1 = require("@nestjs/common/services");
+let CompanyService = CompanyService_1 = class CompanyService {
     constructor(prisma) {
         this.prisma = prisma;
+        this.logger = new services_1.Logger(CompanyService_1.name);
     }
     async updateCompany(params) {
         const { where, data } = params;
@@ -49,7 +52,7 @@ let CompanyService = class CompanyService {
     }
 };
 exports.CompanyService = CompanyService;
-exports.CompanyService = CompanyService = __decorate([
+exports.CompanyService = CompanyService = CompanyService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], CompanyService);

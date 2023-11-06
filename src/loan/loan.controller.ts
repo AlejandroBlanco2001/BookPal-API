@@ -39,6 +39,7 @@ export class LoanController {
     const due_date = await this.referenceService.getDueDate({
       reference_name: createLoanDto.physical_book_collection_name,
     });
+
     const data = {
       status: LoanStatus.active,
       start_date: new Date(),

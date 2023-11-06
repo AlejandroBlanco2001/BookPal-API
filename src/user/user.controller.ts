@@ -32,7 +32,13 @@ export class UserController {
 
   @Public()
   @Post('/')
-  @UsePipes(new ValidationPipe({ whitelist: true }))
+  @UsePipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      forbidUnknownValues: true,
+    }),
+  )
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({
     status: HttpStatus.CREATED,

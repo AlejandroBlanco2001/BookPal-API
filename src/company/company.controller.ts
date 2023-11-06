@@ -18,7 +18,7 @@ import { HistoryService } from '../history/history.service';
 export class CompanyController {
   constructor(
     private readonly companyService: CompanyService,
-    private readonly history: HistoryService,
+    private readonly historyService: HistoryService,
   ) {}
 
   @UseGuards(CompanyGuard)

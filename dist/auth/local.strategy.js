@@ -15,6 +15,7 @@ const passport_1 = require("@nestjs/passport");
 const common_1 = require("@nestjs/common");
 const unauthorizedException_exception_1 = require("../exceptions/unauthorizedException.exception");
 const auth_service_1 = require("./auth.service");
+const services_1 = require("@nestjs/common/services");
 let LocalStrategy = class LocalStrategy extends (0, passport_1.PassportStrategy)(passport_local_1.Strategy) {
     constructor(authService) {
         super({
@@ -22,12 +23,16 @@ let LocalStrategy = class LocalStrategy extends (0, passport_1.PassportStrategy)
             passwordField: 'password',
         });
         this.authService = authService;
+        this.logger = new services_1.Logger(passport_1.PassportStrategy.name);
     }
     async validate(username, password) {
         const user = await this.authService.validateUser(username, password);
+        this.logger.log(`An user is trying to login with ${username} and ${password}`);
         if (!user) {
+            this.logger.error('User not found with email: ' + username + ' and password: ' + password);
             throw new unauthorizedException_exception_1.UnauthorizedException();
         }
+        this.logger.log('User found: ' + JSON.stringify(user));
         return user;
     }
 };

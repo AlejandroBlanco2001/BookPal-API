@@ -59,7 +59,7 @@ let LoanService = class LoanService {
             const unpaidFines = await this.fineService.getFinesByUserID({
                 status: client_1.FineStatus.unpaid,
             }, user_id);
-            if (unpaidFines.length > 0) {
+            if (unpaidFines?.length > 0) {
                 throw new userUnpaidFines_exception_1.UserUnpaidFines();
             }
             const max_number_of_collection = await this.referenceService.getMaxLoans({
@@ -74,9 +74,10 @@ let LoanService = class LoanService {
                     serial_number: {
                         in: user_loans_barcode,
                     },
+                    collection_id: physicalBook?.collection_id,
                 },
             });
-            if (user_loans_books.length > max_number_of_collection) {
+            if (user_loans_books?.length > max_number_of_collection) {
                 throw new maximumLoansPerCollection_exception_1.MaximumLoansPerCollection();
             }
             const inventory = await this.inventoryService.inventoryByPhyiscalSerialNumber({
@@ -101,7 +102,10 @@ let LoanService = class LoanService {
             });
         }
         catch (error) {
-            throw new genericError_exception_1.GenericError('LoanService', error.message, 'createLoan');
+            if (error instanceof genericError_exception_1.GenericError) {
+                throw new genericError_exception_1.GenericError('LoanService', error.message, 'createLoan');
+            }
+            throw error;
         }
     }
     async updateLoan(params) {
@@ -162,9 +166,10 @@ let LoanService = class LoanService {
     }
     async getLoanByUserID(data) {
         try {
-            return await this.prisma.loan.findMany({
+            const loans = await this.prisma.loan.findMany({
                 where: data,
             });
+            return loans;
         }
         catch (error) {
             throw new genericError_exception_1.GenericError('LoanService', error.message, 'getLoanByUserID');

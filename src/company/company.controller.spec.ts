@@ -1,16 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CompanyController } from './company.controller';
 import { CompanyService } from './company.service';
-import { PrismaModule } from '../prisma/prisma.module';
+import { HistoryService } from '../history/history.service';
 
 describe('CompanyController', () => {
   let controller: CompanyController;
 
+  const HistoryServiceMock = {};
+  const CompanyServiceMock = {};
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule],
       controllers: [CompanyController],
-      providers: [CompanyService],
+      providers: [
+        {
+          provide: CompanyService,
+          useValue: CompanyServiceMock,
+        },
+        {
+          provide: HistoryService,
+          useValue: HistoryServiceMock,
+        },
+      ],
     }).compile();
 
     controller = module.get<CompanyController>(CompanyController);

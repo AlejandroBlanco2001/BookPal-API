@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var UserController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const openapi = require("@nestjs/swagger");
@@ -22,10 +23,11 @@ const security_service_1 = require("../utils/security/security.service");
 const swagger_1 = require("@nestjs/swagger");
 const create_user_dto_1 = require("./dto/create-user-dto");
 const update_user_dto_1 = require("./dto/update-user-dto");
-let UserController = class UserController {
+let UserController = UserController_1 = class UserController {
     constructor(userService, securityService) {
         this.userService = userService;
         this.securityService = securityService;
+        this.logger = new common_1.Logger(UserController_1.name);
     }
     async createUser(data) {
         const hashed_password = await this.securityService.hashPassword(data.password);
@@ -39,32 +41,39 @@ let UserController = class UserController {
             },
             password: hashed_password,
         });
-        return {
-            status: common_1.HttpStatus.CREATED,
-            user: user,
-            message: 'The user has been successfully created.',
-        };
+        return user;
     }
-    getUserByID(id) {
-        return this.userService.user({ id: id });
+    async getUserByID(id) {
+        return await this.userService.user({ id: id });
     }
-    getUserByEmail(email) {
-        return this.userService.user({ email: email });
+    async getUserByEmail(email) {
+        return await this.userService.user({ email: email });
     }
     getUserProfile(req) {
         return req.user;
     }
-    updateUserByID(data, id) {
-        return this.userService.updateUser(data, { id: id });
+    async updateUserByID(data, id) {
+        return await this.userService.updateUser(data, { id: id });
     }
-    updateUserByEmail(data, email) {
-        return this.userService.updateUser(data, { email: email });
+    async updateUserByEmail(data, email) {
+        return await this.userService.updateUser(data, { email: email });
+    }
+    async deleteUserByEmail(email) {
+        return await this.userService.deleteUser({ email: email });
+    }
+    async softDeleteUserByID(id) {
+        return await this.userService.softDeleteUser({ id: id });
     }
 };
 exports.UserController = UserController;
 __decorate([
     (0, custom_decorators_1.Public)(),
     (0, common_1.Post)('/'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        forbidUnknownValues: true,
+    })),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new user' }),
     (0, swagger_1.ApiResponse)({
         status: common_1.HttpStatus.CREATED,
@@ -125,7 +134,25 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "updateUserByEmail", null);
-exports.UserController = UserController = __decorate([
+__decorate([
+    (0, common_1.Delete)('email/:email'),
+    (0, swagger_1.ApiOperation)({ summary: 'Delete a user by email' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('email')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "deleteUserByEmail", null);
+__decorate([
+    (0, common_1.Put)('soft-delete/id/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Soft delete a user by ID' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "softDeleteUserByID", null);
+exports.UserController = UserController = UserController_1 = __decorate([
     (0, swagger_1.ApiTags)('user'),
     (0, common_1.Controller)('user'),
     __metadata("design:paramtypes", [user_service_1.UserService,

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Company, Prisma } from '@prisma/client';
 import { CompanyNotFound } from '../exceptions/companyNotFound.exception';
-import { GenericError } from 'src/exceptions/genericError.exception';
+import { GenericError } from '../exceptions/genericError.exception';
 import { Logger } from '@nestjs/common/services';
 @Injectable()
 export class CompanyService {

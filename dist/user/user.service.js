@@ -46,12 +46,37 @@ let UserService = class UserService {
     }
     async createUser(data) {
         try {
-            return this.prisma.user.create({
+            const user = await this.prisma.user.create({
                 data,
             });
+            return user;
         }
         catch (error) {
             throw new genericError_exception_1.GenericError('UserService', error, 'createUser');
+        }
+    }
+    async deleteUser(where) {
+        try {
+            return await this.prisma.user.delete({
+                where,
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('UserService', error, 'deleteUser');
+        }
+    }
+    async softDeleteUser(where) {
+        try {
+            return await this.prisma.user.update({
+                data: {
+                    deleted_at: new Date(),
+                    is_deleted: true,
+                },
+                where,
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('UserService', error, 'softDeleteUser');
         }
     }
 };

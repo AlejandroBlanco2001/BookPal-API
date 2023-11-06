@@ -3,8 +3,8 @@ import { UpdateCompanyDTO } from './dto/update-company-dto';
 import { HistoryService } from '../history/history.service';
 export declare class CompanyController {
     private readonly companyService;
-    private readonly history;
-    constructor(companyService: CompanyService, history: HistoryService);
+    private readonly historyService;
+    constructor(companyService: CompanyService, historyService: HistoryService);
     updateCompany(req: any, id: number, updateCompanyDto: UpdateCompanyDTO): Promise<{
         id: number;
         name: string;

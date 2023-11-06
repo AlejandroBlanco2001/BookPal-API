@@ -6,4 +6,6 @@ export declare class UserService {
     user(userWhereUniqueInput: Prisma.UserWhereUniqueInput): Promise<User | null>;
     updateUser(data: Prisma.UserUpdateInput, filter: Prisma.UserWhereUniqueInput): Promise<User>;
     createUser(data: Prisma.UserCreateInput): Promise<User>;
+    deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User>;
+    softDeleteUser(where: Prisma.UserWhereUniqueInput): Promise<User>;
 }

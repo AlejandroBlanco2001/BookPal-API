@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { GenericError } from 'src/exceptions/genericError.exception';
+import { GenericError } from '../exceptions/genericError.exception';
 
 @Injectable()
 export class HistoryService {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fine = exports.loan = exports.book = exports.reference = exports.physicalBook = exports.company = exports.user = void 0;
+exports.notification = exports.inventory = exports.fine = exports.loan = exports.book = exports.reference = exports.physicalBook = exports.company = exports.user = void 0;
 function user() {
     const userCompany = company().basic();
     return {
@@ -21,6 +21,8 @@ function user() {
             date_of_birth: new Date('1990-01-01'),
             is_admin: false,
             academic_program: null,
+            is_deleted: false,
+            deleted_at: new Date(),
         }),
         custom: (customProps) => {
             return { ...user().basic(), ...customProps };
@@ -48,6 +50,7 @@ function physicalBook() {
             barcode: '1234567890123',
             title: 'The Hobbit',
             reference: referenceObj,
+            collection_id: 1,
         }),
         custom: (customProps) => {
             return { ...physicalBook().basic(), ...customProps };
@@ -130,4 +133,43 @@ function fine() {
     };
 }
 exports.fine = fine;
+function inventory() {
+    const physicalBookObj = physicalBook().basic();
+    return {
+        basic: () => ({
+            id: 1,
+            physical_book_serial_number: physicalBookObj.serial_number,
+            creation_date: new Date(),
+            last_update: new Date(),
+            quantity: 1,
+            minimum_quantity: 1,
+            maximum_quantity: 10,
+            reorder_quantity: 2,
+        }),
+        custom: (customProps) => {
+            return { ...inventory().basic(), ...customProps };
+        },
+    };
+}
+exports.inventory = inventory;
+function notification() {
+    const userObj = user().basic();
+    return {
+        basic: () => ({
+            id: 1,
+            user: {
+                connect: { id: userObj.id },
+            },
+            user_token: userObj.phone_token,
+            title: 'Test Notification',
+            message: 'This is a test notification',
+            status: 'unread',
+            next_schedule_date: new Date(),
+        }),
+        custom: (customProps) => {
+            return { ...notification().basic(), ...customProps };
+        },
+    };
+}
+exports.notification = notification;
 //# sourceMappingURL=factory.js.map

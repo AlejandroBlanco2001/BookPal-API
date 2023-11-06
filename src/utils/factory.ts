@@ -2,10 +2,12 @@ import {
   Book,
   Company,
   Fine,
+  Inventory,
   Loan,
   PhysicalBook,
   Reference,
   User,
+  Notification,
 } from '@prisma/client';
 
 type PhysicalBookFactory = {
@@ -39,6 +41,16 @@ type FineFactory = {
 type LoanFactory = {
   basic: () => Loan;
   custom: (customProps: Partial<Loan>) => Partial<Loan>;
+};
+
+type InventoryFactory = {
+  basic: () => Inventory;
+  custom: (customProps: Partial<Inventory>) => Partial<Inventory>;
+};
+
+type NotificationFactory = {
+  basic: () => Notification;
+  custom: (customProps: Partial<Notification>) => Partial<Notification>;
 };
 
 export function user(): UserFactory {
@@ -90,6 +102,7 @@ export function physicalBook(): PhysicalBookFactory {
       barcode: '1234567890123',
       title: 'The Hobbit',
       reference: referenceObj,
+      collection_id: 1,
     }),
     custom: (customProps: Partial<PhysicalBook>) => {
       return { ...physicalBook().basic(), ...customProps };
@@ -169,6 +182,45 @@ export function fine(): FineFactory {
     }),
     custom: (customProps: Partial<Fine>) => {
       return { ...fine().basic(), ...customProps };
+    },
+  };
+}
+
+export function inventory(): InventoryFactory {
+  const physicalBookObj = physicalBook().basic();
+  return {
+    basic: () => ({
+      id: 1,
+      physical_book_serial_number: physicalBookObj.serial_number as string,
+      creation_date: new Date(),
+      last_update: new Date(),
+      quantity: 1,
+      minimum_quantity: 1,
+      maximum_quantity: 10,
+      reorder_quantity: 2,
+    }),
+    custom: (customProps: Partial<Inventory>) => {
+      return { ...inventory().basic(), ...customProps };
+    },
+  };
+}
+
+export function notification(): NotificationFactory {
+  const userObj = user().basic();
+  return {
+    basic: () => ({
+      id: 1,
+      user: {
+        connect: { id: userObj.id },
+      },
+      user_token: userObj.phone_token,
+      title: 'Test Notification',
+      message: 'This is a test notification',
+      status: 'unread',
+      next_schedule_date: new Date(),
+    }),
+    custom: (customProps: Partial<Notification>) => {
+      return { ...notification().basic(), ...customProps };
     },
   };
 }

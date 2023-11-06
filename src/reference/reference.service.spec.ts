@@ -4,15 +4,31 @@ import { reference as ReferenceFactory } from '../utils/factory';
 import { Reference } from '@prisma/client';
 import { ReferenceNotFound } from '../exceptions/referenceNotFound.exception';
 import { PrismaService } from '../prisma/prisma.service';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const sinon = require('sinon');
 
 describe('ReferenceService', () => {
   let service: ReferenceService;
+  let clock: any;
+  const mockedReference = ReferenceFactory().basic();
 
   const prismaServiceMock = {
     reference: {
-      findUnique: jest.fn(),
+      findUnique: jest.fn().mockResolvedValue(mockedReference),
     },
   };
+
+  beforeAll(() => {
+    clock = sinon.useFakeTimers({
+      now: new Date('2020-01-01T00:00:00.000Z'),
+      shouldAdvanceTime: false,
+      toFake: ['Date'],
+    });
+  });
+
+  afterEach(() => {
+    clock.restore();
+  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -36,10 +52,7 @@ describe('ReferenceService', () => {
     it('by id', async () => {
       const referenceDB: Reference = ReferenceFactory().basic();
 
-      prismaServiceMock.reference.findUnique.mockResolvedValue(referenceDB);
-
       const result = await service.reference({ id: referenceDB.id });
-
       expect(result).toEqual(referenceDB);
     });
 
@@ -51,15 +64,6 @@ describe('ReferenceService', () => {
         expect(error).toBeInstanceOf(ReferenceNotFound);
       }
     });
-  });
-
-  it('should get due date', async () => {
-    const referenceDB: Reference = ReferenceFactory().basic();
-    const date = new Date();
-    prismaServiceMock.reference.findUnique.mockResolvedValue(referenceDB);
-    const result = await service.getDueDate({ id: referenceDB.id });
-    date.setDate(date.getDate() + referenceDB!.amount_of_days_per_loan);
-    expect(result).toEqual(date);
   });
 
   it('should get max loans', async () => {

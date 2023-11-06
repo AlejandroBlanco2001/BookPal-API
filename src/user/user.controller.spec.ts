@@ -5,14 +5,32 @@ import { UserNotFoundException } from '../exceptions/userNotFound.exception';
 import { user as UserFactory } from '../utils/factory';
 import { SecurityService } from '../utils/security/security.service';
 import { UpdateUserDTO } from './dto/update-user-dto';
+import { CreateUserDTO } from './dto/create-user-dto';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const sinon = require('sinon');
 
 describe('UserController', () => {
   let controller: UserController;
+  let clock: any;
+
+  beforeAll(() => {
+    clock = sinon.useFakeTimers({
+      now: new Date('2020-01-01T00:00:00.000Z'),
+      shouldAdvanceTime: false,
+      toFake: ['Date'],
+    });
+    clock.tick(0);
+  });
+
+  afterEach(() => {
+    clock.restore();
+  });
 
   const UserServiceMock = {
     user: jest.fn(),
     updateUser: jest.fn(),
     createUser: jest.fn(),
+    softDeleteUser: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -106,6 +124,41 @@ describe('UserController', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(UserNotFoundException);
       }
+    });
+  });
+
+  describe('should create an user with / POST', () => {
+    it('should create an user when the correct DTO', async () => {
+      const userData = UserFactory().custom({
+        first_name: 'Isaac',
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { deleted_at, is_deleted, ...userDTO } = userData;
+      UserServiceMock.createUser.mockResolvedValue(userData);
+      expect(await controller.createUser(userDTO as CreateUserDTO)).toEqual(
+        userData,
+      );
+    });
+  });
+
+  describe('should delete the user with', () => {
+    describe('soft-delete', () => {
+      it('should soft-delete an user for an id', async () => {
+        const userID = 1;
+        const user = UserFactory().custom({
+          first_name: 'Isaac',
+        });
+        UserServiceMock.softDeleteUser.mockResolvedValue({
+          ...user,
+          deleted_at: clock.now,
+          is_deleted: true,
+        });
+        expect(await controller.softDeleteUserByID(userID)).toEqual({
+          ...user,
+          deleted_at: clock.now,
+          is_deleted: true,
+        });
+      });
     });
   });
 });

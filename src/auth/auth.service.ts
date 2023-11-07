@@ -14,11 +14,14 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.user({ email });
+    if (!user) {
+      return null;
+    }
     const isPasswordValid = await this.securityService.verifyPassword(
       password,
       user?.password ?? '',
     );
-    if (user && isPasswordValid) {
+    if (isPasswordValid) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
       return result;

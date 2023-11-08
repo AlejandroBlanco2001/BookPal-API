@@ -57,7 +57,10 @@ export class PhysicalBookService {
   async physicalBooks(
     params: Prisma.PhysicalBookFindManyArgs,
   ): Promise<PhysicalBook[]> {
-    const { where, skip, take, orderBy } = params;
+    let { skip, take } = params;
+    const { where, orderBy } = params;
+    skip = Number(skip) || 0;
+    take = Number(take) || 10;
     try {
       return this.prisma.physicalBook.findMany({
         where,

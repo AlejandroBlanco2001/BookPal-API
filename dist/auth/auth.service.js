@@ -22,8 +22,11 @@ let AuthService = class AuthService {
     }
     async validateUser(email, password) {
         const user = await this.userService.user({ email });
+        if (!user) {
+            return null;
+        }
         const isPasswordValid = await this.securityService.verifyPassword(password, user?.password ?? '');
-        if (user && isPasswordValid) {
+        if (isPasswordValid) {
             const { password, ...result } = user;
             return result;
         }

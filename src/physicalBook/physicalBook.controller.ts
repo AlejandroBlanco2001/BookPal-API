@@ -33,7 +33,6 @@ export class PhyiscalBookController {
   getPhysicalBooks(
     @Query() query: Prisma.PhysicalBookFindManyArgs,
   ): Promise<PhysicalBookModel[]> {
-    console.log(query);
     return this.physicalBookService.physicalBooks(query);
   }
 }

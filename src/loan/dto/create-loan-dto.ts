@@ -1,14 +1,14 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 export class CreateLoanDto {
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   @ApiProperty()
   physical_book_barcode: string;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   @ApiProperty()
   physical_book_collection_name: string;
 }

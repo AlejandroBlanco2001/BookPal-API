@@ -24,7 +24,7 @@ model User {
   id               Int            @id @default(autoincrement())
   company          Company        @relation(fields: [company_id], references: [id])
   company_id       Int
-  profile_image    String         @default("https://firebasestorage.googleapis.com/v0/b/bookpal-4f333.appspot.com/o/users%2Fdefault_avatar.jpg?alt=media&token=7cf36132-15dd-492e-9a59-c26ca0af6bd6&_gl=1*h5pmgv*_ga*ODQ3MjYwMjYuMTY5NTQ5NzMxNg..*_ga_CW55HF8NVT*MTY5NzIzNTA4NC45LjEuMTY5NzIzNTEwNC40MC4wLjA.")
+  profile_image    String         @default("/default_logo.jpg")
   first_name       String
   second_name      String?
   last_name        String
@@ -84,7 +84,7 @@ model PhysicalBook {
   collection        Reference   @relation(fields: [collection_id], references: [id])
   collection_id     Int
   author            String
-  book_cover        String      @default("https://firebasestorage.googleapis.com/v0/b/bookpal-4f333.appspot.com/o/books%2Fno_cover.jpg?alt=media&token=fa8c05d0-724e-4bd2-acb2-f1731a15d60c&_gl=1*1k7glp8*_ga*ODQ3MjYwMjYuMTY5NTQ5NzMxNg..*_ga_CW55HF8NVT*MTY5NzIzNTA4NC45LjEuMTY5NzIzNTE2NS41OC4wLjA.")
+  book_cover        String      @default("/no_cover.jpg")
   title             String
   edition           String?
   dewey_code        String      @unique

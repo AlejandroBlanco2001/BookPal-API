@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LoanController } from './loan.controller';
 import { LoanService } from './loan.service';
-import { ReferenceService } from '../reference/reference.service';
 import { loan as LoanFactory } from '../utils/factory';
 import { LoanStatus } from '@prisma/client';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -29,9 +28,6 @@ describe('LoanController', () => {
     getLoanByUserID: jest.fn().mockResolvedValue(mockLoan),
     createLoan: jest.fn().mockResolvedValue(mockLoan),
   };
-  const ReferenceServiceMock = {
-    getDueDate: jest.fn().mockResolvedValue(new Date()),
-  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -40,10 +36,6 @@ describe('LoanController', () => {
         {
           provide: LoanService,
           useValue: LoanServiceMock,
-        },
-        {
-          provide: ReferenceService,
-          useValue: ReferenceServiceMock,
         },
       ],
     }).compile();
@@ -79,9 +71,6 @@ describe('LoanController', () => {
       });
 
       LoanServiceMock.createLoan.mockResolvedValueOnce(result);
-      ReferenceServiceMock.getDueDate.mockResolvedValueOnce(
-        new Date('2020-01-01T00:00:00.000Z'),
-      );
 
       const call = await controller.createLoan(
         {
@@ -91,14 +80,12 @@ describe('LoanController', () => {
         },
         {
           physical_book_barcode: '1234567890123',
-          physical_book_collection_name: 'General',
         },
       );
 
       const expectedInput = {
         status: LoanStatus.active,
         start_date: new Date(),
-        due_date: new Date('2020-01-01T00:00:00.000Z'),
         user: {
           connect: {
             id: 1,

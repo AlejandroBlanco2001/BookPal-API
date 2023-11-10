@@ -69,6 +69,10 @@ export class LoanService {
         throw new UserUnpaidFines();
       }
 
+      const due_date = await this.referenceService.getDueDate({
+        reference_name: physicalBook?.collection_id.toString(),
+      });
+
       const max_number_of_collection = await this.referenceService.getMaxLoans({
         reference_name: physicalBook?.collection_id.toString(),
       });
@@ -102,7 +106,7 @@ export class LoanService {
       inventory!.quantity = inventory!.quantity - 1;
       inventory!.last_update = new Date();
 
-      const notificationDate = new Date(data.due_date);
+      const notificationDate = new Date(due_date);
       notificationDate.setDate(notificationDate.getDate() - 1);
 
       await this.notificationService.createNotification({
@@ -115,6 +119,8 @@ export class LoanService {
           },
         },
       });
+
+      data.due_date = new Date(due_date);
 
       return await this.prisma.loan.create({
         data,

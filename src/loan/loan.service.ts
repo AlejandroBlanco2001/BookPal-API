@@ -113,7 +113,7 @@ export class LoanService {
       await this.notificationService.createNotification({
         message: 'You loan return date is coming soon!',
         title: 'Book Pal',
-        next_schedule_date: notificationDate.toString(),
+        next_schedule_date: notificationDate.toISOString(),
         user: {
           connect: {
             phone_token: user_token,

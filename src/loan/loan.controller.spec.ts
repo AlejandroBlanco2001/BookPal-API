@@ -98,7 +98,6 @@ describe('LoanController', () => {
             barcode: '1234567890123',
           },
         },
-        physical_book_barcode: '1234567890123',
       };
 
       expect(call).toBe(result);

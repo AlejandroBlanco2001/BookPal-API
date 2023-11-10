@@ -11,7 +11,14 @@ export declare class NotificationService {
         status: import(".prisma/client").$Enums.NotificationStatus;
         next_schedule_date: Date;
     }[]>;
-    createNotification(data: Prisma.NotificationCreateInput): Promise<void>;
+    createNotification(data: Prisma.NotificationCreateInput): Promise<{
+        id: number;
+        user_token: string;
+        title: string;
+        message: string;
+        status: import(".prisma/client").$Enums.NotificationStatus;
+        next_schedule_date: Date;
+    }>;
     sendPushNotification({ body, title, token, }: {
         body: string;
         title: string;

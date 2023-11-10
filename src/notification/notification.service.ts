@@ -4,6 +4,7 @@ import { GenericError } from '../exceptions/genericError.exception';
 import { PrismaService } from '../prisma/prisma.service';
 import { Notification } from '@prisma/client';
 import { Prisma } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
 
 firebase.initializeApp({
   credential: firebase.credential.cert(
@@ -16,6 +17,7 @@ firebase.initializeApp({
   ),
 });
 
+@Injectable()
 export class NotificationService {
   constructor(private prisma: PrismaService) {}
 
@@ -35,8 +37,7 @@ export class NotificationService {
 
   async createNotification(data: Prisma.NotificationCreateInput) {
     try {
-      console.log(data);
-      this.prisma.notification.create({
+      return await this.prisma.notification.create({
         data,
       });
     } catch (error: any) {

@@ -175,7 +175,7 @@ describe('LoanService', () => {
   */
   describe('createLoan', () => {
     it('should create a new loan if fullfill all the conditions', async () => {
-      const result = await service.createLoan(1, {
+      const result = await service.createLoan(1, 'abc', {
         status: 'active',
         start_date: new Date(),
         due_date: new Date(),
@@ -200,7 +200,7 @@ describe('LoanService', () => {
           InventoryServiceMock.isPhysicalBookAvailable.mockResolvedValueOnce(
             false,
           );
-          await service.createLoan(1, {
+          await service.createLoan(1, 'abc', {
             status: 'active',
             start_date: new Date(),
             due_date: new Date(),
@@ -223,7 +223,7 @@ describe('LoanService', () => {
       it('a UserUnpaidFines if the user has unpaid fines', async () => {
         try {
           FineServiceMock.getFinesByUserID.mockResolvedValueOnce(mockFines);
-          await service.createLoan(1, {
+          await service.createLoan(1, 'abc', {
             status: 'active',
             start_date: new Date(),
             due_date: new Date(),
@@ -248,7 +248,7 @@ describe('LoanService', () => {
             mockPhysicalBooks,
           );
           ReferenceServiceMock.getMaxLoans.mockResolvedValueOnce(1);
-          await service.createLoan(1, {
+          await service.createLoan(1, 'abc', {
             status: 'active',
             start_date: new Date(),
             due_date: new Date(),

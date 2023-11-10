@@ -38,13 +38,11 @@ let LoanController = class LoanController {
                     id: req.user.id,
                 },
             },
-            user_id: req.user.id,
             physical_book: {
                 connect: {
                     barcode: createLoanDto.physical_book_barcode,
                 },
             },
-            physical_book_barcode: createLoanDto.physical_book_barcode,
         };
         return await this.loanService.createLoan(req.user.id, createLoanDto.phone_token, data);
     }

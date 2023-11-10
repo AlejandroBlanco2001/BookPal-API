@@ -19,6 +19,7 @@ import { SecurityService } from '../utils/security/security.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDTO } from './dto/create-user-dto';
 import { UpdateUserDTO } from './dto/update-user-dto';
+import { UnauthorizedException } from 'src/exceptions/unauthorizedException.exception';
 
 @ApiTags('user')
 @Controller('user')
@@ -89,7 +90,25 @@ export class UserController {
     @Body() data: UpdateUserDTO,
     @Param('id') id: number,
   ): Promise<UserModel> {
-    return await this.userService.updateUser(data, { id: id });
+    const { password, ...user_info } = data;
+    if (password) {
+      if (user_info) {
+        throw new UnauthorizedException();
+      }
+      const hashed_password = await this.securityService.hashPassword(password);
+      return await this.userService.updateUser(
+        {
+          password: hashed_password,
+        },
+        { id: id },
+      );
+    }
+    return await this.userService.updateUser(
+      {
+        ...user_info,
+      },
+      { id: id },
+    );
   }
 
   @Put('email/:email')

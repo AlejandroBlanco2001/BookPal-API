@@ -20,5 +20,5 @@ export declare class LoanService {
         data: Prisma.LoanUpdateInput;
     }): Promise<Loan>;
     updateLoanStatus(): Promise<void>;
-    getLoanByUserID(data: Prisma.LoanWhereInput): Promise<Loan[]>;
+    (data: Prisma.LoanWhereInput): Promise<Loan[]>;
 }

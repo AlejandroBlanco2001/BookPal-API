@@ -50,7 +50,7 @@ export class LoanController {
     };
     return await this.loanService.createLoan(
       req.user.id,
-      req.user.phone_token,
+      createLoanDto.phone_token,
       data as any,
     );
   }

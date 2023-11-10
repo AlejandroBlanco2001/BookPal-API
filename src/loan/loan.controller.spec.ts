@@ -80,6 +80,7 @@ describe('LoanController', () => {
         },
         {
           physical_book_barcode: '1234567890123',
+          phone_token: '1234567890123',
         },
       );
 

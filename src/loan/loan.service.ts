@@ -40,6 +40,7 @@ export class LoanService {
 
   async createLoan(
     user_id: number,
+    user_token: string,
     data: Prisma.LoanCreateInput,
   ): Promise<Loan> {
     try {
@@ -70,11 +71,11 @@ export class LoanService {
       }
 
       const due_date = await this.referenceService.getDueDate({
-        reference_name: physicalBook?.collection_id.toString(),
+        id: physicalBook?.collection_id,
       });
 
       const max_number_of_collection = await this.referenceService.getMaxLoans({
-        reference_name: physicalBook?.collection_id.toString(),
+        id: physicalBook?.collection_id,
       });
 
       const user_loans = await this.getLoanByUserID({
@@ -115,7 +116,7 @@ export class LoanService {
         next_schedule_date: notificationDate.toString(),
         user: {
           connect: {
-            id: user_id,
+            phone_token: user_token,
           },
         },
       });

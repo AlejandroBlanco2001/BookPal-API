@@ -48,7 +48,11 @@ export class LoanController {
       },
       physical_book_barcode: createLoanDto.physical_book_barcode,
     };
-    return await this.loanService.createLoan(req.user.id, data as any);
+    return await this.loanService.createLoan(
+      req.user.id,
+      req.user.phone_token,
+      data as any,
+    );
   }
 
   @Put('return/:id')

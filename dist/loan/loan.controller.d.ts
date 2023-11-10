@@ -1,10 +1,8 @@
 import { LoanService } from './loan.service';
 import { CreateLoanDto } from './dto/create-loan-dto';
-import { ReferenceService } from '../reference/reference.service';
 export declare class LoanController {
     readonly loanService: LoanService;
-    readonly referenceService: ReferenceService;
-    constructor(loanService: LoanService, referenceService: ReferenceService);
+    constructor(loanService: LoanService);
     getLoanByID(id: string): Promise<{
         id: number;
         user_id: number;

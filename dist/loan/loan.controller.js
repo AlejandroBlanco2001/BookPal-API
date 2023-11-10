@@ -18,12 +18,10 @@ const common_1 = require("@nestjs/common");
 const loan_service_1 = require("./loan.service");
 const create_loan_dto_1 = require("./dto/create-loan-dto");
 const client_1 = require("@prisma/client");
-const reference_service_1 = require("../reference/reference.service");
 const swagger_1 = require("@nestjs/swagger");
 let LoanController = class LoanController {
-    constructor(loanService, referenceService) {
+    constructor(loanService) {
         this.loanService = loanService;
-        this.referenceService = referenceService;
     }
     getLoanByID(id) {
         return this.loanService.loan({ id: Number(id) });
@@ -32,13 +30,9 @@ let LoanController = class LoanController {
         return this.loanService.getLoanByUserID({ user_id: Number(id) });
     }
     async createLoan(req, createLoanDto) {
-        const due_date = await this.referenceService.getDueDate({
-            reference_name: createLoanDto.physical_book_collection_name,
-        });
         const data = {
             status: client_1.LoanStatus.active,
             start_date: new Date(),
-            due_date: due_date,
             user: {
                 connect: {
                     id: req.user.id,
@@ -52,7 +46,7 @@ let LoanController = class LoanController {
             },
             physical_book_barcode: createLoanDto.physical_book_barcode,
         };
-        return await this.loanService.createLoan(req.user.id, data);
+        return await this.loanService.createLoan(req.user.id, req.user.phone_token, data);
     }
     returnLoan(id) {
         return this.loanService.updateLoan({
@@ -105,7 +99,6 @@ __decorate([
 exports.LoanController = LoanController = __decorate([
     (0, swagger_1.ApiTags)('loan'),
     (0, common_1.Controller)('loan'),
-    __metadata("design:paramtypes", [loan_service_1.LoanService,
-        reference_service_1.ReferenceService])
+    __metadata("design:paramtypes", [loan_service_1.LoanService])
 ], LoanController);
 //# sourceMappingURL=loan.controller.js.map

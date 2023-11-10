@@ -45,7 +45,7 @@ let LoanService = class LoanService {
         }
         return loan;
     }
-    async createLoan(user_id, data) {
+    async createLoan(user_id, user_token, data) {
         try {
             const physicalBook = await this.physicalBookService.physicalBook({
                 barcode: data.physical_book.connect?.barcode,
@@ -62,8 +62,11 @@ let LoanService = class LoanService {
             if (unpaidFines?.length > 0) {
                 throw new userUnpaidFines_exception_1.UserUnpaidFines();
             }
+            const due_date = await this.referenceService.getDueDate({
+                id: physicalBook?.collection_id,
+            });
             const max_number_of_collection = await this.referenceService.getMaxLoans({
-                reference_name: physicalBook?.collection_id.toString(),
+                id: physicalBook?.collection_id,
             });
             const user_loans = await this.getLoanByUserID({
                 user_id: user_id,
@@ -85,7 +88,7 @@ let LoanService = class LoanService {
             });
             inventory.quantity = inventory.quantity - 1;
             inventory.last_update = new Date();
-            const notificationDate = new Date(data.due_date);
+            const notificationDate = new Date(due_date);
             notificationDate.setDate(notificationDate.getDate() - 1);
             await this.notificationService.createNotification({
                 message: 'You loan return date is coming soon!',
@@ -93,10 +96,11 @@ let LoanService = class LoanService {
                 next_schedule_date: notificationDate.toString(),
                 user: {
                     connect: {
-                        id: user_id,
+                        phone_token: user_token,
                     },
                 },
             });
+            data.due_date = new Date(due_date);
             return await this.prisma.loan.create({
                 data,
             });

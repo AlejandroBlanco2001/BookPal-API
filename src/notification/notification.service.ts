@@ -35,6 +35,7 @@ export class NotificationService {
 
   async createNotification(data: Prisma.NotificationCreateInput) {
     try {
+      console.log(data);
       this.prisma.notification.create({
         data,
       });

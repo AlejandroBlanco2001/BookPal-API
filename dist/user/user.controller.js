@@ -23,6 +23,7 @@ const security_service_1 = require("../utils/security/security.service");
 const swagger_1 = require("@nestjs/swagger");
 const create_user_dto_1 = require("./dto/create-user-dto");
 const update_user_dto_1 = require("./dto/update-user-dto");
+const unauthorizedException_exception_1 = require("../exceptions/unauthorizedException.exception");
 let UserController = UserController_1 = class UserController {
     constructor(userService, securityService) {
         this.userService = userService;
@@ -53,7 +54,19 @@ let UserController = UserController_1 = class UserController {
         return req.user;
     }
     async updateUserByID(data, id) {
-        return await this.userService.updateUser(data, { id: id });
+        const { password, ...user_info } = data;
+        if (password) {
+            if (user_info) {
+                throw new unauthorizedException_exception_1.UnauthorizedException();
+            }
+            const hashed_password = await this.securityService.hashPassword(password);
+            return await this.userService.updateUser({
+                password: hashed_password,
+            }, { id: id });
+        }
+        return await this.userService.updateUser({
+            ...user_info,
+        }, { id: id });
     }
     async updateUserByEmail(data, email) {
         return await this.userService.updateUser(data, { email: email });

@@ -69,7 +69,7 @@ let LoanService = class LoanService {
                 id: physicalBook?.collection_id,
             });
             const user_loans = await this.getLoanByUserID({
-                user_id: user_id,
+                id: user_id,
             });
             const user_loans_barcode = user_loans.map((loan) => loan.physical_book_barcode);
             const user_loans_books = await this.physicalBookService.physicalBooks({

@@ -127,7 +127,10 @@ let LoanService = class LoanService {
             });
         }
         catch (error) {
-            throw new genericError_exception_1.GenericError('LoanService', error.message, 'updateLoan');
+            if (!(error instanceof userUnpaidFines_exception_1.UserUnpaidFines)) {
+                throw new genericError_exception_1.GenericError('LoanService', error.message, 'updateLoan');
+            }
+            throw error;
         }
     }
     async updateLoanStatus() {
@@ -144,7 +147,7 @@ let LoanService = class LoanService {
                     barcode: loan.physical_book_barcode,
                 });
                 const collection = await this.referenceService.reference({
-                    id: physicalBook.reference_id,
+                    id: physicalBook.collection_id,
                 });
                 if (dueDate < today) {
                     await this.fineService.fine({

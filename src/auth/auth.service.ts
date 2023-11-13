@@ -17,6 +17,7 @@ export class AuthService {
     if (!user) {
       return null;
     }
+    console.log(password, user?.password);
     const isPasswordValid = await this.securityService.verifyPassword(
       password,
       user?.password ?? '',

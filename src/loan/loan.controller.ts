@@ -56,12 +56,6 @@ export class LoanController {
   @Put('return/:id')
   @ApiOperation({ summary: 'Return a loan' })
   returnLoan(@Param('id') id: string) {
-    return this.loanService.updateLoan({
-      where: { id: Number(id) },
-      data: {
-        return_date: new Date(),
-        status: LoanStatus.returned,
-      },
-    });
+    return this.loanService.returnLoan(Number(id));
   }
 }

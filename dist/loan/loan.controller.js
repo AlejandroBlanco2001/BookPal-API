@@ -47,13 +47,7 @@ let LoanController = class LoanController {
         return await this.loanService.createLoan(req.user.id, createLoanDto.phone_token, data);
     }
     returnLoan(id) {
-        return this.loanService.updateLoan({
-            where: { id: Number(id) },
-            data: {
-                return_date: new Date(),
-                status: client_1.LoanStatus.returned,
-            },
-        });
+        return this.loanService.returnLoan(Number(id));
     }
 };
 exports.LoanController = LoanController;

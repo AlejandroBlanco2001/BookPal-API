@@ -1,5 +1,5 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
-import { Prisma, Loan, FineStatus } from '@prisma/client';
+import { Prisma, Loan, FineStatus, BookStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoanStatus } from '@prisma/client';
 import { FineService } from '../fine/fine.service';
@@ -48,12 +48,7 @@ export class LoanService {
         barcode: data.physical_book.connect?.barcode as string,
       });
 
-      const is_book_available =
-        await this.inventoryService.isPhysicalBookAvailable({
-          physical_book_serial_number: physicalBook?.serial_number as string,
-        });
-
-      if (!is_book_available) {
+      if (physicalBook?.status === BookStatus.unavailable) {
         throw new PhysicalBookNotAvailable(
           data.physical_book.connect?.barcode as string,
         );
@@ -104,8 +99,14 @@ export class LoanService {
           physical_book_serial_number: physicalBook?.serial_number as string,
         });
 
-      inventory!.quantity = inventory!.quantity - 1;
-      inventory!.last_update = new Date();
+      if (inventory && physicalBook) {
+        inventory!.quantity = inventory!.quantity - 1;
+        inventory!.last_update = new Date();
+
+        if (inventory?.quantity < inventory?.minimum_quantity) {
+          physicalBook.status = BookStatus.unavailable;
+        }
+      }
 
       const notificationDate = new Date(due_date);
       notificationDate.setDate(notificationDate.getDate() - 1);
@@ -155,6 +156,30 @@ export class LoanService {
         throw new GenericError('LoanService', error.message, 'updateLoan');
       }
       throw error;
+    }
+  }
+
+  async returnLoan(id: number): Promise<Loan> {
+    try {
+      const loan = await this.loan({ id });
+      const physicalBook = await this.physicalBookService.physicalBook({
+        barcode: loan!.physical_book_barcode,
+      });
+      const inventory =
+        await this.inventoryService.inventoryByPhyiscalSerialNumber({
+          physical_book_serial_number: physicalBook!.serial_number,
+        });
+      if (inventory && physicalBook) {
+        inventory!.quantity = inventory!.quantity + 1;
+        inventory!.last_update = new Date();
+        physicalBook.status = BookStatus.available;
+      }
+      return await this.updateLoan({
+        where: { id },
+        data: { status: LoanStatus.returned },
+      });
+    } catch (error: any) {
+      throw new GenericError('LoanService', error.message, 'returnLoan');
     }
   }
 

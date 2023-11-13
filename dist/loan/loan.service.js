@@ -50,10 +50,7 @@ let LoanService = class LoanService {
             const physicalBook = await this.physicalBookService.physicalBook({
                 barcode: data.physical_book.connect?.barcode,
             });
-            const is_book_available = await this.inventoryService.isPhysicalBookAvailable({
-                physical_book_serial_number: physicalBook?.serial_number,
-            });
-            if (!is_book_available) {
+            if (physicalBook?.status === client_1.BookStatus.unavailable) {
                 throw new physicalBookNotAvailable_exception_1.PhysicalBookNotAvailable(data.physical_book.connect?.barcode);
             }
             const unpaidFines = await this.fineService.getFinesByUserID({
@@ -86,8 +83,13 @@ let LoanService = class LoanService {
             const inventory = await this.inventoryService.inventoryByPhyiscalSerialNumber({
                 physical_book_serial_number: physicalBook?.serial_number,
             });
-            inventory.quantity = inventory.quantity - 1;
-            inventory.last_update = new Date();
+            if (inventory && physicalBook) {
+                inventory.quantity = inventory.quantity - 1;
+                inventory.last_update = new Date();
+                if (inventory?.quantity < inventory?.minimum_quantity) {
+                    physicalBook.status = client_1.BookStatus.unavailable;
+                }
+            }
             const notificationDate = new Date(due_date);
             notificationDate.setDate(notificationDate.getDate() - 1);
             await this.notificationService.createNotification({
@@ -131,6 +133,29 @@ let LoanService = class LoanService {
                 throw new genericError_exception_1.GenericError('LoanService', error.message, 'updateLoan');
             }
             throw error;
+        }
+    }
+    async returnLoan(id) {
+        try {
+            const loan = await this.loan({ id });
+            const physicalBook = await this.physicalBookService.physicalBook({
+                barcode: loan.physical_book_barcode,
+            });
+            const inventory = await this.inventoryService.inventoryByPhyiscalSerialNumber({
+                physical_book_serial_number: physicalBook.serial_number,
+            });
+            if (inventory && physicalBook) {
+                inventory.quantity = inventory.quantity + 1;
+                inventory.last_update = new Date();
+                physicalBook.status = client_1.BookStatus.available;
+            }
+            return await this.updateLoan({
+                where: { id },
+                data: { status: client_2.LoanStatus.returned },
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('LoanService', error.message, 'returnLoan');
         }
     }
     async updateLoanStatus() {

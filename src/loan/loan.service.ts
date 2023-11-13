@@ -169,7 +169,7 @@ export class LoanService {
           barcode: loan.physical_book_barcode,
         });
         const collection = await this.referenceService.reference({
-          id: physicalBook!.reference_id,
+          id: physicalBook!.collection_id,
         });
         if (dueDate < today) {
           await this.fineService.fine({

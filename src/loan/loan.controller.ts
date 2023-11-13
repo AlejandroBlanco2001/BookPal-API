@@ -32,7 +32,6 @@ export class LoanController {
   @Post()
   @ApiOperation({ summary: 'Create a new loan' })
   async createLoan(@Request() req: any, @Body() createLoanDto: CreateLoanDto) {
-    console.log(req.user);
     const data = {
       status: LoanStatus.active,
       start_date: new Date(),

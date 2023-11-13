@@ -151,7 +151,10 @@ export class LoanService {
         where,
       });
     } catch (error: any) {
-      throw new GenericError('LoanService', error.message, 'updateLoan');
+      if (!(error instanceof UserUnpaidFines)) {
+        throw new GenericError('LoanService', error.message, 'updateLoan');
+      }
+      throw error;
     }
   }
 

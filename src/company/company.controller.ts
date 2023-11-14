@@ -13,6 +13,7 @@ import { CompanyGuard } from './company.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UpdateCompanyDTO } from './dto/update-company-dto';
 import { HistoryService } from '../history/history.service';
+import { Public } from '../utils/custom_decorators';
 
 @ApiTags('company')
 @Controller('company')
@@ -55,6 +56,7 @@ export class CompanyController {
 
   @Get('/style/:id')
   @ApiOperation({ summary: 'Get a company style by their ID' })
+  @Public()
   async getCompanyStyle(@Param('id') id: number) {
     const company = await this.companyService.company({ id: id });
     if (!company) {

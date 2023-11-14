@@ -6,6 +6,7 @@ import {
   Put,
   UseGuards,
   Request,
+  NotFoundException,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CompanyGuard } from './company.guard';
@@ -48,13 +49,27 @@ export class CompanyController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a company by ID' })
-  getCompany(@Param('id') id: number) {
-    return this.companyService.company({ id: id });
+  async getCompany(@Param('id') id: number) {
+    return await this.companyService.company({ id: id });
+  }
+
+  @Get('/style/:id')
+  @ApiOperation({ summary: 'Get a company style by their ID' })
+  async getCompanyStyle(@Param('id') id: number) {
+    const company = await this.companyService.company({ id: id });
+    if (!company) {
+      throw new NotFoundException();
+    }
+    return {
+      logo: company.logo,
+      primary_color: company.primary_color,
+      secondary_color: company.secondary_color,
+    };
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all companies' })
-  getCompanies() {
-    return this.companyService.companies();
+  async getCompanies() {
+    return await this.companyService.companies();
   }
 }

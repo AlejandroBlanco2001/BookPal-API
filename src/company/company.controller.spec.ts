@@ -2,12 +2,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CompanyController } from './company.controller';
 import { CompanyService } from './company.service';
 import { HistoryService } from '../history/history.service';
+import { company as CompanyFactory, company} from '../utils/factory';
 
 describe('CompanyController', () => {
   let controller: CompanyController;
+  let companyMock = CompanyFactory().basic();
 
   const HistoryServiceMock = {};
-  const CompanyServiceMock = {};
+  const CompanyServiceMock = {
+    company: jest.fn().mockImplementation(),
+    companies: jest.fn().mockImplementation(),
+    updateCompany: jest.fn().mockImplementation(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -30,4 +36,11 @@ describe('CompanyController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
+
+  describe('getCompany', () ==> {
+    it('should return a company', () => {
+      
+    });
+    it('should throw an error if the company does not exist', () => {});
+  })
 });

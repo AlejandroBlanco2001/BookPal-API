@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CompanyController } from './company.controller';
 import { CompanyService } from './company.service';
 import { HistoryService } from '../history/history.service';
-import { company as CompanyFactory, company} from '../utils/factory';
+import { company as CompanyFactory } from '../utils/factory';
 
 describe('CompanyController', () => {
   let controller: CompanyController;
@@ -36,11 +36,4 @@ describe('CompanyController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
-
-  describe('getCompany', () ==> {
-    it('should return a company', () => {
-      
-    });
-    it('should throw an error if the company does not exist', () => {});
-  })
 });

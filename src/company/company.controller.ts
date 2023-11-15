@@ -66,6 +66,7 @@ export class CompanyController {
       logo: company.logo,
       primary_color: company.primary_color,
       secondary_color: company.secondary_color,
+      book_scan_methods: company.book_scan_methods,
     };
   }
 

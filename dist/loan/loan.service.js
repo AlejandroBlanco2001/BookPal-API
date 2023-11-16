@@ -86,10 +86,8 @@ let LoanService = class LoanService {
             if (inventory && physicalBook) {
                 inventory.quantity = inventory.quantity - 1;
                 inventory.last_update = new Date();
-                if (inventory?.quantity < inventory?.minimum_quantity) {
-                    physicalBook.status = client_1.BookStatus.unavailable;
-                }
             }
+            physicalBook.status = client_1.BookStatus.unavailable;
             const notificationDate = new Date(due_date);
             notificationDate.setDate(notificationDate.getDate() - 1);
             await this.notificationService.createNotification({

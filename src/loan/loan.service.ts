@@ -102,11 +102,9 @@ export class LoanService {
       if (inventory && physicalBook) {
         inventory!.quantity = inventory!.quantity - 1;
         inventory!.last_update = new Date();
-
-        if (inventory?.quantity < inventory?.minimum_quantity) {
-          physicalBook.status = BookStatus.unavailable;
-        }
       }
+
+      physicalBook!.status = BookStatus.unavailable;
 
       const notificationDate = new Date(due_date);
       notificationDate.setDate(notificationDate.getDate() - 1);

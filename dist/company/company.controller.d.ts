@@ -21,6 +21,12 @@ export declare class CompanyController {
         primary_color: string | null;
         secondary_color: string | null;
     } | null>;
+    getCompanyStyle(id: number): Promise<{
+        logo: string | null;
+        primary_color: string | null;
+        secondary_color: string | null;
+        book_scan_methods: import(".prisma/client").$Enums.BookScanMethod[];
+    }>;
     getCompanies(): Promise<{
         id: number;
         name: string;

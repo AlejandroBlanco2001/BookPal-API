@@ -20,6 +20,7 @@ const company_guard_1 = require("./company.guard");
 const swagger_1 = require("@nestjs/swagger");
 const update_company_dto_1 = require("./dto/update-company-dto");
 const history_service_1 = require("../history/history.service");
+const custom_decorators_1 = require("../utils/custom_decorators");
 let CompanyController = class CompanyController {
     constructor(companyService, historyService) {
         this.companyService = companyService;
@@ -32,11 +33,23 @@ let CompanyController = class CompanyController {
         });
         return company;
     }
-    getCompany(id) {
-        return this.companyService.company({ id: id });
+    async getCompany(id) {
+        return await this.companyService.company({ id: id });
     }
-    getCompanies() {
-        return this.companyService.companies();
+    async getCompanyStyle(id) {
+        const company = await this.companyService.company({ id: id });
+        if (!company) {
+            throw new common_1.NotFoundException();
+        }
+        return {
+            logo: company.logo,
+            primary_color: company.primary_color,
+            secondary_color: company.secondary_color,
+            book_scan_methods: company.book_scan_methods,
+        };
+    }
+    async getCompanies() {
+        return await this.companyService.companies();
     }
 };
 exports.CompanyController = CompanyController;
@@ -59,15 +72,25 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], CompanyController.prototype, "getCompany", null);
+__decorate([
+    (0, common_1.Get)('/style/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get a company style by their ID' }),
+    (0, custom_decorators_1.Public)(),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], CompanyController.prototype, "getCompanyStyle", null);
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all companies' }),
     openapi.ApiResponse({ status: 200 }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], CompanyController.prototype, "getCompanies", null);
 exports.CompanyController = CompanyController = __decorate([
     (0, swagger_1.ApiTags)('company'),

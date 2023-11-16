@@ -35,4 +35,16 @@ export class PhyiscalBookController {
   ): Promise<PhysicalBookModel[]> {
     return this.physicalBookService.physicalBooks(query);
   }
+
+  @Public()
+  @Get('/recent')
+  @ApiOperation({ summary: 'Get all physical books' })
+  getRecentPhysicalBooks(): Promise<PhysicalBookModel[]> {
+    return this.physicalBookService.physicalBooks({
+      orderBy: {
+        creation_date: 'desc',
+      },
+      take: 10,
+    });
+  }
 }

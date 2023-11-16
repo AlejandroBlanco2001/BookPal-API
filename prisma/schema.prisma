@@ -87,7 +87,7 @@ model PhysicalBook {
   book_cover        String      @default("/no_cover.jpg")
   title             String
   edition           String?
-  dewey_code        String      @unique
+  dewey_code        String
   creation_date     DateTime
   isbn              String?     
   isbn13            String?     

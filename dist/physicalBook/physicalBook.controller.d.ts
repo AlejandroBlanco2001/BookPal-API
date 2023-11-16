@@ -6,4 +6,5 @@ export declare class PhyiscalBookController {
     getPhysicalBookByBarcode(barcode: string): Promise<PhysicalBookModel | null>;
     getPhysicalBookByID(id: string): Promise<PhysicalBookModel | null>;
     getPhysicalBooks(query: Prisma.PhysicalBookFindManyArgs): Promise<PhysicalBookModel[]>;
+    getRecentPhysicalBooks(): Promise<PhysicalBookModel[]>;
 }

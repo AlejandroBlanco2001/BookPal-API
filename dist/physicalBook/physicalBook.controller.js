@@ -32,6 +32,14 @@ let PhyiscalBookController = class PhyiscalBookController {
     getPhysicalBooks(query) {
         return this.physicalBookService.physicalBooks(query);
     }
+    getRecentPhysicalBooks() {
+        return this.physicalBookService.physicalBooks({
+            orderBy: {
+                creation_date: 'desc',
+            },
+            take: 10,
+        });
+    }
 };
 exports.PhyiscalBookController = PhyiscalBookController;
 __decorate([
@@ -64,6 +72,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PhyiscalBookController.prototype, "getPhysicalBooks", null);
+__decorate([
+    (0, custom_decorators_1.Public)(),
+    (0, common_1.Get)('/recent'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all physical books' }),
+    openapi.ApiResponse({ status: 200 }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PhyiscalBookController.prototype, "getRecentPhysicalBooks", null);
 exports.PhyiscalBookController = PhyiscalBookController = __decorate([
     (0, swagger_1.ApiTags)('physical-book'),
     (0, common_1.Controller)('physical-book'),

@@ -7,7 +7,7 @@ import { RatingService } from '../rating/rating.service';
 
 interface PhyiscalBookWithRatings extends PhysicalBook {
   rating: number;
-  ratings: Rating[];
+  ratings?: Rating[];
 }
 @Injectable()
 export class PhysicalBookService {
@@ -60,14 +60,9 @@ export class PhysicalBookService {
       });
       if (!physicalBook)
         throw new PhysicalBookNotFound(physicalBookWhereUniqueInput);
-      const average_rating = await this.prisma.rating.aggregate({
-        where: {
-          physical_book_barcode: physicalBook.barcode,
-        },
-        _avg: {
-          rating: true,
-        },
-      });
+      const average_rating = await this.ratingService.getBooksAverageRating(
+        physicalBook.barcode,
+      );
       return {
         ...physicalBook,
         rating: average_rating._avg.rating || 0,
@@ -102,6 +97,45 @@ export class PhysicalBookService {
         error.message,
         'physicalBooks',
       );
+    }
+  }
+
+  async getTopRatedBooks(items: number = 10) {
+    try {
+      const groupedData: any =
+        await this.prisma.userFavoritePhyiscalBook.groupBy({
+          by: ['physical_book_barcode'],
+          _count: {
+            physical_book_barcode: true,
+          },
+          orderBy: {
+            _count: {
+              physical_book_barcode: 'desc',
+            },
+          },
+          take: items,
+        });
+
+      const barcodes = groupedData.map(
+        (rating: any) => rating.physical_book_barcode,
+      ) as string[];
+
+      const booksWithRatings = await Promise.all(
+        barcodes.map(async (barcode: string) => {
+          const rating =
+            await this.ratingService.getBooksAverageRating(barcode);
+          const physicalBook = await this.physicalBook({ barcode: barcode });
+          return {
+            ...physicalBook,
+            rating: rating._avg.rating || 0,
+          };
+        }),
+      );
+      const sortedBooks = booksWithRatings.sort((a, b) => b.rating - a.rating);
+
+      return sortedBooks;
+    } catch (error) {
+      throw error;
     }
   }
 }

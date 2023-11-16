@@ -6,21 +6,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PhysicalBookModule = void 0;
+exports.RatingModule = void 0;
 const common_1 = require("@nestjs/common");
-const physicalBook_service_1 = require("./physicalBook.service");
-const physicalBook_controller_1 = require("./physicalBook.controller");
+const rating_controller_1 = require("./rating.controller");
+const rating_service_1 = require("./rating.service");
 const prisma_module_1 = require("../prisma/prisma.module");
-const rating_module_1 = require("../rating/rating.module");
-let PhysicalBookModule = class PhysicalBookModule {
+let RatingModule = class RatingModule {
 };
-exports.PhysicalBookModule = PhysicalBookModule;
-exports.PhysicalBookModule = PhysicalBookModule = __decorate([
+exports.RatingModule = RatingModule;
+exports.RatingModule = RatingModule = __decorate([
     (0, common_1.Module)({
-        controllers: [physicalBook_controller_1.PhyiscalBookController],
-        providers: [physicalBook_service_1.PhysicalBookService],
-        imports: [prisma_module_1.PrismaModule, rating_module_1.RatingModule],
-        exports: [physicalBook_service_1.PhysicalBookService],
+        controllers: [rating_controller_1.RatingController],
+        providers: [rating_service_1.RatingService],
+        exports: [rating_service_1.RatingService],
+        imports: [prisma_module_1.PrismaModule],
     })
-], PhysicalBookModule);
-//# sourceMappingURL=physicalBook.module.js.map
+], RatingModule);
+//# sourceMappingURL=rating.module.js.map

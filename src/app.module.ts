@@ -26,6 +26,7 @@ import { InventoryService } from './inventory/inventory.service';
 import { NotificationController } from './notification/notification.controller';
 import { NotificationService } from './notification/notification.service';
 import { NotificationModule } from './notification/notification.module';
+import { RatingModule } from './rating/rating.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { NotificationModule } from './notification/notification.module';
     CronjobsModule,
     FineModule,
     NotificationModule,
+    RatingModule,
   ],
   controllers: [
     AppController,

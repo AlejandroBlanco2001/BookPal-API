@@ -1,11 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { PhysicalBook, Prisma } from '@prisma/client';
+import { PhysicalBook, Prisma, Rating } from '@prisma/client';
 import { PhysicalBookNotFound } from '../exceptions/physicalBookNotFound.exception';
 import { GenericError } from '../exceptions/genericError.exception';
+import { RatingService } from '../rating/rating.service';
+
+interface PhyiscalBookWithRatings extends PhysicalBook {
+  rating: number;
+  ratings: Rating[];
+}
 @Injectable()
 export class PhysicalBookService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private ratingService: RatingService,
+  ) {}
 
   async createPhysicalBook(
     data: Prisma.PhysicalBookCreateInput,
@@ -44,11 +53,30 @@ export class PhysicalBookService {
 
   async physicalBook(
     physicalBookWhereUniqueInput: Prisma.PhysicalBookWhereUniqueInput,
-  ): Promise<PhysicalBook | null> {
+  ): Promise<PhyiscalBookWithRatings | null> {
     try {
-      return this.prisma.physicalBook.findUnique({
+      const physicalBook = await this.prisma.physicalBook.findUnique({
         where: physicalBookWhereUniqueInput,
       });
+      if (!physicalBook)
+        throw new PhysicalBookNotFound(physicalBookWhereUniqueInput);
+      const average_rating = await this.prisma.rating.aggregate({
+        where: {
+          physical_book_barcode: physicalBook.barcode,
+        },
+        _avg: {
+          rating: true,
+        },
+      });
+      return {
+        ...physicalBook,
+        rating: average_rating._avg.rating || 0,
+        ratings: await this.ratingService.ratings({
+          where: {
+            physical_book_barcode: physicalBook.barcode,
+          },
+        }),
+      };
     } catch (error) {
       throw new PhysicalBookNotFound(physicalBookWhereUniqueInput);
     }

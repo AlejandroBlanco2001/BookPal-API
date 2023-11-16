@@ -14,9 +14,11 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const physicalBookNotFound_exception_1 = require("../exceptions/physicalBookNotFound.exception");
 const genericError_exception_1 = require("../exceptions/genericError.exception");
+const rating_service_1 = require("../rating/rating.service");
 let PhysicalBookService = class PhysicalBookService {
-    constructor(prisma) {
+    constructor(prisma, ratingService) {
         this.prisma = prisma;
+        this.ratingService = ratingService;
     }
     async createPhysicalBook(data) {
         try {
@@ -42,9 +44,28 @@ let PhysicalBookService = class PhysicalBookService {
     }
     async physicalBook(physicalBookWhereUniqueInput) {
         try {
-            return this.prisma.physicalBook.findUnique({
+            const physicalBook = await this.prisma.physicalBook.findUnique({
                 where: physicalBookWhereUniqueInput,
             });
+            if (!physicalBook)
+                throw new physicalBookNotFound_exception_1.PhysicalBookNotFound(physicalBookWhereUniqueInput);
+            const average_rating = await this.prisma.rating.aggregate({
+                where: {
+                    physical_book_barcode: physicalBook.barcode,
+                },
+                _avg: {
+                    rating: true,
+                },
+            });
+            return {
+                ...physicalBook,
+                rating: average_rating._avg.rating || 0,
+                ratings: await this.ratingService.ratings({
+                    where: {
+                        physical_book_barcode: physicalBook.barcode,
+                    },
+                }),
+            };
         }
         catch (error) {
             throw new physicalBookNotFound_exception_1.PhysicalBookNotFound(physicalBookWhereUniqueInput);
@@ -71,6 +92,7 @@ let PhysicalBookService = class PhysicalBookService {
 exports.PhysicalBookService = PhysicalBookService;
 exports.PhysicalBookService = PhysicalBookService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        rating_service_1.RatingService])
 ], PhysicalBookService);
 //# sourceMappingURL=physicalBook.service.js.map

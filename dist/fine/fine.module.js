@@ -11,23 +11,17 @@ const common_1 = require("@nestjs/common");
 const fine_service_1 = require("./fine.service");
 const prisma_module_1 = require("../prisma/prisma.module");
 const loan_service_1 = require("../loan/loan.service");
-const physicalBook_service_1 = require("../physicalBook/physicalBook.service");
 const reference_service_1 = require("../reference/reference.service");
 const inventory_service_1 = require("../inventory/inventory.service");
 const notification_module_1 = require("../notification/notification.module");
+const physicalBook_module_1 = require("../physicalBook/physicalBook.module");
 let FineModule = class FineModule {
 };
 exports.FineModule = FineModule;
 exports.FineModule = FineModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, notification_module_1.NotificationModule],
-        providers: [
-            fine_service_1.FineService,
-            loan_service_1.LoanService,
-            physicalBook_service_1.PhysicalBookService,
-            reference_service_1.ReferenceService,
-            inventory_service_1.InventoryService,
-        ],
+        imports: [prisma_module_1.PrismaModule, notification_module_1.NotificationModule, physicalBook_module_1.PhysicalBookModule],
+        providers: [fine_service_1.FineService, loan_service_1.LoanService, reference_service_1.ReferenceService, inventory_service_1.InventoryService],
         exports: [fine_service_1.FineService],
     })
 ], FineModule);

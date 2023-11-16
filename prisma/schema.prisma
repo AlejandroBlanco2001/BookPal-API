@@ -40,6 +40,7 @@ model User {
   notifications    Notification[]
   Loan             Loan[]
   History          History[]
+  Rating           Rating[]
 }
 
 model Notification {
@@ -76,27 +77,39 @@ model Fine {
 }
 
 model PhysicalBook {
-  id                Int         @id @default(autoincrement())
-  serial_number     String      
-  barcode           String      @unique
-  reference_book    Book        @relation(fields: [reference_id], references: [id])
+  id                Int        @id @default(autoincrement())
+  serial_number     String
+  barcode           String     @unique
+  reference_book    Book       @relation(fields: [reference_id], references: [id])
   reference_id      Int
-  collection        Reference   @relation(fields: [collection_id], references: [id])
+  collection        Reference  @relation(fields: [collection_id], references: [id])
   collection_id     Int
   author            String
-  book_cover        String      @default("/no_cover.jpg")
+  book_cover        String     @default("/no_cover.jpg")
   title             String
   edition           String?
   dewey_code        String
   creation_date     DateTime
-  isbn              String?     
-  isbn13            String?     
+  isbn              String?
+  isbn13            String?
   publisher         String?
   publish_date      DateTime?
   language          String?
-  status            BookStatus  @default(available)
-  bibliographic_gps String?     @unique
+  status            BookStatus @default(available)
+  bibliographic_gps String?    @unique
   Loan              Loan[]
+  Rating            Rating[]
+}
+
+model Rating {
+  id                    Int          @id @default(autoincrement())
+  rating                Float
+  phyiscal_book         PhysicalBook @relation(fields: [physical_book_barcode], references: [barcode])
+  physical_book_barcode String
+  user                  User         @relation(fields: [user_id], references: [id])
+  user_id               Int
+  email                 String
+  created_at            DateTime?     @default(now())
 }
 
 model Reference {
@@ -135,14 +148,14 @@ model Book {
 }
 
 model Inventory {
-  id                    Int          @id @default(autoincrement())
+  id                          Int      @id @default(autoincrement())
   physical_book_serial_number String
-  creation_date         DateTime     @default(now())
-  last_update           DateTime     @default(now())
-  quantity              Int
-  minimum_quantity      Int          @default(0)
-  maximum_quantity      Int
-  reorder_quantity      Int?
+  creation_date               DateTime @default(now())
+  last_update                 DateTime @default(now())
+  quantity                    Int
+  minimum_quantity            Int      @default(0)
+  maximum_quantity            Int
+  reorder_quantity            Int?
 }
 
 model History {

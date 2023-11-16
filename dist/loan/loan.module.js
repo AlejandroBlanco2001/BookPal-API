@@ -11,24 +11,19 @@ const common_1 = require("@nestjs/common");
 const loan_controller_1 = require("./loan.controller");
 const loan_service_1 = require("./loan.service");
 const prisma_module_1 = require("../prisma/prisma.module");
-const physicalBook_service_1 = require("../physicalBook/physicalBook.service");
 const reference_service_1 = require("../reference/reference.service");
 const inventory_service_1 = require("../inventory/inventory.service");
 const notification_module_1 = require("../notification/notification.module");
 const fine_module_1 = require("../fine/fine.module");
+const physicalBook_module_1 = require("../physicalBook/physicalBook.module");
 let LoanModule = class LoanModule {
 };
 exports.LoanModule = LoanModule;
 exports.LoanModule = LoanModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, notification_module_1.NotificationModule, fine_module_1.FineModule],
+        imports: [prisma_module_1.PrismaModule, notification_module_1.NotificationModule, fine_module_1.FineModule, physicalBook_module_1.PhysicalBookModule],
         controllers: [loan_controller_1.LoanController],
-        providers: [
-            loan_service_1.LoanService,
-            physicalBook_service_1.PhysicalBookService,
-            reference_service_1.ReferenceService,
-            inventory_service_1.InventoryService,
-        ],
+        providers: [loan_service_1.LoanService, reference_service_1.ReferenceService, inventory_service_1.InventoryService],
         exports: [loan_service_1.LoanService],
     })
 ], LoanModule);

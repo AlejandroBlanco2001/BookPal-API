@@ -100,11 +100,25 @@ export class LoanService {
         });
 
       if (inventory && physicalBook) {
-        inventory!.quantity = inventory!.quantity - 1;
-        inventory!.last_update = new Date();
-      }
+        await this.inventoryService.updateInventory({
+          where: {
+            id: inventory.id,
+          },
+          data: {
+            quantity: inventory.quantity - 1,
+            last_update: new Date(),
+          },
+        });
 
-      physicalBook!.status = BookStatus.unavailable;
+        await this.physicalBookService.updatePhysicalBook({
+          where: {
+            barcode: physicalBook.barcode,
+          },
+          data: {
+            status: BookStatus.unavailable,
+          },
+        });
+      }
 
       const notificationDate = new Date(due_date);
       notificationDate.setDate(notificationDate.getDate() - 1);

@@ -84,10 +84,24 @@ let LoanService = class LoanService {
                 physical_book_serial_number: physicalBook?.serial_number,
             });
             if (inventory && physicalBook) {
-                inventory.quantity = inventory.quantity - 1;
-                inventory.last_update = new Date();
+                await this.inventoryService.updateInventory({
+                    where: {
+                        id: inventory.id,
+                    },
+                    data: {
+                        quantity: inventory.quantity - 1,
+                        last_update: new Date(),
+                    },
+                });
+                await this.physicalBookService.updatePhysicalBook({
+                    where: {
+                        barcode: physicalBook.barcode,
+                    },
+                    data: {
+                        status: client_1.BookStatus.unavailable,
+                    },
+                });
             }
-            physicalBook.status = client_1.BookStatus.unavailable;
             const notificationDate = new Date(due_date);
             notificationDate.setDate(notificationDate.getDate() - 1);
             await this.notificationService.createNotification({

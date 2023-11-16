@@ -21,26 +21,27 @@ model Company {
 }
 
 model User {
-  id               Int            @id @default(autoincrement())
-  company          Company        @relation(fields: [company_id], references: [id])
-  company_id       Int
-  profile_image    String         @default("/default_logo.jpg")
-  first_name       String
-  second_name      String?
-  last_name        String
-  second_last_name String?
-  date_of_birth    DateTime       @db.Date
-  email            String         @unique
-  password         String         @db.VarChar(255)
-  academic_program String?
-  is_admin         Boolean        @default(false)
-  phone_token      String         @unique
-  is_deleted       Boolean        @default(false)
-  deleted_at       DateTime?
-  notifications    Notification[]
-  Loan             Loan[]
-  History          History[]
-  Rating           Rating[]
+  id                       Int                        @id @default(autoincrement())
+  company                  Company                    @relation(fields: [company_id], references: [id])
+  company_id               Int
+  profile_image            String                     @default("/default_logo.jpg")
+  first_name               String
+  second_name              String?
+  last_name                String
+  second_last_name         String?
+  date_of_birth            DateTime                   @db.Date
+  email                    String                     @unique
+  password                 String                     @db.VarChar(255)
+  academic_program         String?
+  is_admin                 Boolean                    @default(false)
+  phone_token              String                     @unique
+  is_deleted               Boolean                    @default(false)
+  deleted_at               DateTime?
+  notifications            Notification[]
+  Loan                     Loan[]
+  History                  History[]
+  Rating                   Rating[]
+  UserFavoritePhyiscalBook UserFavoritePhyiscalBook[]
 }
 
 model Notification {
@@ -77,28 +78,29 @@ model Fine {
 }
 
 model PhysicalBook {
-  id                Int        @id @default(autoincrement())
-  serial_number     String
-  barcode           String     @unique
-  reference_book    Book       @relation(fields: [reference_id], references: [id])
-  reference_id      Int
-  collection        Reference  @relation(fields: [collection_id], references: [id])
-  collection_id     Int
-  author            String
-  book_cover        String     @default("/no_cover.jpg")
-  title             String
-  edition           String?
-  dewey_code        String
-  creation_date     DateTime
-  isbn              String?
-  isbn13            String?
-  publisher         String?
-  publish_date      DateTime?
-  language          String?
-  status            BookStatus @default(available)
-  bibliographic_gps String?    @unique
-  Loan              Loan[]
-  Rating            Rating[]
+  id                       Int                        @id @default(autoincrement())
+  serial_number            String
+  barcode                  String                     @unique
+  reference_book           Book                       @relation(fields: [reference_id], references: [id])
+  reference_id             Int
+  collection               Reference                  @relation(fields: [collection_id], references: [id])
+  collection_id            Int
+  author                   String
+  book_cover               String                     @default("/no_cover.jpg")
+  title                    String
+  edition                  String?
+  dewey_code               String
+  creation_date            DateTime
+  isbn                     String?
+  isbn13                   String?
+  publisher                String?
+  publish_date             DateTime?
+  language                 String?
+  status                   BookStatus                 @default(available)
+  bibliographic_gps        String?                    @unique
+  Loan                     Loan[]
+  Rating                   Rating[]
+  UserFavoritePhyiscalBook UserFavoritePhyiscalBook[]
 }
 
 model Rating {
@@ -109,7 +111,16 @@ model Rating {
   user                  User         @relation(fields: [user_id], references: [id])
   user_id               Int
   email                 String
-  created_at            DateTime?     @default(now())
+  created_at            DateTime?    @default(now())
+}
+
+model UserFavoritePhyiscalBook {
+  id                    Int          @id @default(autoincrement())
+  user                  User         @relation(fields: [user_id], references: [id])
+  user_id               Int
+  physical_book         PhysicalBook @relation(fields: [physical_book_barcode], references: [barcode])
+  physical_book_barcode String
+  created_at            DateTime?    @default(now())
 }
 
 model Reference {

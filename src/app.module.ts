@@ -27,6 +27,7 @@ import { NotificationController } from './notification/notification.controller';
 import { NotificationService } from './notification/notification.service';
 import { NotificationModule } from './notification/notification.module';
 import { RatingModule } from './rating/rating.module';
+import { FavoriteModule } from './favorite/favorite.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { RatingModule } from './rating/rating.module';
     FineModule,
     NotificationModule,
     RatingModule,
+    FavoriteModule,
   ],
   controllers: [
     AppController,

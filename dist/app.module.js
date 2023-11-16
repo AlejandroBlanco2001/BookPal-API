@@ -36,6 +36,7 @@ const notification_controller_1 = require("./notification/notification.controlle
 const notification_service_1 = require("./notification/notification.service");
 const notification_module_1 = require("./notification/notification.module");
 const rating_module_1 = require("./rating/rating.module");
+const favorite_module_1 = require("./favorite/favorite.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -55,6 +56,7 @@ exports.AppModule = AppModule = __decorate([
             fine_module_1.FineModule,
             notification_module_1.NotificationModule,
             rating_module_1.RatingModule,
+            favorite_module_1.FavoriteModule,
         ],
         controllers: [
             app_controller_1.AppController,

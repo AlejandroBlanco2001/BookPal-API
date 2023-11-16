@@ -49,14 +49,7 @@ let PhysicalBookService = class PhysicalBookService {
             });
             if (!physicalBook)
                 throw new physicalBookNotFound_exception_1.PhysicalBookNotFound(physicalBookWhereUniqueInput);
-            const average_rating = await this.prisma.rating.aggregate({
-                where: {
-                    physical_book_barcode: physicalBook.barcode,
-                },
-                _avg: {
-                    rating: true,
-                },
-            });
+            const average_rating = await this.ratingService.getBooksAverageRating(physicalBook.barcode);
             return {
                 ...physicalBook,
                 rating: average_rating._avg.rating || 0,
@@ -86,6 +79,36 @@ let PhysicalBookService = class PhysicalBookService {
         }
         catch (error) {
             throw new genericError_exception_1.GenericError('PhysicalBookService', error.message, 'physicalBooks');
+        }
+    }
+    async getTopRatedBooks(items = 10) {
+        try {
+            const groupedData = await this.prisma.userFavoritePhyiscalBook.groupBy({
+                by: ['physical_book_barcode'],
+                _count: {
+                    physical_book_barcode: true,
+                },
+                orderBy: {
+                    _count: {
+                        physical_book_barcode: 'desc',
+                    },
+                },
+                take: items,
+            });
+            const barcodes = groupedData.map((rating) => rating.physical_book_barcode);
+            const booksWithRatings = await Promise.all(barcodes.map(async (barcode) => {
+                const rating = await this.ratingService.getBooksAverageRating(barcode);
+                const physicalBook = await this.physicalBook({ barcode: barcode });
+                return {
+                    ...physicalBook,
+                    rating: rating._avg.rating || 0,
+                };
+            }));
+            const sortedBooks = booksWithRatings.sort((a, b) => b.rating - a.rating);
+            return sortedBooks;
+        }
+        catch (error) {
+            throw error;
         }
     }
 };

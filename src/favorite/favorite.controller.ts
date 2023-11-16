@@ -53,7 +53,6 @@ export class FavoriteController {
   @ApiOperation({ summary: 'Create a new favorite' })
   async createFavorite(@Request() req: any, @Body() data: CreateFavoriteDto) {
     return await this.favoriteService.bookmarkFavorite({
-      ...data,
       user: {
         connect: {
           id: req.user.id,

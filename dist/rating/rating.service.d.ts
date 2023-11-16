@@ -44,4 +44,26 @@ export declare class RatingService {
         email: string;
         created_at: Date | null;
     }>;
+    getBooksAverageRating(barcodes: string[] | string, items?: number): Promise<Prisma.GetRatingAggregateType<{
+        where: {
+            physical_book_barcode: {
+                in: any;
+            };
+        };
+        _avg: {
+            rating: true;
+        };
+        take: number;
+    }>>;
+    getTopBooksAverageRating(items?: number): Promise<Prisma.GetRatingAggregateType<{
+        where: {
+            physical_book_barcode: {
+                in: any;
+            };
+        };
+        _avg: {
+            rating: true;
+        };
+        take: number;
+    }>>;
 }

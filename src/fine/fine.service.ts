@@ -35,6 +35,18 @@ export class FineService {
     return fine;
   }
 
+  async getFines(data: Prisma.FineWhereInput): Promise<Fine[]> {
+    let fines: Fine[] = [];
+    try {
+      fines = await this.prisma.fine.findMany({
+        where: data,
+      });
+    } catch (error: any) {
+      throw new GenericError('FineService', error.message, 'getFines');
+    }
+    return fines;
+  }
+
   async getFinesByUserID(data: Prisma.FineWhereInput, user_id: number) {
     let fines: Fine[] = [];
     try {
@@ -76,14 +88,13 @@ export class FineService {
   }
 
   async updateFineAmountToPay() {
-    const fines = await this.prisma.fine.findMany({
-      where: {
-        status: FineStatus.unpaid,
-        last_update_date: {
-          gt: new Date(),
-        },
+    const fines = await this.getFines({
+      status: FineStatus.unpaid,
+      last_update_date: {
+        gt: new Date(),
       },
     });
+
     const date = new Date();
     fines.forEach(async (fine) => {
       const loan = await this.loanService.loan({ id: fine.loan_id });

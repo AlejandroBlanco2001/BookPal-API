@@ -47,6 +47,18 @@ let FineService = class FineService {
         }
         return fine;
     }
+    async getFines(data) {
+        let fines = [];
+        try {
+            fines = await this.prisma.fine.findMany({
+                where: data,
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('FineService', error.message, 'getFines');
+        }
+        return fines;
+    }
     async getFinesByUserID(data, user_id) {
         let fines = [];
         try {
@@ -85,12 +97,10 @@ let FineService = class FineService {
         }
     }
     async updateFineAmountToPay() {
-        const fines = await this.prisma.fine.findMany({
-            where: {
-                status: client_1.FineStatus.unpaid,
-                last_update_date: {
-                    gt: new Date(),
-                },
+        const fines = await this.getFines({
+            status: client_1.FineStatus.unpaid,
+            last_update_date: {
+                gt: new Date(),
             },
         });
         const date = new Date();

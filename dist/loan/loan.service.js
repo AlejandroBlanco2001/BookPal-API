@@ -158,10 +158,11 @@ let LoanService = class LoanService {
             if (loan && loan.status === client_2.LoanStatus.returned) {
                 throw new loanAlreadyReturned_exception_1.LoanAlreadyReturned();
             }
-            const fine = await this.fineService.getFine({
-                id: loan.id,
+            const fine = await this.fineService.getFines({
+                loan_id: id,
+                status: client_1.FineStatus.unpaid,
             });
-            if (fine && fine?.status === client_1.FineStatus.unpaid) {
+            if (fine) {
                 throw new userUnpaidFines_exception_1.UserUnpaidFines();
             }
             const physicalBook = await this.physicalBookService.physicalBook({

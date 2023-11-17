@@ -185,22 +185,29 @@ export class LoanService {
   async returnLoan(id: number): Promise<Loan> {
     try {
       const loan = await this.loan({ id });
+
       if (loan && loan.status === LoanStatus.returned) {
         throw new LoanAlreadyReturned();
       }
-      const fine = await this.fineService.getFine({
-        id: loan!.id,
+
+      const fine = await this.fineService.getFines({
+        loan_id: id,
+        status: FineStatus.unpaid,
       });
-      if (fine && fine?.status === FineStatus.unpaid) {
+
+      if (fine) {
         throw new UserUnpaidFines();
       }
+
       const physicalBook = await this.physicalBookService.physicalBook({
         barcode: loan!.physical_book_barcode,
       });
+
       const inventory =
         await this.inventoryService.inventoryByPhyiscalSerialNumber({
           physical_book_serial_number: physicalBook!.serial_number,
         });
+
       if (inventory && physicalBook) {
         await this.inventoryService.updateInventory({
           where: {
@@ -211,6 +218,7 @@ export class LoanService {
             last_update: new Date(),
           },
         });
+
         await this.physicalBookService.updatePhysicalBook({
           where: {
             barcode: physicalBook.barcode,

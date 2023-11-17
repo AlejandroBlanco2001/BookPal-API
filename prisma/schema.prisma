@@ -34,10 +34,8 @@ model User {
   password                 String                     @db.VarChar(255)
   academic_program         String?
   is_admin                 Boolean                    @default(false)
-  phone_token              String                     @unique
   is_deleted               Boolean                    @default(false)
   deleted_at               DateTime?
-  notifications            Notification[]
   Loan                     Loan[]
   History                  History[]
   Rating                   Rating[]
@@ -46,8 +44,6 @@ model User {
 
 model Notification {
   id                 Int                @id @default(autoincrement())
-  user               User               @relation(fields: [user_token], references: [phone_token])
-  user_token         String
   title              String
   message            String
   status             NotificationStatus @default(unread)

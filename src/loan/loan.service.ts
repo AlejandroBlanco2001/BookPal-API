@@ -139,11 +139,6 @@ export class LoanService {
         message: 'You loan return date is coming soon!',
         title: 'Book Pal',
         next_schedule_date: notificationDate.toISOString(),
-        user: {
-          connect: {
-            phone_token: user_token,
-          },
-        },
       });
 
       data.due_date = new Date(due_date);

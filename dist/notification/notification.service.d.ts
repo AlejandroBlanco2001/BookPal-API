@@ -5,7 +5,6 @@ export declare class NotificationService {
     constructor(prisma: PrismaService);
     notifications(): Promise<{
         id: number;
-        user_token: string;
         title: string;
         message: string;
         status: import(".prisma/client").$Enums.NotificationStatus;
@@ -13,7 +12,6 @@ export declare class NotificationService {
     }[]>;
     createNotification(data: Prisma.NotificationCreateInput): Promise<{
         id: number;
-        user_token: string;
         title: string;
         message: string;
         status: import(".prisma/client").$Enums.NotificationStatus;

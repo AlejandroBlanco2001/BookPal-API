@@ -21,10 +21,4 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], CreateLoanDto.prototype, "physical_book_barcode", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", String)
-], CreateLoanDto.prototype, "phone_token", void 0);
 //# sourceMappingURL=create-loan-dto.js.map

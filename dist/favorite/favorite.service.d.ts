@@ -12,17 +12,7 @@ export declare class FavoriteService {
         where: Prisma.UserFavoritePhyiscalBookWhereInput;
         take?: number;
     }): Promise<Favorite[] | []>;
-    bookmarkFavorite(data: Prisma.UserFavoritePhyiscalBookCreateInput): Promise<{
-        id: number;
-        user_id: number;
-        physical_book_barcode: string;
-        created_at: Date | null;
-    }>;
-    unbookmarkFavorite(favoriteWhereUniqueInput: Prisma.UserFavoritePhyiscalBookWhereUniqueInput): Promise<{
-        id: number;
-        user_id: number;
-        physical_book_barcode: string;
-        created_at: Date | null;
-    }>;
+    bookmarkFavorite(data: Prisma.UserFavoritePhyiscalBookCreateInput): Promise<Favorite>;
+    unbookmarkFavorite(favoriteWhereUniqueInput: Prisma.UserFavoritePhyiscalBookWhereUniqueInput): Promise<Favorite>;
     mostFavoritePhysicalBooks(): Promise<PhysicalBook[] | []>;
 }

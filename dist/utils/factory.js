@@ -11,7 +11,6 @@ function user() {
             },
             profile_image: 'example.png',
             company_id: userCompany.id,
-            phone_token: 'test_token',
             email: 'test@gmail.com',
             password: 'test_password',
             first_name: 'John',
@@ -153,14 +152,9 @@ function inventory() {
 }
 exports.inventory = inventory;
 function notification() {
-    const userObj = user().basic();
     return {
         basic: () => ({
             id: 1,
-            user: {
-                connect: { id: userObj.id },
-            },
-            user_token: userObj.phone_token,
             title: 'Test Notification',
             message: 'This is a test notification',
             status: 'unread',

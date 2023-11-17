@@ -71,11 +71,25 @@ let FavoriteService = FavoriteService_1 = class FavoriteService {
     }
     async bookmarkFavorite(data) {
         try {
+            const favorite = await this.prisma.userFavoritePhyiscalBook.findMany({
+                where: {
+                    user_id: data?.user?.connect?.id,
+                    physical_book_barcode: data?.physical_book?.connect?.barcode,
+                },
+            });
+            if (favorite) {
+                return await this.unbookmarkFavorite({
+                    id: favorite[0].id,
+                });
+            }
             return await this.prisma.userFavoritePhyiscalBook.create({ data });
         }
         catch (error) {
             this.logger.error(error);
-            throw new genericError_exception_1.GenericError('FavoriteService', error.message, 'bookmarkFavorite');
+            if (error instanceof genericError_exception_1.GenericError) {
+                throw new genericError_exception_1.GenericError('FavoriteService', error.message, 'bookmarkFavorite');
+            }
+            throw error;
         }
     }
     async unbookmarkFavorite(favoriteWhereUniqueInput) {

@@ -81,22 +81,38 @@ export class FavoriteService {
     }
   }
 
-  async bookmarkFavorite(data: Prisma.UserFavoritePhyiscalBookCreateInput) {
+  async bookmarkFavorite(
+    data: Prisma.UserFavoritePhyiscalBookCreateInput,
+  ): Promise<Favorite> {
     try {
+      const favorite = await this.prisma.userFavoritePhyiscalBook.findMany({
+        where: {
+          user_id: data?.user?.connect?.id,
+          physical_book_barcode: data?.physical_book?.connect?.barcode,
+        },
+      });
+      if (favorite) {
+        return await this.unbookmarkFavorite({
+          id: favorite[0].id,
+        });
+      }
       return await this.prisma.userFavoritePhyiscalBook.create({ data });
     } catch (error: any) {
       this.logger.error(error);
-      throw new GenericError(
-        'FavoriteService',
-        error.message,
-        'bookmarkFavorite',
-      );
+      if (error instanceof GenericError) {
+        throw new GenericError(
+          'FavoriteService',
+          error.message,
+          'bookmarkFavorite',
+        );
+      }
+      throw error;
     }
   }
 
   async unbookmarkFavorite(
     favoriteWhereUniqueInput: Prisma.UserFavoritePhyiscalBookWhereUniqueInput,
-  ) {
+  ): Promise<Favorite> {
     try {
       return await this.prisma.userFavoritePhyiscalBook.delete({
         where: favoriteWhereUniqueInput,

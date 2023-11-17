@@ -39,6 +39,7 @@ export class CronjobsService {
   async sendNotifications() {
     this.logger.debug('Sending notifications...');
     try {
+      /*
       const notifications_to_send =
         await this.notificationService.notifications();
       notifications_to_send.forEach(async (notification) => {
@@ -48,6 +49,7 @@ export class CronjobsService {
           token: notification.user_token,
         });
       });
+      */
     } catch (err) {
       this.logger.error(err);
     }

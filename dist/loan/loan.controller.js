@@ -44,7 +44,7 @@ let LoanController = class LoanController {
                 },
             },
         };
-        return await this.loanService.createLoan(req.user.id, createLoanDto.phone_token, data);
+        return await this.loanService.createLoan(req.user.id, data);
     }
     returnLoan(id) {
         return this.loanService.returnLoan(Number(id));

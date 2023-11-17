@@ -6,8 +6,14 @@ import {
   PhysicalBook,
 } from '@prisma/client';
 import { GenericError } from '../exceptions/genericError.exception';
-import { PhysicalBookService } from '../physicalBook/physicalBook.service';
+import {
+  PhyiscalBookWithRatings,
+  PhysicalBookService,
+} from '../physicalBook/physicalBook.service';
 
+export interface FavoriteWithPhysicalBook extends Favorite {
+  physical_book: PhyiscalBookWithRatings | PhyiscalBookWithRatings[] | null;
+}
 @Injectable()
 export class FavoriteService {
   private readonly logger = new Logger(FavoriteService.name);
@@ -19,11 +25,12 @@ export class FavoriteService {
 
   async favorite(
     favoriteWhereUniqueInput: Prisma.UserFavoritePhyiscalBookWhereUniqueInput,
-  ): Promise<Favorite | null> {
+  ): Promise<FavoriteWithPhysicalBook | null> {
     try {
-      const favorite = this.prisma.userFavoritePhyiscalBook.findUnique({
+      const favorite = await this.prisma.userFavoritePhyiscalBook.findUnique({
         where: favoriteWhereUniqueInput,
       });
+
       if (!favorite) {
         throw new GenericError(
           'FavoriteService',
@@ -31,7 +38,15 @@ export class FavoriteService {
           'favorite',
         );
       }
-      return favorite;
+
+      const physicalBook = await this.physicalBookService.physicalBook({
+        barcode: favorite.physical_book_barcode,
+      });
+
+      return {
+        ...favorite,
+        physical_book: physicalBook,
+      };
     } catch (error) {
       this.logger.error(error);
       throw new GenericError('FavoriteService', error.message, 'favorite');
@@ -64,7 +79,7 @@ export class FavoriteService {
   async favorites(params: {
     where: Prisma.UserFavoritePhyiscalBookWhereInput;
     take?: number;
-  }): Promise<Favorite[] | []> {
+  }): Promise<FavoriteWithPhysicalBook[] | []> {
     try {
       const { where, take } = params;
       const favorites = await this.prisma.userFavoritePhyiscalBook.findMany({
@@ -74,7 +89,18 @@ export class FavoriteService {
           created_at: 'desc',
         },
       });
-      return favorites;
+      const favoritesWithBooks = await Promise.all(
+        favorites.map(async (favorite) => {
+          const physicalBook = await this.physicalBookService.physicalBook({
+            barcode: favorite.physical_book_barcode,
+          });
+          return {
+            ...favorite,
+            physical_book: physicalBook,
+          };
+        }),
+      );
+      return favoritesWithBooks;
     } catch (error: any) {
       this.logger.error(error);
       throw new GenericError('FavoriteService', error.message, 'favorites');

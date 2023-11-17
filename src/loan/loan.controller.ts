@@ -51,11 +51,7 @@ export class LoanController {
         },
       },
     };
-    return await this.loanService.createLoan(
-      req.user.id,
-      createLoanDto.phone_token,
-      data as any,
-    );
+    return await this.loanService.createLoan(req.user.id, data as any);
   }
 
   @Put('return/:id')

@@ -9,19 +9,9 @@ export declare class FavoriteController {
         physical_book_barcode: string;
         created_at: Date | null;
     }[]>;
-    getFavoritesFromUser(req: any): Promise<[] | {
-        id: number;
-        user_id: number;
-        physical_book_barcode: string;
-        created_at: Date | null;
-    }[]>;
-    getFavoritesFromBook(barcode: string): Promise<[] | {
-        id: number;
-        user_id: number;
-        physical_book_barcode: string;
-        created_at: Date | null;
-    }[]>;
-    getMostFavorites(): Promise<{
+    getFavoritesFromUser(req: any): Promise<[] | import("./favorite.service").FavoriteWithPhysicalBook[]>;
+    getFavoritesFromBook(barcode: string): Promise<[] | import("./favorite.service").FavoriteWithPhysicalBook[]>;
+    getMostFavorites(): Promise<[] | {
         id: number;
         serial_number: string;
         barcode: string;
@@ -40,7 +30,7 @@ export declare class FavoriteController {
         language: string | null;
         status: import(".prisma/client").$Enums.BookStatus;
         bibliographic_gps: string | null;
-    }[] | []>;
+    }[]>;
     createFavorite(req: any, data: CreateFavoriteDto): Promise<{
         id: number;
         user_id: number;

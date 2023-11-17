@@ -23,13 +23,19 @@ let FavoriteService = FavoriteService_1 = class FavoriteService {
     }
     async favorite(favoriteWhereUniqueInput) {
         try {
-            const favorite = this.prisma.userFavoritePhyiscalBook.findUnique({
+            const favorite = await this.prisma.userFavoritePhyiscalBook.findUnique({
                 where: favoriteWhereUniqueInput,
             });
             if (!favorite) {
                 throw new genericError_exception_1.GenericError('FavoriteService', 'Favorite not found', 'favorite');
             }
-            return favorite;
+            const physicalBook = await this.physicalBookService.physicalBook({
+                barcode: favorite.physical_book_barcode,
+            });
+            return {
+                ...favorite,
+                physical_book: physicalBook,
+            };
         }
         catch (error) {
             this.logger.error(error);
@@ -62,7 +68,16 @@ let FavoriteService = FavoriteService_1 = class FavoriteService {
                     created_at: 'desc',
                 },
             });
-            return favorites;
+            const favoritesWithBooks = await Promise.all(favorites.map(async (favorite) => {
+                const physicalBook = await this.physicalBookService.physicalBook({
+                    barcode: favorite.physical_book_barcode,
+                });
+                return {
+                    ...favorite,
+                    physical_book: physicalBook,
+                };
+            }));
+            return favoritesWithBooks;
         }
         catch (error) {
             this.logger.error(error);

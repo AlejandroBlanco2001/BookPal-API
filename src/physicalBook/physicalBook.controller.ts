@@ -37,7 +37,7 @@ export class PhyiscalBookController {
     return this.physicalBookService.physicalBooks({
       where: {
         title: {
-          contains: title,
+          contains: title.replace(/["']/g, ''),
           mode: 'insensitive',
         },
       },

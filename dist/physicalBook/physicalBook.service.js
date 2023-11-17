@@ -50,14 +50,15 @@ let PhysicalBookService = class PhysicalBookService {
             if (!physicalBook)
                 throw new physicalBookNotFound_exception_1.PhysicalBookNotFound(physicalBookWhereUniqueInput);
             const average_rating = await this.ratingService.getBooksAverageRating(physicalBook.barcode);
+            const ratings = await this.ratingService.ratings({
+                where: {
+                    physical_book_barcode: physicalBook.barcode,
+                },
+            });
             return {
                 ...physicalBook,
                 rating: average_rating._avg.rating || 0,
-                ratings: await this.ratingService.ratings({
-                    where: {
-                        physical_book_barcode: physicalBook.barcode,
-                    },
-                }),
+                ratings: ratings,
             };
         }
         catch (error) {
@@ -65,36 +66,48 @@ let PhysicalBookService = class PhysicalBookService {
         }
     }
     async physicalBooks(params) {
-        let { skip, take } = params;
-        const { where, orderBy } = params;
-        skip = Number(skip) || 0;
-        take = Number(take) || 10;
+        const { skip = 0, take = 10, where, orderBy } = params;
+        const numericSkip = Number(skip);
+        const numericTake = Number(take);
         try {
-            return this.prisma.physicalBook.findMany({
+            const books = await this.prisma.physicalBook.findMany({
                 where,
-                skip,
-                take,
+                skip: numericSkip,
+                take: numericTake,
                 orderBy,
             });
+            const books_with_rating = await Promise.all(books.map(async (book) => {
+                const average_rating = await this.ratingService.getBooksAverageRating(book.barcode);
+                const ratings = await this.ratingService.ratings({
+                    where: {
+                        physical_book_barcode: book.barcode,
+                    },
+                });
+                return {
+                    ...book,
+                    rating: average_rating._avg.rating || 0,
+                    ratings: ratings,
+                };
+            }));
+            return books_with_rating;
         }
         catch (error) {
             throw new genericError_exception_1.GenericError('PhysicalBookService', error.message, 'physicalBooks');
         }
     }
-    async getTopRatedBooks(items = 10) {
+    async getTopRatedBooks(items) {
         try {
             const groupedData = await this.prisma.rating.groupBy({
                 by: ['physical_book_barcode'],
-                _count: {
-                    physical_book_barcode: true,
-                    _all: true,
+                _avg: {
+                    rating: true,
                 },
                 orderBy: {
-                    _count: {
-                        physical_book_barcode: 'desc',
+                    _avg: {
+                        rating: 'desc',
                     },
                 },
-                take: items,
+                take: items || 10,
             });
             const barcodes = groupedData.map((rating) => rating.physical_book_barcode);
             const booksWithRatings = await Promise.all(barcodes.map(async (barcode) => {

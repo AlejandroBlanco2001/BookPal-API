@@ -1,6 +1,9 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { PhysicalBookService } from './physicalBook.service';
-import { PhysicalBook as PhysicalBookModel, Prisma } from '@prisma/client';
+import {
+  PhyiscalBookWithRatings,
+  PhysicalBookService,
+} from './physicalBook.service';
+import { Prisma } from '@prisma/client';
 import { Public } from '../utils/custom_decorators';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 @ApiTags('physical-book')
@@ -13,7 +16,7 @@ export class PhyiscalBookController {
   @ApiOperation({ summary: 'Get a physical book by barcode' })
   getPhysicalBookByBarcode(
     @Param('barcode') barcode: string,
-  ): Promise<PhysicalBookModel | null> {
+  ): Promise<PhyiscalBookWithRatings | null> {
     return this.physicalBookService.physicalBook({ barcode: barcode });
   }
 
@@ -22,7 +25,7 @@ export class PhyiscalBookController {
   @ApiOperation({ summary: 'Get a physical book by ID' })
   getPhysicalBookByID(
     @Param('id') id: string,
-  ): Promise<PhysicalBookModel | null> {
+  ): Promise<PhyiscalBookWithRatings | null> {
     return this.physicalBookService.physicalBook({ id: Number(id) });
   }
 
@@ -31,14 +34,14 @@ export class PhyiscalBookController {
   @ApiOperation({ summary: 'Get all physical books' })
   getPhysicalBooks(
     @Query() query: Prisma.PhysicalBookFindManyArgs,
-  ): Promise<PhysicalBookModel[]> {
+  ): Promise<PhyiscalBookWithRatings[]> {
     return this.physicalBookService.physicalBooks(query);
   }
 
   @Public()
   @Get('/recent')
   @ApiOperation({ summary: 'Get all physical books' })
-  getRecentPhysicalBooks(): Promise<PhysicalBookModel[]> {
+  getRecentPhysicalBooks(): Promise<PhyiscalBookWithRatings[]> {
     return this.physicalBookService.physicalBooks({
       orderBy: {
         creation_date: 'desc',
@@ -50,7 +53,9 @@ export class PhyiscalBookController {
   @Public()
   @Get('/top-rated-books')
   @ApiOperation({ summary: 'Get top rated books' })
-  async getTopRatedBooks(@Query('items') items: number): Promise<any[]> {
+  async getTopRatedBooks(
+    @Query('items') items?: number,
+  ): Promise<PhyiscalBookWithRatings[]> {
     return await this.physicalBookService.getTopRatedBooks(Number(items));
   }
 }

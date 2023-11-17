@@ -11,7 +11,7 @@ export declare class FavoriteController {
     }[]>;
     getFavoritesFromUser(req: any): Promise<[] | import("./favorite.service").FavoriteWithPhysicalBook[]>;
     getFavoritesFromBook(barcode: string): Promise<[] | import("./favorite.service").FavoriteWithPhysicalBook[]>;
-    getMostFavorites(): Promise<[] | {
+    getMostFavorites(): Promise<{
         id: number;
         serial_number: string;
         barcode: string;
@@ -30,7 +30,7 @@ export declare class FavoriteController {
         language: string | null;
         status: import(".prisma/client").$Enums.BookStatus;
         bibliographic_gps: string | null;
-    }[]>;
+    }[] | []>;
     createFavorite(req: any, data: CreateFavoriteDto): Promise<{
         id: number;
         user_id: number;

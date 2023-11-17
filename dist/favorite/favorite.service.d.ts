@@ -10,7 +10,7 @@ export declare class FavoriteService {
     private readonly logger;
     constructor(prisma: PrismaService, physicalBookService: PhysicalBookService);
     favorite(favoriteWhereUniqueInput: Prisma.UserFavoritePhyiscalBookWhereUniqueInput): Promise<FavoriteWithPhysicalBook | null>;
-    getAllFavorites(numberItems: number, filter?: Prisma.UserFavoritePhyiscalBookWhereInput): Promise<Favorite[]>;
+    getAllFavorites(numberItems?: number, filter?: Prisma.UserFavoritePhyiscalBookWhereInput): Promise<Favorite[]>;
     favorites(params: {
         where: Prisma.UserFavoritePhyiscalBookWhereInput;
         take?: number;

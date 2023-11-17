@@ -54,13 +54,13 @@ export class FavoriteService {
   }
 
   async getAllFavorites(
-    numberItems: number,
+    numberItems?: number,
     filter: Prisma.UserFavoritePhyiscalBookWhereInput = {},
   ): Promise<Favorite[]> {
     try {
       const favorites = await this.prisma.userFavoritePhyiscalBook.findMany({
         where: filter,
-        take: numberItems,
+        take: numberItems || 10,
         orderBy: {
           created_at: 'desc',
         },

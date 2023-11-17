@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { PhysicalBook, Prisma } from '@prisma/client';
+import { PhysicalBook, Prisma, Rating } from '@prisma/client';
 import { PhysicalBookNotFound } from '../exceptions/physicalBookNotFound.exception';
 import { GenericError } from '../exceptions/genericError.exception';
 import { RatingService } from '../rating/rating.service';
 
 export interface PhyiscalBookWithRatings extends PhysicalBook {
   rating: number;
+  ratings?: Rating[];
 }
+
 @Injectable()
 export class PhysicalBookService {
   constructor(
@@ -57,14 +59,24 @@ export class PhysicalBookService {
       const physicalBook = await this.prisma.physicalBook.findUnique({
         where: physicalBookWhereUniqueInput,
       });
+
       if (!physicalBook)
         throw new PhysicalBookNotFound(physicalBookWhereUniqueInput);
+
       const average_rating = await this.ratingService.getBooksAverageRating(
         physicalBook.barcode,
       );
+
+      const ratings = await this.ratingService.ratings({
+        where: {
+          physical_book_barcode: physicalBook.barcode,
+        },
+      });
+
       return {
         ...physicalBook,
         rating: average_rating._avg.rating || 0,
+        ratings: ratings,
       };
     } catch (error) {
       throw new PhysicalBookNotFound(physicalBookWhereUniqueInput);
@@ -73,18 +85,40 @@ export class PhysicalBookService {
 
   async physicalBooks(
     params: Prisma.PhysicalBookFindManyArgs,
-  ): Promise<PhysicalBook[]> {
-    let { skip, take } = params;
-    const { where, orderBy } = params;
-    skip = Number(skip) || 0;
-    take = Number(take) || 10;
+  ): Promise<PhyiscalBookWithRatings[]> {
+    const { skip = 0, take = 10, where, orderBy } = params;
+    const numericSkip = Number(skip);
+    const numericTake = Number(take);
+
     try {
-      return this.prisma.physicalBook.findMany({
+      const books = await this.prisma.physicalBook.findMany({
         where,
-        skip,
-        take,
+        skip: numericSkip,
+        take: numericTake,
         orderBy,
       });
+
+      const books_with_rating = await Promise.all(
+        books.map(async (book) => {
+          const average_rating = await this.ratingService.getBooksAverageRating(
+            book.barcode,
+          );
+
+          const ratings = await this.ratingService.ratings({
+            where: {
+              physical_book_barcode: book.barcode,
+            },
+          });
+
+          return {
+            ...book,
+            rating: average_rating._avg.rating || 0,
+            ratings: ratings,
+          };
+        }),
+      );
+
+      return books_with_rating;
     } catch (error: any) {
       throw new GenericError(
         'PhysicalBookService',
@@ -94,22 +128,19 @@ export class PhysicalBookService {
     }
   }
 
-  async getTopRatedBooks(
-    items: number = 10,
-  ): Promise<PhyiscalBookWithRatings[]> {
+  async getTopRatedBooks(items?: number): Promise<PhyiscalBookWithRatings[]> {
     try {
       const groupedData: any = await this.prisma.rating.groupBy({
         by: ['physical_book_barcode'],
-        _count: {
-          physical_book_barcode: true,
-          _all: true,
+        _avg: {
+          rating: true,
         },
         orderBy: {
-          _count: {
-            physical_book_barcode: 'desc',
+          _avg: {
+            rating: 'desc',
           },
         },
-        take: items,
+        take: items || 10,
       });
 
       const barcodes = groupedData.map(

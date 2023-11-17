@@ -46,7 +46,7 @@ let FavoriteService = FavoriteService_1 = class FavoriteService {
         try {
             const favorites = await this.prisma.userFavoritePhyiscalBook.findMany({
                 where: filter,
-                take: numberItems,
+                take: numberItems || 10,
                 orderBy: {
                     created_at: 'desc',
                 },

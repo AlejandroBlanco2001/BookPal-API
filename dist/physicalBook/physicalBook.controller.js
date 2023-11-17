@@ -69,7 +69,7 @@ __decorate([
     (0, custom_decorators_1.Public)(),
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all physical books' }),
-    openapi.ApiResponse({ status: 200 }),
+    openapi.ApiResponse({ status: 200, type: [Object] }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -79,7 +79,7 @@ __decorate([
     (0, custom_decorators_1.Public)(),
     (0, common_1.Get)('/recent'),
     (0, swagger_1.ApiOperation)({ summary: 'Get all physical books' }),
-    openapi.ApiResponse({ status: 200 }),
+    openapi.ApiResponse({ status: 200, type: [Object] }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

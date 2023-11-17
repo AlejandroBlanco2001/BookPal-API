@@ -27,6 +27,7 @@ const inventory_service_1 = require("../inventory/inventory.service");
 const physicalBookNotAvailable_exception_1 = require("../exceptions/physicalBookNotAvailable.exception");
 const maximumLoansPerCollection_exception_1 = require("../exceptions/maximumLoansPerCollection.exception");
 const notification_service_1 = require("../notification/notification.service");
+const loanAlreadyReturned_exception_1 = require("../exceptions/loanAlreadyReturned.exception");
 let LoanService = class LoanService {
     constructor(fineService, physicalBookService, referenceService, inventoryService, notificationService, prisma) {
         this.fineService = fineService;
@@ -144,6 +145,9 @@ let LoanService = class LoanService {
     async returnLoan(id) {
         try {
             const loan = await this.loan({ id });
+            if (loan && loan.status === client_2.LoanStatus.returned) {
+                throw new loanAlreadyReturned_exception_1.LoanAlreadyReturned();
+            }
             const fine = await this.fineService.getFine({
                 id: loan.id,
             });
@@ -181,7 +185,10 @@ let LoanService = class LoanService {
             });
         }
         catch (error) {
-            throw new genericError_exception_1.GenericError('LoanService', error.message, 'returnLoan');
+            if (error instanceof genericError_exception_1.GenericError) {
+                throw new genericError_exception_1.GenericError('LoanService', error.message, 'returnLoan');
+            }
+            throw error;
         }
     }
     async updateLoanStatus() {

@@ -12,6 +12,7 @@ import { InventoryService } from '../inventory/inventory.service';
 import { PhysicalBookNotAvailable } from '../exceptions/physicalBookNotAvailable.exception';
 import { MaximumLoansPerCollection } from '../exceptions/maximumLoansPerCollection.exception';
 import { NotificationService } from '../notification/notification.service';
+import { LoanAlreadyReturned } from '../exceptions/loanAlreadyReturned.exception';
 
 @Injectable()
 export class LoanService {
@@ -168,6 +169,9 @@ export class LoanService {
   async returnLoan(id: number): Promise<Loan> {
     try {
       const loan = await this.loan({ id });
+      if (loan && loan.status === LoanStatus.returned) {
+        throw new LoanAlreadyReturned();
+      }
       const fine = await this.fineService.getFine({
         id: loan!.id,
       });
@@ -205,7 +209,10 @@ export class LoanService {
         data: { status: LoanStatus.returned },
       });
     } catch (error: any) {
-      throw new GenericError('LoanService', error.message, 'returnLoan');
+      if (error instanceof GenericError) {
+        throw new GenericError('LoanService', error.message, 'returnLoan');
+      }
+      throw error;
     }
   }
 

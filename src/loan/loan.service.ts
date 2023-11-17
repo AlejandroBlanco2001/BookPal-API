@@ -284,6 +284,9 @@ export class LoanService {
     try {
       const loans = await this.prisma.loan.findMany({
         where: data,
+        orderBy: {
+          start_date: 'desc',
+        },
       });
       const loans_book = await Promise.all(
         loans.map(async (loan) => {

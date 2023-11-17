@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Fine, Prisma } from '@prisma/client';
 import { LoanService } from '../loan/loan.service';
 import { PrismaService } from '../prisma/prisma.service';
 export declare class FineService {
@@ -13,14 +13,7 @@ export declare class FineService {
         pay_date: Date | null;
         last_update_date: Date;
     }>;
-    getFine(data: Prisma.FineWhereUniqueInput): Promise<{
-        id: number;
-        loan_id: number;
-        amount: number;
-        status: import(".prisma/client").$Enums.FineStatus;
-        pay_date: Date | null;
-        last_update_date: Date;
-    }>;
+    getFine(data: Prisma.FineWhereUniqueInput): Promise<Fine | null>;
     getFinesByUserID(data: Prisma.FineWhereInput, user_id: number): Promise<{
         id: number;
         loan_id: number;

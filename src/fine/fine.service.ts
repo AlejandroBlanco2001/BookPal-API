@@ -4,7 +4,6 @@ import { LoanService } from '../loan/loan.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ONE_DAY_IN_MILLISECONDS } from '../utils/constant';
 import { GenericError } from '../exceptions/genericError.exception';
-import { FineNotFound } from '../exceptions/fineNotFound.exception';
 @Injectable()
 export class FineService {
   constructor(
@@ -23,7 +22,7 @@ export class FineService {
     }
   }
 
-  async getFine(data: Prisma.FineWhereUniqueInput) {
+  async getFine(data: Prisma.FineWhereUniqueInput): Promise<Fine | null> {
     let fine;
     try {
       fine = await this.prisma.fine.findUnique({ where: data });
@@ -31,7 +30,7 @@ export class FineService {
       throw new GenericError('FineService', error.message, 'getFine');
     }
     if (!fine) {
-      throw new FineNotFound();
+      return null;
     }
     return fine;
   }

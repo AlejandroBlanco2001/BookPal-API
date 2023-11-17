@@ -129,12 +129,6 @@ let LoanService = class LoanService {
     async updateLoan(params) {
         const { where, data } = params;
         try {
-            const is_fine_payed = await this.fineService.getFine({
-                id: where.id,
-            });
-            if (is_fine_payed.status === client_1.FineStatus.unpaid) {
-                throw new userUnpaidFines_exception_1.UserUnpaidFines();
-            }
             return await this.prisma.loan.update({
                 data,
                 where,
@@ -150,6 +144,12 @@ let LoanService = class LoanService {
     async returnLoan(id) {
         try {
             const loan = await this.loan({ id });
+            const fine = await this.fineService.getFine({
+                id: loan.id,
+            });
+            if (fine && fine?.status === client_1.FineStatus.unpaid) {
+                throw new userUnpaidFines_exception_1.UserUnpaidFines();
+            }
             const physicalBook = await this.physicalBookService.physicalBook({
                 barcode: loan.physical_book_barcode,
             });
@@ -157,9 +157,23 @@ let LoanService = class LoanService {
                 physical_book_serial_number: physicalBook.serial_number,
             });
             if (inventory && physicalBook) {
-                inventory.quantity = inventory.quantity + 1;
-                inventory.last_update = new Date();
-                physicalBook.status = client_1.BookStatus.available;
+                await this.inventoryService.updateInventory({
+                    where: {
+                        id: inventory.id,
+                    },
+                    data: {
+                        quantity: inventory.quantity + 1,
+                        last_update: new Date(),
+                    },
+                });
+                await this.physicalBookService.updatePhysicalBook({
+                    where: {
+                        barcode: physicalBook.barcode,
+                    },
+                    data: {
+                        status: client_1.BookStatus.available,
+                    },
+                });
             }
             return await this.updateLoan({
                 where: { id },

@@ -19,7 +19,6 @@ const loan_service_1 = require("../loan/loan.service");
 const prisma_service_1 = require("../prisma/prisma.service");
 const constant_1 = require("../utils/constant");
 const genericError_exception_1 = require("../exceptions/genericError.exception");
-const fineNotFound_exception_1 = require("../exceptions/fineNotFound.exception");
 let FineService = class FineService {
     constructor(loanService, prisma) {
         this.loanService = loanService;
@@ -44,7 +43,7 @@ let FineService = class FineService {
             throw new genericError_exception_1.GenericError('FineService', error.message, 'getFine');
         }
         if (!fine) {
-            throw new fineNotFound_exception_1.FineNotFound();
+            return null;
         }
         return fine;
     }

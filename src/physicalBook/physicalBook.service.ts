@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { PhysicalBook, Prisma, Rating } from '@prisma/client';
+import { PhysicalBook, Prisma } from '@prisma/client';
 import { PhysicalBookNotFound } from '../exceptions/physicalBookNotFound.exception';
 import { GenericError } from '../exceptions/genericError.exception';
 import { RatingService } from '../rating/rating.service';
 
 export interface PhyiscalBookWithRatings extends PhysicalBook {
   rating: number;
-  ratings?: Rating[];
 }
 @Injectable()
 export class PhysicalBookService {
@@ -66,11 +65,6 @@ export class PhysicalBookService {
       return {
         ...physicalBook,
         rating: average_rating._avg.rating || 0,
-        ratings: await this.ratingService.ratings({
-          where: {
-            physical_book_barcode: physicalBook.barcode,
-          },
-        }),
       };
     } catch (error) {
       throw new PhysicalBookNotFound(physicalBookWhereUniqueInput);

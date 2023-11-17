@@ -2,6 +2,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Inventory, Prisma } from '@prisma/client';
 export declare class InventoryService {
     private prisma;
+    private readonly logger;
     constructor(prisma: PrismaService);
     inventory(): Promise<Inventory[]>;
     inventoryByPhyiscalBookId(physicalBookId: string): Promise<Inventory[]>;

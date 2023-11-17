@@ -16,7 +16,6 @@ exports.PhyiscalBookController = void 0;
 const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const physicalBook_service_1 = require("./physicalBook.service");
-const client_1 = require("@prisma/client");
 const custom_decorators_1 = require("../utils/custom_decorators");
 const swagger_1 = require("@nestjs/swagger");
 let PhyiscalBookController = class PhyiscalBookController {
@@ -29,8 +28,15 @@ let PhyiscalBookController = class PhyiscalBookController {
     getPhysicalBookByID(id) {
         return this.physicalBookService.physicalBook({ id: Number(id) });
     }
-    getPhysicalBooks(query) {
-        return this.physicalBookService.physicalBooks(query);
+    getPhysicalBooks(title) {
+        return this.physicalBookService.physicalBooks({
+            where: {
+                title: {
+                    contains: title,
+                    mode: 'insensitive',
+                },
+            },
+        });
     }
     getRecentPhysicalBooks() {
         return this.physicalBookService.physicalBooks({
@@ -70,9 +76,9 @@ __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all physical books' }),
     openapi.ApiResponse({ status: 200, type: [Object] }),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, common_1.Query)('title')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PhyiscalBookController.prototype, "getPhysicalBooks", null);
 __decorate([

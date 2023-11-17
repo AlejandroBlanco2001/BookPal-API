@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { GenericError } from '../exceptions/genericError.exception';
 import { PrismaService } from '../prisma/prisma.service';
 import { Inventory, Prisma } from '@prisma/client';
 
 @Injectable()
 export class InventoryService {
+  private readonly logger = new Logger(InventoryService.name);
   constructor(private prisma: PrismaService) {}
 
   async inventory(): Promise<Inventory[]> {
@@ -25,6 +26,7 @@ export class InventoryService {
         },
       });
     } catch (error: any) {
+      this.logger.error(error);
       throw new GenericError(
         'InventoryService',
         error.message,

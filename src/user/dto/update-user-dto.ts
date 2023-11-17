@@ -4,14 +4,12 @@ import {
   IsOptional,
   IsString,
   IsStrongPassword,
-  IsUrl,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserDTO {
   @ApiProperty()
   @IsString()
-  @IsUrl()
   @IsNotEmpty()
   @IsOptional()
   profile_image?: string;

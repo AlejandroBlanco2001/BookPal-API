@@ -3,7 +3,6 @@ import {
   PhyiscalBookWithRatings,
   PhysicalBookService,
 } from './physicalBook.service';
-import { Prisma } from '@prisma/client';
 import { Public } from '../utils/custom_decorators';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 @ApiTags('physical-book')
@@ -33,9 +32,16 @@ export class PhyiscalBookController {
   @Get()
   @ApiOperation({ summary: 'Get all physical books' })
   getPhysicalBooks(
-    @Query() query: Prisma.PhysicalBookFindManyArgs,
+    @Query('title') title: string,
   ): Promise<PhyiscalBookWithRatings[]> {
-    return this.physicalBookService.physicalBooks(query);
+    return this.physicalBookService.physicalBooks({
+      where: {
+        title: {
+          contains: title,
+          mode: 'insensitive',
+        },
+      },
+    });
   }
 
   @Public()

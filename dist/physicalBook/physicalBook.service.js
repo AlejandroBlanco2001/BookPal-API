@@ -69,7 +69,7 @@ let PhysicalBookService = PhysicalBookService_1 = class PhysicalBookService {
                 ...physicalBook,
                 rating: average_rating._avg.rating || 0,
                 ratings: ratings,
-                available: inventoryCount,
+                available: inventoryCount > 0 ? inventoryCount : 0,
             };
         }
         catch (error) {
@@ -104,7 +104,7 @@ let PhysicalBookService = PhysicalBookService_1 = class PhysicalBookService {
                     ...book,
                     rating: average_rating._avg.rating || 0,
                     ratings: ratings,
-                    available: inventoryCount,
+                    available: inventoryCount > 0 ? inventoryCount : 0,
                 };
             }));
             return books_with_rating;

@@ -100,7 +100,7 @@ export class PhysicalBookService {
         ...physicalBook,
         rating: average_rating._avg.rating || 0,
         ratings: ratings,
-        available: inventoryCount,
+        available: inventoryCount > 0 ? inventoryCount : 0,
       };
     } catch (error) {
       throw new PhysicalBookNotFound(physicalBookWhereUniqueInput);
@@ -157,7 +157,7 @@ export class PhysicalBookService {
             ...book,
             rating: average_rating._avg.rating || 0,
             ratings: ratings,
-            available: inventoryCount,
+            available: inventoryCount > 0 ? inventoryCount : 0,
           };
         }),
       );

@@ -8,14 +8,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var InventoryService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InventoryService = void 0;
 const common_1 = require("@nestjs/common");
 const genericError_exception_1 = require("../exceptions/genericError.exception");
 const prisma_service_1 = require("../prisma/prisma.service");
-let InventoryService = class InventoryService {
+let InventoryService = InventoryService_1 = class InventoryService {
     constructor(prisma) {
         this.prisma = prisma;
+        this.logger = new common_1.Logger(InventoryService_1.name);
     }
     async inventory() {
         try {
@@ -34,6 +36,7 @@ let InventoryService = class InventoryService {
             });
         }
         catch (error) {
+            this.logger.error(error);
             throw new genericError_exception_1.GenericError('InventoryService', error.message, 'inventoryByPhyiscalBookId');
         }
     }
@@ -83,7 +86,7 @@ let InventoryService = class InventoryService {
     }
 };
 exports.InventoryService = InventoryService;
-exports.InventoryService = InventoryService = __decorate([
+exports.InventoryService = InventoryService = InventoryService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], InventoryService);

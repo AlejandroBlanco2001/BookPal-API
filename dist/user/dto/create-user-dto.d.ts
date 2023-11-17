@@ -10,5 +10,4 @@ export declare class CreateUserDTO {
     password: string;
     academic_program: string;
     is_admin: boolean;
-    phone_token: string;
 }

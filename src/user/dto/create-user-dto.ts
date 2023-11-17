@@ -64,8 +64,4 @@ export class CreateUserDTO {
   @ApiProperty()
   @IsBoolean()
   is_admin: boolean;
-
-  @ApiProperty()
-  @IsString()
-  phone_token: string;
 }

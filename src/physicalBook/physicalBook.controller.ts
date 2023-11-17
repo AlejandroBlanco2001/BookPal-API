@@ -3,7 +3,6 @@ import { PhysicalBookService } from './physicalBook.service';
 import { PhysicalBook as PhysicalBookModel, Prisma } from '@prisma/client';
 import { Public } from '../utils/custom_decorators';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-
 @ApiTags('physical-book')
 @Controller('physical-book')
 export class PhyiscalBookController {
@@ -46,5 +45,12 @@ export class PhyiscalBookController {
       },
       take: 10,
     });
+  }
+
+  @Public()
+  @Get('/top-rated-books')
+  @ApiOperation({ summary: 'Get top rated books' })
+  async getTopRatedBooks(@Query('items') items: number): Promise<any[]> {
+    return await this.physicalBookService.getTopRatedBooks(items);
   }
 }

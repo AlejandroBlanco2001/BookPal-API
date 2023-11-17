@@ -7,4 +7,5 @@ export declare class PhyiscalBookController {
     getPhysicalBookByID(id: string): Promise<PhysicalBookModel | null>;
     getPhysicalBooks(query: Prisma.PhysicalBookFindManyArgs): Promise<PhysicalBookModel[]>;
     getRecentPhysicalBooks(): Promise<PhysicalBookModel[]>;
+    getTopRatedBooks(items: number): Promise<any[]>;
 }

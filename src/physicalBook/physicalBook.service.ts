@@ -5,7 +5,7 @@ import { PhysicalBookNotFound } from '../exceptions/physicalBookNotFound.excepti
 import { GenericError } from '../exceptions/genericError.exception';
 import { RatingService } from '../rating/rating.service';
 
-interface PhyiscalBookWithRatings extends PhysicalBook {
+export interface PhyiscalBookWithRatings extends PhysicalBook {
   rating: number;
   ratings?: Rating[];
 }
@@ -100,7 +100,7 @@ export class PhysicalBookService {
     }
   }
 
-  async getTopRatedBooks(items: number = 10) {
+  async getTopRatedBooks(items: number = 10): Promise<any> {
     try {
       const groupedData: any =
         await this.prisma.userFavoritePhyiscalBook.groupBy({

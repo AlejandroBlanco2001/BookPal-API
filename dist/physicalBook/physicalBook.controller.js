@@ -40,6 +40,9 @@ let PhyiscalBookController = class PhyiscalBookController {
             take: 10,
         });
     }
+    async getTopRatedBooks(items) {
+        return await this.physicalBookService.getTopRatedBooks(items);
+    }
 };
 exports.PhyiscalBookController = PhyiscalBookController;
 __decorate([
@@ -81,6 +84,16 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PhyiscalBookController.prototype, "getRecentPhysicalBooks", null);
+__decorate([
+    (0, custom_decorators_1.Public)(),
+    (0, common_1.Get)('/top-rated-books'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get top rated books' }),
+    openapi.ApiResponse({ status: 200, type: [Object] }),
+    __param(0, (0, common_1.Query)('items')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], PhyiscalBookController.prototype, "getTopRatedBooks", null);
 exports.PhyiscalBookController = PhyiscalBookController = __decorate([
     (0, swagger_1.ApiTags)('physical-book'),
     (0, common_1.Controller)('physical-book'),

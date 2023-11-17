@@ -12,13 +12,14 @@ const physicalBook_service_1 = require("./physicalBook.service");
 const physicalBook_controller_1 = require("./physicalBook.controller");
 const prisma_module_1 = require("../prisma/prisma.module");
 const rating_module_1 = require("../rating/rating.module");
+const inventory_service_1 = require("../inventory/inventory.service");
 let PhysicalBookModule = class PhysicalBookModule {
 };
 exports.PhysicalBookModule = PhysicalBookModule;
 exports.PhysicalBookModule = PhysicalBookModule = __decorate([
     (0, common_1.Module)({
         controllers: [physicalBook_controller_1.PhyiscalBookController],
-        providers: [physicalBook_service_1.PhysicalBookService],
+        providers: [physicalBook_service_1.PhysicalBookService, inventory_service_1.InventoryService],
         imports: [prisma_module_1.PrismaModule, rating_module_1.RatingModule],
         exports: [physicalBook_service_1.PhysicalBookService],
     })

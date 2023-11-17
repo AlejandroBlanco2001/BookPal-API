@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var PhysicalBookService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PhysicalBookService = void 0;
 const common_1 = require("@nestjs/common");
@@ -15,10 +16,13 @@ const prisma_service_1 = require("../prisma/prisma.service");
 const physicalBookNotFound_exception_1 = require("../exceptions/physicalBookNotFound.exception");
 const genericError_exception_1 = require("../exceptions/genericError.exception");
 const rating_service_1 = require("../rating/rating.service");
-let PhysicalBookService = class PhysicalBookService {
-    constructor(prisma, ratingService) {
+const inventory_service_1 = require("../inventory/inventory.service");
+let PhysicalBookService = PhysicalBookService_1 = class PhysicalBookService {
+    constructor(prisma, ratingService, invetoryService) {
         this.prisma = prisma;
         this.ratingService = ratingService;
+        this.invetoryService = invetoryService;
+        this.logger = new common_1.Logger(PhysicalBookService_1.name);
     }
     async createPhysicalBook(data) {
         try {
@@ -55,10 +59,17 @@ let PhysicalBookService = class PhysicalBookService {
                     physical_book_barcode: physicalBook.barcode,
                 },
             });
+            const inventory = await this.invetoryService.inventoryByPhyiscalBookId(physicalBook.serial_number);
+            if (inventory.length === 0) {
+                this.logger.error(`Inventory not found with serial number ${physicalBook.serial_number}`);
+                throw new genericError_exception_1.GenericError('PhysicalBookService', 'Inventory not found', 'physicalBook');
+            }
+            const inventoryCount = inventory[0].quantity - inventory[0].minimum_quantity;
             return {
                 ...physicalBook,
                 rating: average_rating._avg.rating || 0,
                 ratings: ratings,
+                available: inventoryCount,
             };
         }
         catch (error) {
@@ -83,10 +94,17 @@ let PhysicalBookService = class PhysicalBookService {
                         physical_book_barcode: book.barcode,
                     },
                 });
+                const inventory = await this.invetoryService.inventoryByPhyiscalBookId(book.serial_number);
+                if (inventory.length === 0) {
+                    this.logger.error(`Inventory not found with serial number ${book.serial_number}`);
+                    throw new genericError_exception_1.GenericError('PhysicalBookService', 'Inventory not found', 'physicalBook');
+                }
+                const inventoryCount = inventory[0].quantity - inventory[0].minimum_quantity;
                 return {
                     ...book,
                     rating: average_rating._avg.rating || 0,
                     ratings: ratings,
+                    available: inventoryCount,
                 };
             }));
             return books_with_rating;
@@ -111,14 +129,9 @@ let PhysicalBookService = class PhysicalBookService {
             });
             const barcodes = groupedData.map((rating) => rating.physical_book_barcode);
             const booksWithRatings = await Promise.all(barcodes.map(async (barcode) => {
-                const rating = await this.ratingService.getBooksAverageRating(barcode);
-                const physicalBook = await this.physicalBook({ barcode: barcode });
-                return {
-                    ...physicalBook,
-                    rating: rating._avg.rating || 0,
-                };
+                return await this.physicalBook({ barcode: barcode });
             }));
-            const sortedBooks = booksWithRatings.sort((a, b) => b.rating - a.rating);
+            const sortedBooks = booksWithRatings.sort((a, b) => b?.rating - a?.rating);
             return sortedBooks;
         }
         catch (error) {
@@ -127,9 +140,10 @@ let PhysicalBookService = class PhysicalBookService {
     }
 };
 exports.PhysicalBookService = PhysicalBookService;
-exports.PhysicalBookService = PhysicalBookService = __decorate([
+exports.PhysicalBookService = PhysicalBookService = PhysicalBookService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        rating_service_1.RatingService])
+        rating_service_1.RatingService,
+        inventory_service_1.InventoryService])
 ], PhysicalBookService);
 //# sourceMappingURL=physicalBook.service.js.map

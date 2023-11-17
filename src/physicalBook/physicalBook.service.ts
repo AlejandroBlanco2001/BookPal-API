@@ -1,20 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PhysicalBook, Prisma, Rating } from '@prisma/client';
 import { PhysicalBookNotFound } from '../exceptions/physicalBookNotFound.exception';
 import { GenericError } from '../exceptions/genericError.exception';
 import { RatingService } from '../rating/rating.service';
+import { InventoryService } from '../inventory/inventory.service';
 
 export interface PhyiscalBookWithRatings extends PhysicalBook {
   rating: number;
   ratings?: Rating[];
+  available?: number;
 }
 
 @Injectable()
 export class PhysicalBookService {
+  private readonly logger = new Logger(PhysicalBookService.name);
+
   constructor(
     private prisma: PrismaService,
     private ratingService: RatingService,
+    private invetoryService: InventoryService,
   ) {}
 
   async createPhysicalBook(
@@ -54,7 +59,7 @@ export class PhysicalBookService {
 
   async physicalBook(
     physicalBookWhereUniqueInput: Prisma.PhysicalBookWhereUniqueInput,
-  ): Promise<PhyiscalBookWithRatings | null> {
+  ): Promise<PhyiscalBookWithRatings> {
     try {
       const physicalBook = await this.prisma.physicalBook.findUnique({
         where: physicalBookWhereUniqueInput,
@@ -73,10 +78,29 @@ export class PhysicalBookService {
         },
       });
 
+      const inventory = await this.invetoryService.inventoryByPhyiscalBookId(
+        physicalBook.serial_number,
+      );
+
+      if (inventory.length === 0) {
+        this.logger.error(
+          `Inventory not found with serial number ${physicalBook.serial_number}`,
+        );
+        throw new GenericError(
+          'PhysicalBookService',
+          'Inventory not found',
+          'physicalBook',
+        );
+      }
+
+      const inventoryCount =
+        inventory[0].quantity - inventory[0].minimum_quantity;
+
       return {
         ...physicalBook,
         rating: average_rating._avg.rating || 0,
         ratings: ratings,
+        available: inventoryCount,
       };
     } catch (error) {
       throw new PhysicalBookNotFound(physicalBookWhereUniqueInput);
@@ -110,10 +134,30 @@ export class PhysicalBookService {
             },
           });
 
+          const inventory =
+            await this.invetoryService.inventoryByPhyiscalBookId(
+              book.serial_number,
+            );
+
+          if (inventory.length === 0) {
+            this.logger.error(
+              `Inventory not found with serial number ${book.serial_number}`,
+            );
+            throw new GenericError(
+              'PhysicalBookService',
+              'Inventory not found',
+              'physicalBook',
+            );
+          }
+
+          const inventoryCount =
+            inventory[0].quantity - inventory[0].minimum_quantity;
+
           return {
             ...book,
             rating: average_rating._avg.rating || 0,
             ratings: ratings,
+            available: inventoryCount,
           };
         }),
       );
@@ -147,18 +191,15 @@ export class PhysicalBookService {
         (rating: any) => rating.physical_book_barcode,
       ) as string[];
 
-      const booksWithRatings = await Promise.all(
+      const booksWithRatings: PhyiscalBookWithRatings[] = await Promise.all(
         barcodes.map(async (barcode: string) => {
-          const rating =
-            await this.ratingService.getBooksAverageRating(barcode);
-          const physicalBook = await this.physicalBook({ barcode: barcode });
-          return {
-            ...physicalBook,
-            rating: rating._avg.rating || 0,
-          };
+          return await this.physicalBook({ barcode: barcode });
         }),
       );
-      const sortedBooks = booksWithRatings.sort((a, b) => b.rating - a.rating);
+
+      const sortedBooks = booksWithRatings.sort(
+        (a, b) => b?.rating - a?.rating,
+      );
 
       return sortedBooks as PhyiscalBookWithRatings[];
     } catch (error) {

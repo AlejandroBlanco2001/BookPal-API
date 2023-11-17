@@ -52,7 +52,7 @@ let LoanService = class LoanService {
             physical_book: book,
         };
     }
-    async createLoan(user_id, user_token, data) {
+    async createLoan(user_id, data) {
         try {
             const physicalBook = await this.physicalBookService.physicalBook({
                 barcode: data.physical_book.connect?.barcode,

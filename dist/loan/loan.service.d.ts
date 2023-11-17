@@ -17,7 +17,7 @@ export declare class LoanService {
     private prisma;
     constructor(fineService: FineService, physicalBookService: PhysicalBookService, referenceService: ReferenceService, inventoryService: InventoryService, notificationService: NotificationService, prisma: PrismaService);
     loan(loanWhereUniqueInput: Prisma.LoanWhereUniqueInput): Promise<LoanWithPhysicalBook | null>;
-    createLoan(user_id: number, user_token: string, data: Prisma.LoanCreateInput): Promise<LoanWithPhysicalBook>;
+    createLoan(user_id: number, data: Prisma.LoanCreateInput): Promise<LoanWithPhysicalBook>;
     updateLoan(params: {
         where: Prisma.LoanWhereUniqueInput;
         data: Prisma.LoanUpdateInput;

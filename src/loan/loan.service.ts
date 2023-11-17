@@ -52,7 +52,6 @@ export class LoanService {
 
   async createLoan(
     user_id: number,
-    user_token: string,
     data: Prisma.LoanCreateInput,
   ): Promise<LoanWithPhysicalBook> {
     try {

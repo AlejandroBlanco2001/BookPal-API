@@ -189,7 +189,7 @@ export class LoanService {
         status: FineStatus.unpaid,
       });
 
-      if (fine) {
+      if (fine.length) {
         throw new UserUnpaidFines();
       }
 

@@ -117,7 +117,7 @@ export class FavoriteService {
           physical_book_barcode: data?.physical_book?.connect?.barcode,
         },
       });
-      if (favorite) {
+      if (favorite.length === 1) {
         return await this.unbookmarkFavorite({
           id: favorite[0].id,
         });

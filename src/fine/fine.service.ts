@@ -26,11 +26,11 @@ export class FineService {
     let fine;
     try {
       fine = await this.prisma.fine.findUnique({ where: data });
+      if (!fine) {
+        return null;
+      }
     } catch (error: any) {
       throw new GenericError('FineService', error.message, 'getFine');
-    }
-    if (!fine) {
-      return null;
     }
     return fine;
   }

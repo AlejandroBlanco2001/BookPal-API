@@ -1,10 +1,13 @@
 import { Prisma, Loan } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { FineService } from '../fine/fine.service';
-import { PhysicalBookService } from '../physicalBook/physicalBook.service';
+import { PhyiscalBookWithRatings, PhysicalBookService } from '../physicalBook/physicalBook.service';
 import { ReferenceService } from '../reference/reference.service';
 import { InventoryService } from '../inventory/inventory.service';
 import { NotificationService } from '../notification/notification.service';
+export interface LoanWithPhysicalBook extends Loan {
+    physical_book: PhyiscalBookWithRatings;
+}
 export declare class LoanService {
     private fineService;
     private physicalBookService;
@@ -13,13 +16,13 @@ export declare class LoanService {
     private notificationService;
     private prisma;
     constructor(fineService: FineService, physicalBookService: PhysicalBookService, referenceService: ReferenceService, inventoryService: InventoryService, notificationService: NotificationService, prisma: PrismaService);
-    loan(loanWhereUniqueInput: Prisma.LoanWhereUniqueInput): Promise<Loan | null>;
-    createLoan(user_id: number, user_token: string, data: Prisma.LoanCreateInput): Promise<Loan>;
+    loan(loanWhereUniqueInput: Prisma.LoanWhereUniqueInput): Promise<LoanWithPhysicalBook | null>;
+    createLoan(user_id: number, user_token: string, data: Prisma.LoanCreateInput): Promise<LoanWithPhysicalBook>;
     updateLoan(params: {
         where: Prisma.LoanWhereUniqueInput;
         data: Prisma.LoanUpdateInput;
     }): Promise<Loan>;
     returnLoan(id: number): Promise<Loan>;
     updateLoanStatus(): Promise<void>;
-    getLoanByUserID(data: Prisma.LoanWhereInput): Promise<Loan[]>;
+    getLoanByUserID(data: Prisma.LoanWhereInput): Promise<LoanWithPhysicalBook[]>;
 }

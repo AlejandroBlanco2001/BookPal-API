@@ -16,5 +16,5 @@ export declare class PhysicalBookService {
     }): Promise<PhysicalBook>;
     physicalBook(physicalBookWhereUniqueInput: Prisma.PhysicalBookWhereUniqueInput): Promise<PhyiscalBookWithRatings | null>;
     physicalBooks(params: Prisma.PhysicalBookFindManyArgs): Promise<PhysicalBook[]>;
-    getTopRatedBooks(items?: number): Promise<any>;
+    getTopRatedBooks(items?: number): Promise<PhyiscalBookWithRatings[]>;
 }

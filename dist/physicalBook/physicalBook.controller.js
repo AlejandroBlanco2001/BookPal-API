@@ -41,7 +41,7 @@ let PhyiscalBookController = class PhyiscalBookController {
         });
     }
     async getTopRatedBooks(items) {
-        return await this.physicalBookService.getTopRatedBooks(items);
+        return await this.physicalBookService.getTopRatedBooks(Number(items));
     }
 };
 exports.PhyiscalBookController = PhyiscalBookController;

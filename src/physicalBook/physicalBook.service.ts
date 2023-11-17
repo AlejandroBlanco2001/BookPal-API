@@ -100,21 +100,23 @@ export class PhysicalBookService {
     }
   }
 
-  async getTopRatedBooks(items: number = 10): Promise<any> {
+  async getTopRatedBooks(
+    items: number = 10,
+  ): Promise<PhyiscalBookWithRatings[]> {
     try {
-      const groupedData: any =
-        await this.prisma.userFavoritePhyiscalBook.groupBy({
-          by: ['physical_book_barcode'],
+      const groupedData: any = await this.prisma.rating.groupBy({
+        by: ['physical_book_barcode'],
+        _count: {
+          physical_book_barcode: true,
+          _all: true,
+        },
+        orderBy: {
           _count: {
-            physical_book_barcode: true,
+            physical_book_barcode: 'desc',
           },
-          orderBy: {
-            _count: {
-              physical_book_barcode: 'desc',
-            },
-          },
-          take: items,
-        });
+        },
+        take: items,
+      });
 
       const barcodes = groupedData.map(
         (rating: any) => rating.physical_book_barcode,
@@ -133,7 +135,7 @@ export class PhysicalBookService {
       );
       const sortedBooks = booksWithRatings.sort((a, b) => b.rating - a.rating);
 
-      return sortedBooks;
+      return sortedBooks as PhyiscalBookWithRatings[];
     } catch (error) {
       throw error;
     }

@@ -7,7 +7,7 @@ import {
   Put,
   Request,
 } from '@nestjs/common';
-import { LoanService } from './loan.service';
+import { LoanService, LoanWithPhysicalBook } from './loan.service';
 import { CreateLoanDto } from './dto/create-loan-dto';
 import { LoanStatus } from '@prisma/client';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
@@ -19,19 +19,24 @@ export class LoanController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a loan by ID' })
-  getLoanByID(@Param('id') id: string) {
-    return this.loanService.loan({ id: Number(id) });
+  async getLoanByID(
+    @Param('id') id: string,
+  ): Promise<LoanWithPhysicalBook | null> {
+    return await this.loanService.loan({ id: Number(id) });
   }
 
   @Get('/user/:id')
   @ApiOperation({ summary: 'Get a user loans' })
-  getUserLoans(@Param('id') id: string) {
-    return this.loanService.getLoanByUserID({ user_id: Number(id) });
+  async getUserLoans(@Param('id') id: string): Promise<LoanWithPhysicalBook[]> {
+    return await this.loanService.getLoanByUserID({ user_id: Number(id) });
   }
 
   @Post()
   @ApiOperation({ summary: 'Create a new loan' })
-  async createLoan(@Request() req: any, @Body() createLoanDto: CreateLoanDto) {
+  async createLoan(
+    @Request() req: any,
+    @Body() createLoanDto: CreateLoanDto,
+  ): Promise<LoanWithPhysicalBook> {
     const data = {
       status: LoanStatus.active,
       start_date: new Date(),

@@ -44,7 +44,13 @@ let LoanService = class LoanService {
         if (!loan) {
             throw new loanNotFound_exceptions_1.LoanNotFound(loanWhereUniqueInput);
         }
-        return loan;
+        const book = await this.physicalBookService.physicalBook({
+            barcode: loan.physical_book_barcode,
+        });
+        return {
+            ...loan,
+            physical_book: book,
+        };
     }
     async createLoan(user_id, user_token, data) {
         try {
@@ -116,9 +122,13 @@ let LoanService = class LoanService {
                 },
             });
             data.due_date = new Date(due_date);
-            return await this.prisma.loan.create({
+            const loan = await this.prisma.loan.create({
                 data,
             });
+            return {
+                ...loan,
+                physical_book: physicalBook,
+            };
         }
         catch (error) {
             if (error instanceof genericError_exception_1.GenericError) {
@@ -234,7 +244,16 @@ let LoanService = class LoanService {
             const loans = await this.prisma.loan.findMany({
                 where: data,
             });
-            return loans;
+            const loans_book = await Promise.all(loans.map(async (loan) => {
+                const physicalBook = await this.physicalBookService.physicalBook({
+                    barcode: loan.physical_book_barcode,
+                });
+                return {
+                    ...loan,
+                    physical_book: physicalBook,
+                };
+            }));
+            return loans_book;
         }
         catch (error) {
             throw new genericError_exception_1.GenericError('LoanService', error.message, 'getLoanByUserID');

@@ -23,11 +23,11 @@ let LoanController = class LoanController {
     constructor(loanService) {
         this.loanService = loanService;
     }
-    getLoanByID(id) {
-        return this.loanService.loan({ id: Number(id) });
+    async getLoanByID(id) {
+        return await this.loanService.loan({ id: Number(id) });
     }
-    getUserLoans(id) {
-        return this.loanService.getLoanByUserID({ user_id: Number(id) });
+    async getUserLoans(id) {
+        return await this.loanService.getLoanByUserID({ user_id: Number(id) });
     }
     async createLoan(req, createLoanDto) {
         const data = {
@@ -58,21 +58,21 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], LoanController.prototype, "getLoanByID", null);
 __decorate([
     (0, common_1.Get)('/user/:id'),
     (0, swagger_1.ApiOperation)({ summary: 'Get a user loans' }),
-    openapi.ApiResponse({ status: 200 }),
+    openapi.ApiResponse({ status: 200, type: [Object] }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], LoanController.prototype, "getUserLoans", null);
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new loan' }),
-    openapi.ApiResponse({ status: 201 }),
+    openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

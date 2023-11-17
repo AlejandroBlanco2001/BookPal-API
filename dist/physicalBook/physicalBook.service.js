@@ -83,10 +83,11 @@ let PhysicalBookService = class PhysicalBookService {
     }
     async getTopRatedBooks(items = 10) {
         try {
-            const groupedData = await this.prisma.userFavoritePhyiscalBook.groupBy({
+            const groupedData = await this.prisma.rating.groupBy({
                 by: ['physical_book_barcode'],
                 _count: {
                     physical_book_barcode: true,
+                    _all: true,
                 },
                 orderBy: {
                     _count: {

@@ -38,12 +38,12 @@ let FineService = class FineService {
         let fine;
         try {
             fine = await this.prisma.fine.findUnique({ where: data });
+            if (!fine) {
+                return null;
+            }
         }
         catch (error) {
             throw new genericError_exception_1.GenericError('FineService', error.message, 'getFine');
-        }
-        if (!fine) {
-            return null;
         }
         return fine;
     }

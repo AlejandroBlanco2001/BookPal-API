@@ -51,6 +51,6 @@ export class PhyiscalBookController {
   @Get('/top-rated-books')
   @ApiOperation({ summary: 'Get top rated books' })
   async getTopRatedBooks(@Query('items') items: number): Promise<any[]> {
-    return await this.physicalBookService.getTopRatedBooks(items);
+    return await this.physicalBookService.getTopRatedBooks(Number(items));
   }
 }

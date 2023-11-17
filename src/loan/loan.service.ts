@@ -4,7 +4,10 @@ import { PrismaService } from '../prisma/prisma.service';
 import { LoanStatus } from '@prisma/client';
 import { FineService } from '../fine/fine.service';
 import { UserUnpaidFines } from '../exceptions/userUnpaidFines.exception';
-import { PhysicalBookService } from '../physicalBook/physicalBook.service';
+import {
+  PhyiscalBookWithRatings,
+  PhysicalBookService,
+} from '../physicalBook/physicalBook.service';
 import { ReferenceService } from '../reference/reference.service';
 import { GenericError } from '../exceptions/genericError.exception';
 import { LoanNotFound } from '../exceptions/loanNotFound.exceptions';
@@ -14,6 +17,9 @@ import { MaximumLoansPerCollection } from '../exceptions/maximumLoansPerCollecti
 import { NotificationService } from '../notification/notification.service';
 import { LoanAlreadyReturned } from '../exceptions/loanAlreadyReturned.exception';
 
+export interface LoanWithPhysicalBook extends Loan {
+  physical_book: PhyiscalBookWithRatings;
+}
 @Injectable()
 export class LoanService {
   constructor(
@@ -28,22 +34,27 @@ export class LoanService {
 
   async loan(
     loanWhereUniqueInput: Prisma.LoanWhereUniqueInput,
-  ): Promise<Loan | null> {
+  ): Promise<LoanWithPhysicalBook | null> {
     const loan = await this.prisma.loan.findUnique({
       where: loanWhereUniqueInput,
     });
-
     if (!loan) {
       throw new LoanNotFound(loanWhereUniqueInput);
     }
-    return loan;
+    const book = await this.physicalBookService.physicalBook({
+      barcode: loan.physical_book_barcode,
+    });
+    return {
+      ...loan,
+      physical_book: book,
+    } as LoanWithPhysicalBook;
   }
 
   async createLoan(
     user_id: number,
     user_token: string,
     data: Prisma.LoanCreateInput,
-  ): Promise<Loan> {
+  ): Promise<LoanWithPhysicalBook> {
     try {
       const physicalBook = await this.physicalBookService.physicalBook({
         barcode: data.physical_book.connect?.barcode as string,
@@ -137,9 +148,14 @@ export class LoanService {
 
       data.due_date = new Date(due_date);
 
-      return await this.prisma.loan.create({
+      const loan = await this.prisma.loan.create({
         data,
       });
+
+      return {
+        ...loan,
+        physical_book: physicalBook as PhyiscalBookWithRatings,
+      };
     } catch (error: any) {
       if (error instanceof GenericError) {
         throw new GenericError('LoanService', error.message, 'createLoan');
@@ -254,12 +270,25 @@ export class LoanService {
     }
   }
 
-  async getLoanByUserID(data: Prisma.LoanWhereInput): Promise<Loan[]> {
+  async getLoanByUserID(
+    data: Prisma.LoanWhereInput,
+  ): Promise<LoanWithPhysicalBook[]> {
     try {
       const loans = await this.prisma.loan.findMany({
         where: data,
       });
-      return loans;
+      const loans_book = await Promise.all(
+        loans.map(async (loan) => {
+          const physicalBook = await this.physicalBookService.physicalBook({
+            barcode: loan.physical_book_barcode,
+          });
+          return {
+            ...loan,
+            physical_book: physicalBook,
+          } as LoanWithPhysicalBook;
+        }),
+      );
+      return loans_book;
     } catch (error: any) {
       throw new GenericError('LoanService', error.message, 'getLoanByUserID');
     }

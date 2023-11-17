@@ -230,7 +230,7 @@ export class LoanService {
       }
       return await this.updateLoan({
         where: { id },
-        data: { status: LoanStatus.returned },
+        data: { status: LoanStatus.returned, return_date: new Date() },
       });
     } catch (error: any) {
       if (error instanceof GenericError) {

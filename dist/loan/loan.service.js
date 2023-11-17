@@ -192,7 +192,7 @@ let LoanService = class LoanService {
             }
             return await this.updateLoan({
                 where: { id },
-                data: { status: client_2.LoanStatus.returned },
+                data: { status: client_2.LoanStatus.returned, return_date: new Date() },
             });
         }
         catch (error) {

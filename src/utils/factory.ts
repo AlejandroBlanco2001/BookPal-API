@@ -169,6 +169,8 @@ export function loan(): LoanFactory {
 
 export function fine(): FineFactory {
   const loanObj = loan().basic();
+  const userObj = user().basic();
+
   return {
     basic: () => ({
       id: 1,
@@ -178,6 +180,7 @@ export function fine(): FineFactory {
       last_update_date: new Date(),
       loan_id: loanObj.id,
       loan: loanObj,
+      user_id: userObj.id,
     }),
     custom: (customProps: Partial<Fine>) => {
       return { ...fine().basic(), ...customProps };

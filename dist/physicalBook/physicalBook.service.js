@@ -15,12 +15,10 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const physicalBookNotFound_exception_1 = require("../exceptions/physicalBookNotFound.exception");
 const genericError_exception_1 = require("../exceptions/genericError.exception");
-const rating_service_1 = require("../rating/rating.service");
 const inventory_service_1 = require("../inventory/inventory.service");
 let PhysicalBookService = PhysicalBookService_1 = class PhysicalBookService {
-    constructor(prisma, ratingService, invetoryService) {
+    constructor(prisma, invetoryService) {
         this.prisma = prisma;
-        this.ratingService = ratingService;
         this.invetoryService = invetoryService;
         this.logger = new common_1.Logger(PhysicalBookService_1.name);
     }
@@ -46,19 +44,19 @@ let PhysicalBookService = PhysicalBookService_1 = class PhysicalBookService {
             throw new genericError_exception_1.GenericError('PhysicalBookService', error.message, 'updatePhysicalBook');
         }
     }
-    async physicalBook(physicalBookWhereUniqueInput) {
+    async physicalBook(physicalBookWhereUniqueInput, extra_include) {
         try {
             const physicalBook = await this.prisma.physicalBook.findUnique({
                 where: physicalBookWhereUniqueInput,
+                include: {
+                    Rating: true,
+                    ...extra_include,
+                },
             });
             if (!physicalBook)
                 throw new physicalBookNotFound_exception_1.PhysicalBookNotFound(physicalBookWhereUniqueInput);
-            const average_rating = await this.ratingService.getBooksAverageRating(physicalBook.barcode);
-            const ratings = await this.ratingService.ratings({
-                where: {
-                    physical_book_barcode: physicalBook.barcode,
-                },
-            });
+            const all_rating = physicalBook.Rating.reduce((a, b) => a + b.rating, 0);
+            const average_rating = all_rating / physicalBook.Rating.length;
             const inventory = await this.invetoryService.inventoryByPhyiscalBookId(physicalBook.serial_number);
             if (inventory.length === 0) {
                 this.logger.error(`Inventory not found with serial number ${physicalBook.serial_number}`);
@@ -67,8 +65,8 @@ let PhysicalBookService = PhysicalBookService_1 = class PhysicalBookService {
             const inventoryCount = inventory[0].quantity - inventory[0].minimum_quantity;
             return {
                 ...physicalBook,
-                rating: average_rating._avg.rating || 0,
-                ratings: ratings,
+                rating: average_rating,
+                ratings: physicalBook.Rating,
                 available: inventoryCount > 0 ? inventoryCount : 0,
             };
         }
@@ -86,14 +84,13 @@ let PhysicalBookService = PhysicalBookService_1 = class PhysicalBookService {
                 skip: numericSkip,
                 take: numericTake,
                 orderBy,
+                include: {
+                    Rating: true,
+                },
             });
             const books_with_rating = await Promise.all(books.map(async (book) => {
-                const average_rating = await this.ratingService.getBooksAverageRating(book.barcode);
-                const ratings = await this.ratingService.ratings({
-                    where: {
-                        physical_book_barcode: book.barcode,
-                    },
-                });
+                const all_rating = book.Rating.reduce((a, b) => a + b.rating, 0);
+                const average_rating = all_rating / book.Rating.length;
                 const inventory = await this.invetoryService.inventoryByPhyiscalBookId(book.serial_number);
                 if (inventory.length === 0) {
                     this.logger.error(`Inventory not found with serial number ${book.serial_number}`);
@@ -102,8 +99,8 @@ let PhysicalBookService = PhysicalBookService_1 = class PhysicalBookService {
                 const inventoryCount = inventory[0].quantity - inventory[0].minimum_quantity;
                 return {
                     ...book,
-                    rating: average_rating._avg.rating || 0,
-                    ratings: ratings,
+                    rating: average_rating,
+                    ratings: book.Rating ?? [],
                     available: inventoryCount > 0 ? inventoryCount : 0,
                 };
             }));
@@ -143,7 +140,6 @@ exports.PhysicalBookService = PhysicalBookService;
 exports.PhysicalBookService = PhysicalBookService = PhysicalBookService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        rating_service_1.RatingService,
         inventory_service_1.InventoryService])
 ], PhysicalBookService);
 //# sourceMappingURL=physicalBook.service.js.map

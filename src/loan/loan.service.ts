@@ -1,5 +1,5 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
-import { Prisma, Loan, FineStatus, BookStatus } from '@prisma/client';
+import { Prisma, Loan, FineStatus, BookStatus, Fine } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoanStatus } from '@prisma/client';
 import { FineService } from '../fine/fine.service';
@@ -19,6 +19,7 @@ import { LoanAlreadyReturned } from '../exceptions/loanAlreadyReturned.exception
 
 export interface LoanWithPhysicalBook extends Loan {
   physical_book: PhyiscalBookWithRatings;
+  Fine?: any;
 }
 @Injectable()
 export class LoanService {
@@ -34,16 +35,21 @@ export class LoanService {
 
   async loan(
     loanWhereUniqueInput: Prisma.LoanWhereUniqueInput,
+    includes?: any,
   ): Promise<LoanWithPhysicalBook | null> {
     const loan = await this.prisma.loan.findUnique({
       where: loanWhereUniqueInput,
+      include: includes,
     });
+
     if (!loan) {
       throw new LoanNotFound(loanWhereUniqueInput);
     }
+
     const book = await this.physicalBookService.physicalBook({
       barcode: loan.physical_book_barcode,
     });
+
     return {
       ...loan,
       physical_book: book,
@@ -53,11 +59,17 @@ export class LoanService {
   async createLoan(
     user_id: number,
     data: Prisma.LoanCreateInput,
-  ): Promise<LoanWithPhysicalBook> {
+  ): Promise<Loan> {
     try {
-      const physicalBook = await this.physicalBookService.physicalBook({
-        barcode: data.physical_book.connect?.barcode as string,
-      });
+      const physicalBook = await this.physicalBookService.physicalBook(
+        {
+          barcode: data.physical_book.connect?.barcode as string,
+        },
+        {
+          collection: true,
+          Loan: true,
+        },
+      );
 
       if (physicalBook?.status === BookStatus.unavailable) {
         throw new PhysicalBookNotAvailable(
@@ -65,58 +77,45 @@ export class LoanService {
         );
       }
 
-      const unpaidFines = await this.fineService.getFinesByUserID(
-        {
-          status: FineStatus.unpaid,
-        },
-        user_id,
-      );
+      const unpaidFines = await this.fineService.getFines({
+        status: FineStatus.unpaid,
+        user_id: user_id,
+      });
 
       if (unpaidFines?.length > 0) {
         throw new UserUnpaidFines();
       }
 
-      const due_date = await this.referenceService.getDueDate({
-        id: physicalBook?.collection_id,
-      });
+      const date = new Date();
+      date.setDate(
+        (date.getDate() +
+          (physicalBook as any).collection.amount_of_days_per_loan) as number,
+      );
 
-      const max_number_of_collection = await this.referenceService.getMaxLoans({
-        id: physicalBook?.collection_id,
-      });
+      const maxNumberOfCollection = (physicalBook as any).collection
+        .max_number_of_loans;
 
       const user_loans = await this.getLoanByUserID({
         id: user_id,
       });
 
-      const user_loans_barcode = user_loans.map(
-        (loan: Loan) => loan.physical_book_barcode,
-      );
+      const userAmountOfLoansPerCollection = user_loans.filter((loan) => {
+        return loan.physical_book.collection_id === physicalBook?.collection_id;
+      }).length;
 
-      const user_loans_books = await this.physicalBookService.physicalBooks({
-        where: {
-          serial_number: {
-            in: user_loans_barcode,
-          },
-          collection_id: physicalBook?.collection_id,
-        },
-      });
-
-      if (user_loans_books?.length > max_number_of_collection) {
+      if (userAmountOfLoansPerCollection > maxNumberOfCollection) {
         throw new MaximumLoansPerCollection();
       }
 
-      const inventory =
-        await this.inventoryService.inventoryByPhyiscalSerialNumber({
-          physical_book_serial_number: physicalBook?.serial_number as string,
-        });
-
-      if (inventory && physicalBook) {
-        await this.inventoryService.updateInventory({
+      if (physicalBook) {
+        await this.inventoryService.updateInventoryGivenSerialNumber({
           where: {
-            id: inventory.id,
+            physical_book_serial_number: physicalBook?.serial_number as string,
           },
           data: {
-            quantity: inventory.quantity - 1,
+            quantity: {
+              decrement: 1,
+            },
             last_update: new Date(),
           },
         });
@@ -131,7 +130,7 @@ export class LoanService {
         });
       }
 
-      const notificationDate = new Date(due_date);
+      const notificationDate = new Date(date);
       notificationDate.setDate(notificationDate.getDate() - 1);
 
       await this.notificationService.createNotification({
@@ -140,16 +139,13 @@ export class LoanService {
         next_schedule_date: notificationDate.toISOString(),
       });
 
-      data.due_date = new Date(due_date);
+      data.due_date = new Date(date);
 
       const loan = await this.prisma.loan.create({
         data,
       });
 
-      return {
-        ...loan,
-        physical_book: physicalBook as PhyiscalBookWithRatings,
-      };
+      return loan;
     } catch (error: any) {
       if (error instanceof GenericError) {
         throw new GenericError('LoanService', error.message, 'createLoan');
@@ -178,50 +174,43 @@ export class LoanService {
 
   async returnLoan(id: number): Promise<Loan> {
     try {
-      const loan = await this.loan({ id });
+      const loan = await this.loan({ id }, { Fine: true, physical_book: true });
 
       if (loan && loan.status === LoanStatus.returned) {
         throw new LoanAlreadyReturned();
       }
 
-      const fine = await this.fineService.getFines({
-        loan_id: id,
-        status: FineStatus.unpaid,
+      const isAnyFineUnpaid = loan?.Fine.some((fine: Fine) => {
+        return fine.status === FineStatus.unpaid;
       });
 
-      if (fine.length) {
+      if (isAnyFineUnpaid) {
         throw new UserUnpaidFines();
       }
 
-      const physicalBook = await this.physicalBookService.physicalBook({
-        barcode: loan!.physical_book_barcode,
-      });
-
-      const inventory =
-        await this.inventoryService.inventoryByPhyiscalSerialNumber({
-          physical_book_serial_number: physicalBook!.serial_number,
-        });
-
-      if (inventory && physicalBook) {
-        await this.inventoryService.updateInventory({
+      if (loan?.physical_book) {
+        await this.inventoryService.updateInventoryGivenSerialNumber({
           where: {
-            id: inventory.id,
+            physical_book_serial_number: loan?.physical_book.serial_number,
           },
           data: {
-            quantity: inventory.quantity + 1,
+            quantity: {
+              increment: 1,
+            },
             last_update: new Date(),
           },
         });
 
         await this.physicalBookService.updatePhysicalBook({
           where: {
-            barcode: physicalBook.barcode,
+            barcode: loan?.physical_book.barcode,
           },
           data: {
             status: BookStatus.available,
           },
         });
       }
+
       return await this.updateLoan({
         where: { id },
         data: { status: LoanStatus.returned, return_date: new Date() },
@@ -240,20 +229,27 @@ export class LoanService {
         where: {
           status: LoanStatus.active,
         },
+        include: {
+          physical_book: {
+            include: {
+              collection: true,
+            },
+          },
+        },
       });
       const today = new Date();
-      loans.forEach(async (loan) => {
+      for (const loan of loans) {
         const dueDate = new Date(loan.due_date);
-        const physicalBook = await this.physicalBookService.physicalBook({
-          barcode: loan.physical_book_barcode,
-        });
-        const collection = await this.referenceService.reference({
-          id: physicalBook!.collection_id,
-        });
+
         if (dueDate < today) {
           await this.fineService.fine({
             last_update_date: new Date(),
-            amount: collection?.amount_of_money_per_day,
+            amount: loan.physical_book.collection?.amount_of_money_per_day,
+            user: {
+              connect: {
+                id: loan.user_id,
+              },
+            },
             loan: {
               connect: {
                 id: loan.id,
@@ -261,12 +257,13 @@ export class LoanService {
             },
             status: FineStatus.unpaid,
           });
+
           await this.updateLoan({
             where: { id: loan.id },
             data: { status: LoanStatus.overdue },
           });
         }
-      });
+      }
     } catch (error: any) {
       throw new GenericError('LoanService', error.message, 'updateLoanStatus');
     }
@@ -278,6 +275,9 @@ export class LoanService {
     try {
       const loans = await this.prisma.loan.findMany({
         where: data,
+        include: {
+          physical_book: true,
+        },
         orderBy: {
           start_date: 'desc',
         },

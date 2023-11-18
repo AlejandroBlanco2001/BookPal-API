@@ -8,6 +8,7 @@ export declare class FineService {
     fine(data: Prisma.FineCreateInput): Promise<{
         id: number;
         loan_id: number;
+        user_id: number;
         amount: number;
         status: import(".prisma/client").$Enums.FineStatus;
         pay_date: Date | null;
@@ -18,6 +19,7 @@ export declare class FineService {
     getFinesByUserID(data: Prisma.FineWhereInput, user_id: number): Promise<{
         id: number;
         loan_id: number;
+        user_id: number;
         amount: number;
         status: import(".prisma/client").$Enums.FineStatus;
         pay_date: Date | null;
@@ -29,6 +31,7 @@ export declare class FineService {
     }): Promise<{
         id: number;
         loan_id: number;
+        user_id: number;
         amount: number;
         status: import(".prisma/client").$Enums.FineStatus;
         pay_date: Date | null;

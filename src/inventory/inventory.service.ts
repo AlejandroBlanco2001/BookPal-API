@@ -3,6 +3,10 @@ import { GenericError } from '../exceptions/genericError.exception';
 import { PrismaService } from '../prisma/prisma.service';
 import { Inventory, Prisma } from '@prisma/client';
 
+export type BatchPayload = {
+  count: number;
+};
+
 @Injectable()
 export class InventoryService {
   private readonly logger = new Logger(InventoryService.name);
@@ -56,6 +60,25 @@ export class InventoryService {
     const { where, data } = params;
     try {
       return await this.prisma.inventory.update({
+        data,
+        where,
+      });
+    } catch (error: any) {
+      throw new GenericError(
+        'InventoryService',
+        error.message,
+        'updateInventory',
+      );
+    }
+  }
+
+  async updateInventoryGivenSerialNumber(params: {
+    where: Prisma.InventoryWhereInput;
+    data: Prisma.InventoryUpdateInput;
+  }): Promise<BatchPayload> {
+    const { where, data } = params;
+    try {
+      return await this.prisma.inventory.updateMany({
         data,
         where,
       });

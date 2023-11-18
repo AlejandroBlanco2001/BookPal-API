@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { LoanService, LoanWithPhysicalBook } from './loan.service';
 import { CreateLoanDto } from './dto/create-loan-dto';
-import { LoanStatus } from '@prisma/client';
+import { Loan, LoanStatus } from '@prisma/client';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('loan')
@@ -36,7 +36,7 @@ export class LoanController {
   async createLoan(
     @Request() req: any,
     @Body() createLoanDto: CreateLoanDto,
-  ): Promise<LoanWithPhysicalBook> {
+  ): Promise<Loan> {
     const data = {
       status: LoanStatus.active,
       start_date: new Date(),

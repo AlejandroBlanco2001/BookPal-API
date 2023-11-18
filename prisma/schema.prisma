@@ -41,6 +41,7 @@ model User {
   History                  History[]
   Rating                   Rating[]
   UserFavoritePhyiscalBook UserFavoritePhyiscalBook[]
+  Fine                     Fine[]
 }
 
 model Notification {
@@ -68,6 +69,8 @@ model Fine {
   id               Int        @id @default(autoincrement())
   loan             Loan       @relation(fields: [loan_id], references: [id])
   loan_id          Int
+  user             User       @relation(fields: [user_id], references: [id])
+  user_id          Int
   amount           Float      @default(0)
   status           FineStatus @default(unpaid)
   pay_date         DateTime?

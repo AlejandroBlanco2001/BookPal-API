@@ -62,6 +62,18 @@ let InventoryService = InventoryService_1 = class InventoryService {
             throw new genericError_exception_1.GenericError('InventoryService', error.message, 'updateInventory');
         }
     }
+    async updateInventoryGivenSerialNumber(params) {
+        const { where, data } = params;
+        try {
+            return await this.prisma.inventory.updateMany({
+                data,
+                where,
+            });
+        }
+        catch (error) {
+            throw new genericError_exception_1.GenericError('InventoryService', error.message, 'updateInventory');
+        }
+    }
     async isPhysicalBookAvailable(where) {
         try {
             const inventory = await this.prisma.inventory.findFirst({

@@ -116,6 +116,7 @@ function loan() {
 exports.loan = loan;
 function fine() {
     const loanObj = loan().basic();
+    const userObj = user().basic();
     return {
         basic: () => ({
             id: 1,
@@ -125,6 +126,7 @@ function fine() {
             last_update_date: new Date(),
             loan_id: loanObj.id,
             loan: loanObj,
+            user_id: userObj.id,
         }),
         custom: (customProps) => {
             return { ...fine().basic(), ...customProps };

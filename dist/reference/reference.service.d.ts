@@ -10,6 +10,4 @@ export declare class ReferenceService {
         amount_of_days_per_loan: number;
         amount_of_money_per_day: number;
     }>;
-    getDueDate(referenceWhereUniqueInput: Prisma.ReferenceWhereUniqueInput): Promise<Date>;
-    getMaxLoans(referenceWhereUniqueInput: Prisma.ReferenceWhereUniqueInput): Promise<number>;
 }

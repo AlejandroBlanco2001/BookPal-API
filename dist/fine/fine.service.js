@@ -47,11 +47,12 @@ let FineService = class FineService {
         }
         return fine;
     }
-    async getFines(data) {
+    async getFines(data, includes) {
         let fines = [];
         try {
             fines = await this.prisma.fine.findMany({
                 where: data,
+                include: includes,
             });
         }
         catch (error) {
@@ -102,11 +103,12 @@ let FineService = class FineService {
             last_update_date: {
                 gt: new Date(),
             },
+        }, {
+            loan: true,
         });
-        const date = new Date();
-        fines.forEach(async (fine) => {
-            const loan = await this.loanService.loan({ id: fine.loan_id });
-            const due_date = new Date(loan.due_date);
+        for (const fine of fines) {
+            const date = new Date();
+            const due_date = new Date(fine.loan.due_date);
             const diffTime = Math.ceil(Math.abs(due_date.getTime() - date.getTime()) / constant_1.ONE_DAY_IN_MILLISECONDS);
             if (diffTime > 0) {
                 await this.updateFine({
@@ -118,7 +120,7 @@ let FineService = class FineService {
                     },
                 });
             }
-        });
+        }
     }
 };
 exports.FineService = FineService;

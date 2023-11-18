@@ -53,47 +53,4 @@ export class RatingService {
       throw new GenericError('RatingService', error.message, 'updateRating');
     }
   }
-
-  async getBooksAverageRating(barcodes: string[] | string, items: number = 10) {
-    let filter = {
-      physical_book_barcode: {
-        in: barcodes as any,
-      },
-    };
-    if (typeof barcodes === 'string') {
-      filter = {
-        physical_book_barcode: barcodes as any,
-      };
-    }
-
-    return await this.prisma.rating.aggregate({
-      where: filter,
-      _avg: {
-        rating: true,
-      },
-      take: items,
-    });
-  }
-
-  async getTopBooksAverageRating(items: number = 10) {
-    try {
-      const getBooksThatHaveRatings =
-        await this.prisma.userFavoritePhyiscalBook.findMany({
-          select: {
-            physical_book_barcode: true,
-          },
-          distinct: ['physical_book_barcode'],
-        });
-      const barcodes = getBooksThatHaveRatings.map(
-        (item) => item.physical_book_barcode,
-      );
-      return await this.getBooksAverageRating(barcodes, items);
-    } catch (error: any) {
-      throw new GenericError(
-        'RatingService',
-        error.message,
-        'getTopBooksAverageRating',
-      );
-    }
-  }
 }

@@ -36,7 +36,7 @@ let RatingService = class RatingService {
         }
     }
     async createRating(data) {
-        console.log(...oo_oo(`3325104608_35_4_35_21_4`, data));
+        console.log(...oo_oo(`3388427587_35_4_35_21_4`, data));
         try {
             return await this.prisma.rating.create({
                 data,
@@ -53,40 +53,6 @@ let RatingService = class RatingService {
         }
         catch (error) {
             throw new genericError_exception_1.GenericError('RatingService', error.message, 'updateRating');
-        }
-    }
-    async getBooksAverageRating(barcodes, items = 10) {
-        let filter = {
-            physical_book_barcode: {
-                in: barcodes,
-            },
-        };
-        if (typeof barcodes === 'string') {
-            filter = {
-                physical_book_barcode: barcodes,
-            };
-        }
-        return await this.prisma.rating.aggregate({
-            where: filter,
-            _avg: {
-                rating: true,
-            },
-            take: items,
-        });
-    }
-    async getTopBooksAverageRating(items = 10) {
-        try {
-            const getBooksThatHaveRatings = await this.prisma.userFavoritePhyiscalBook.findMany({
-                select: {
-                    physical_book_barcode: true,
-                },
-                distinct: ['physical_book_barcode'],
-            });
-            const barcodes = getBooksThatHaveRatings.map((item) => item.physical_book_barcode);
-            return await this.getBooksAverageRating(barcodes, items);
-        }
-        catch (error) {
-            throw new genericError_exception_1.GenericError('RatingService', error.message, 'getTopBooksAverageRating');
         }
     }
 };

@@ -15,7 +15,7 @@ export declare class FineService {
         last_update_date: Date;
     }>;
     getFine(data: Prisma.FineWhereUniqueInput): Promise<Fine | null>;
-    getFines(data: Prisma.FineWhereInput): Promise<Fine[]>;
+    getFines(data: Prisma.FineWhereInput, includes?: any): Promise<Fine[]>;
     getFinesByUserID(data: Prisma.FineWhereInput, user_id: number): Promise<{
         id: number;
         loan_id: number;

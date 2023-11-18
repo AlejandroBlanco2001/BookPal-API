@@ -33,18 +33,6 @@ let ReferenceService = class ReferenceService {
         }
         return reference;
     }
-    async getDueDate(referenceWhereUniqueInput) {
-        const reference = await this.reference(referenceWhereUniqueInput);
-        const date = new Date();
-        date.setDate(date.getDate() + reference.amount_of_days_per_loan);
-        return date;
-    }
-    async getMaxLoans(referenceWhereUniqueInput) {
-        const reference = await this.prisma.reference.findUnique({
-            where: referenceWhereUniqueInput,
-        });
-        return reference.limit_of_books_per_user;
-    }
 };
 exports.ReferenceService = ReferenceService;
 exports.ReferenceService = ReferenceService = __decorate([

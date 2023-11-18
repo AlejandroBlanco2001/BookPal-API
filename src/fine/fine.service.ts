@@ -35,11 +35,12 @@ export class FineService {
     return fine;
   }
 
-  async getFines(data: Prisma.FineWhereInput): Promise<Fine[]> {
+  async getFines(data: Prisma.FineWhereInput, includes?: any): Promise<Fine[]> {
     let fines: Fine[] = [];
     try {
       fines = await this.prisma.fine.findMany({
         where: data,
+        include: includes,
       });
     } catch (error: any) {
       throw new GenericError('FineService', error.message, 'getFines');
@@ -88,17 +89,21 @@ export class FineService {
   }
 
   async updateFineAmountToPay() {
-    const fines = await this.getFines({
-      status: FineStatus.unpaid,
-      last_update_date: {
-        gt: new Date(),
+    const fines = await this.getFines(
+      {
+        status: FineStatus.unpaid,
+        last_update_date: {
+          gt: new Date(),
+        },
       },
-    });
+      {
+        loan: true,
+      },
+    );
 
-    const date = new Date();
-    fines.forEach(async (fine) => {
-      const loan = await this.loanService.loan({ id: fine.loan_id });
-      const due_date = new Date(loan!.due_date);
+    for (const fine of fines) {
+      const date = new Date();
+      const due_date = new Date((fine as any).loan!.due_date);
       const diffTime = Math.ceil(
         Math.abs(due_date.getTime() - date.getTime()) / ONE_DAY_IN_MILLISECONDS,
       );
@@ -112,6 +117,6 @@ export class FineService {
           },
         });
       }
-    });
+    }
   }
 }

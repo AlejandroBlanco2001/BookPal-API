@@ -7,10 +7,6 @@ export class CompanyGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     if (!context.switchToHttp().getRequest().user) return true;
-    return true;
-    // FIXME - Uncomment this line to enable the guard
-    /*
     return context.switchToHttp().getRequest().user.is_admin;
-    */
   }
 }

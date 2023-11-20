@@ -4,6 +4,7 @@ import { HistoryService } from '../history/history.service';
 export declare class CompanyController {
     private readonly companyService;
     private readonly historyService;
+    private readonly logger;
     constructor(companyService: CompanyService, historyService: HistoryService);
     updateCompany(req: any, id: number, updateCompanyDto: UpdateCompanyDTO): Promise<{
         id: number;
@@ -12,6 +13,7 @@ export declare class CompanyController {
         logo: string | null;
         primary_color: string | null;
         secondary_color: string | null;
+        dynamic_code_return: string;
     }>;
     getCompany(id: number): Promise<{
         id: number;
@@ -20,6 +22,7 @@ export declare class CompanyController {
         logo: string | null;
         primary_color: string | null;
         secondary_color: string | null;
+        dynamic_code_return: string;
     } | null>;
     getCompanyStyle(id: number): Promise<{
         logo: string | null;
@@ -34,5 +37,7 @@ export declare class CompanyController {
         logo: string | null;
         primary_color: string | null;
         secondary_color: string | null;
+        dynamic_code_return: string;
     }[]>;
+    getReturnCode(req: any): Promise<string>;
 }

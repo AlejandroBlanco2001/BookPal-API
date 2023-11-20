@@ -12,7 +12,7 @@ let CompanyGuard = class CompanyGuard {
     canActivate(context) {
         if (!context.switchToHttp().getRequest().user)
             return true;
-        return true;
+        return context.switchToHttp().getRequest().user.is_admin;
     }
 };
 exports.CompanyGuard = CompanyGuard;

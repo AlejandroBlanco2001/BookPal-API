@@ -19,6 +19,7 @@ model Company {
   primary_color     String?          @default("#000000")
   secondary_color   String?          @default("#000000")
   User              User[]
+  dynamic_code_return String @default("123123")
 }
 
 model User {

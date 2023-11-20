@@ -16,9 +16,11 @@ const prisma_service_1 = require("../prisma/prisma.service");
 const companyNotFound_exception_1 = require("../exceptions/companyNotFound.exception");
 const genericError_exception_1 = require("../exceptions/genericError.exception");
 const services_1 = require("@nestjs/common/services");
+const security_service_1 = require("../utils/security/security.service");
 let CompanyService = CompanyService_1 = class CompanyService {
-    constructor(prisma) {
+    constructor(prisma, securityService) {
         this.prisma = prisma;
+        this.securityService = securityService;
         this.logger = new services_1.Logger(CompanyService_1.name);
     }
     async updateCompany(params) {
@@ -50,10 +52,25 @@ let CompanyService = CompanyService_1 = class CompanyService {
             throw new genericError_exception_1.GenericError('CompanyService', error.message, 'companies');
         }
     }
+    async updateDynamicCode() {
+        const companies = await this.prisma.company.findMany();
+        for (const company of companies) {
+            const dynamicCode = this.securityService.generateRandomDynamicCode();
+            await this.prisma.company.update({
+                data: {
+                    dynamic_code_return: dynamicCode,
+                },
+                where: {
+                    id: company.id,
+                },
+            });
+        }
+    }
 };
 exports.CompanyService = CompanyService;
 exports.CompanyService = CompanyService = CompanyService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        security_service_1.SecurityService])
 ], CompanyService);
 //# sourceMappingURL=company.service.js.map

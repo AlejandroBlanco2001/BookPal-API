@@ -12,6 +12,7 @@ export declare class JwtStrategy extends JwtStrategy_base {
         first_name: any;
         last_name: any;
         profile_image: any;
+        company_id: any;
     }>;
 }
 export {};

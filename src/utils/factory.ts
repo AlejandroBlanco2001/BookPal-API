@@ -90,6 +90,7 @@ export function company(): CompanyFactory {
       logo: 'https://www.google.com',
       primary_color: '#000000',
       secondary_color: '#ffffff',
+      dynamic_code_return: '123456',
     }),
   };
 }

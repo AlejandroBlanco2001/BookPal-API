@@ -12,12 +12,20 @@ const cronjobs_service_1 = require("./cronjobs.service");
 const loan_module_1 = require("../loan/loan.module");
 const fine_module_1 = require("../fine/fine.module");
 const notification_module_1 = require("../notification/notification.module");
+const company_module_1 = require("../company/company.module");
+const security_module_1 = require("../utils/security/security.module");
 let CronjobsModule = class CronjobsModule {
 };
 exports.CronjobsModule = CronjobsModule;
 exports.CronjobsModule = CronjobsModule = __decorate([
     (0, common_1.Module)({
-        imports: [loan_module_1.LoanModule, fine_module_1.FineModule, notification_module_1.NotificationModule],
+        imports: [
+            loan_module_1.LoanModule,
+            fine_module_1.FineModule,
+            notification_module_1.NotificationModule,
+            company_module_1.CompanyModule,
+            security_module_1.SecurityModule,
+        ],
         providers: [cronjobs_service_1.CronjobsService],
     })
 ], CronjobsModule);

@@ -38,6 +38,7 @@ export class AuthService {
       first_name: user.first_name,
       last_name: user.last_name,
       profile_image: user.profile_image,
+      company_id: user.company_id,
     };
     return {
       access_token: await this.jwtService.sign(payload),

@@ -7,6 +7,7 @@ import {
   UseGuards,
   Request,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CompanyGuard } from './company.guard';
@@ -14,10 +15,12 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UpdateCompanyDTO } from './dto/update-company-dto';
 import { HistoryService } from '../history/history.service';
 import { Public } from '../utils/custom_decorators';
+import * as qrcode from 'qrcode';
 
 @ApiTags('company')
 @Controller('company')
 export class CompanyController {
+  private readonly logger = new Logger(CompanyController.name);
   constructor(
     private readonly companyService: CompanyService,
     private readonly historyService: HistoryService,
@@ -74,5 +77,24 @@ export class CompanyController {
   @ApiOperation({ summary: 'Get all companies' })
   async getCompanies() {
     return await this.companyService.companies();
+  }
+
+  @Get('return/code')
+  @UseGuards(CompanyGuard)
+  @ApiOperation({ summary: 'Return the dynamic code for returns' })
+  async getReturnCode(@Request() req: any) {
+    const company = await this.companyService.company({
+      id: req.user.company_id,
+    });
+    if (!company) {
+      throw new NotFoundException();
+    }
+    try {
+      const qrCodeDataURL = await qrcode.toDataURL(company.dynamic_code_return);
+      return `<img src="${qrCodeDataURL}" alt="QR Code" />`;
+    } catch (e) {
+      this.logger.error(e);
+      throw new Error('Failed to generate QR code.');
+    }
   }
 }

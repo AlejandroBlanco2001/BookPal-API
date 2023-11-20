@@ -28,13 +28,16 @@ const physicalBookNotAvailable_exception_1 = require("../exceptions/physicalBook
 const maximumLoansPerCollection_exception_1 = require("../exceptions/maximumLoansPerCollection.exception");
 const notification_service_1 = require("../notification/notification.service");
 const loanAlreadyReturned_exception_1 = require("../exceptions/loanAlreadyReturned.exception");
+const company_service_1 = require("../company/company.service");
+const companyDynamicInvalidCode_exception_1 = require("../exceptions/companyDynamicInvalidCode.exception");
 let LoanService = class LoanService {
-    constructor(fineService, physicalBookService, referenceService, inventoryService, notificationService, prisma) {
+    constructor(fineService, physicalBookService, referenceService, inventoryService, notificationService, companyService, prisma) {
         this.fineService = fineService;
         this.physicalBookService = physicalBookService;
         this.referenceService = referenceService;
         this.inventoryService = inventoryService;
         this.notificationService = notificationService;
+        this.companyService = companyService;
         this.prisma = prisma;
     }
     async loan(loanWhereUniqueInput, includes) {
@@ -141,8 +144,14 @@ let LoanService = class LoanService {
             throw error;
         }
     }
-    async returnLoan(id) {
+    async returnLoan(id, companyID, dynamicReturnCode) {
         try {
+            const company = await this.companyService.company({
+                id: Number(companyID),
+            });
+            if (company?.dynamic_code_return !== dynamicReturnCode) {
+                throw new companyDynamicInvalidCode_exception_1.CompanyDynamicCodeNotValid();
+            }
             const loan = await this.loan({ id }, { Fine: true, physical_book: true });
             if (loan && loan.status === client_2.LoanStatus.returned) {
                 throw new loanAlreadyReturned_exception_1.LoanAlreadyReturned();
@@ -266,6 +275,7 @@ exports.LoanService = LoanService = __decorate([
         reference_service_1.ReferenceService,
         inventory_service_1.InventoryService,
         notification_service_1.NotificationService,
+        company_service_1.CompanyService,
         prisma_service_1.PrismaService])
 ], LoanService);
 //# sourceMappingURL=loan.service.js.map

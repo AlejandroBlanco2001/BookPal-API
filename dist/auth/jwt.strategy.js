@@ -34,6 +34,7 @@ let JwtStrategy = JwtStrategy_1 = class JwtStrategy extends (0, passport_1.Passp
             first_name: payload.first_name,
             last_name: payload.last_name,
             profile_image: payload.profile_image,
+            company_id: payload.company_id,
         };
     }
 };

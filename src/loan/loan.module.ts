@@ -6,10 +6,19 @@ import { ReferenceService } from '../reference/reference.service';
 import { InventoryService } from '../inventory/inventory.service';
 import { NotificationModule } from '../notification/notification.module';
 import { FineModule } from '../fine/fine.module';
-import { PhysicalBookModule } from 'src/physicalBook/physicalBook.module';
+import { PhysicalBookModule } from '../physicalBook/physicalBook.module';
+import { CompanyModule } from '../company/company.module';
+import { SecurityModule } from '../utils/security/security.module';
 
 @Module({
-  imports: [PrismaModule, NotificationModule, FineModule, PhysicalBookModule],
+  imports: [
+    PrismaModule,
+    NotificationModule,
+    FineModule,
+    PhysicalBookModule,
+    CompanyModule,
+    SecurityModule,
+  ],
   controllers: [LoanController],
   providers: [LoanService, ReferenceService, InventoryService],
   exports: [LoanService],

@@ -19,6 +19,7 @@ const loan_service_1 = require("./loan.service");
 const create_loan_dto_1 = require("./dto/create-loan-dto");
 const client_1 = require("@prisma/client");
 const swagger_1 = require("@nestjs/swagger");
+const return_loan_dto_1 = require("./dto/return-loan-dto");
 let LoanController = class LoanController {
     constructor(loanService) {
         this.loanService = loanService;
@@ -46,8 +47,8 @@ let LoanController = class LoanController {
         };
         return await this.loanService.createLoan(req.user.id, data);
     }
-    returnLoan(id) {
-        return this.loanService.returnLoan(Number(id));
+    returnLoan(id, req, returnLoanDto) {
+        return this.loanService.returnLoan(Number(id), req.user.company_id, returnLoanDto.dynamic_code);
     }
 };
 exports.LoanController = LoanController;
@@ -84,8 +85,10 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Return a loan' }),
     openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Request)()),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object, return_loan_dto_1.ReturnLoanDto]),
     __metadata("design:returntype", void 0)
 ], LoanController.prototype, "returnLoan", null);
 exports.LoanController = LoanController = __decorate([

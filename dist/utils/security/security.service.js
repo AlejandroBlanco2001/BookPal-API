@@ -16,6 +16,9 @@ let SecurityService = class SecurityService {
     async verifyPassword(password, hash) {
         return await argon2.verify(hash, password);
     }
+    generateRandomDynamicCode() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
 };
 exports.SecurityService = SecurityService;
 exports.SecurityService = SecurityService = __decorate([

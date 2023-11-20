@@ -16,11 +16,13 @@ const schedule_1 = require("@nestjs/schedule");
 const loan_service_1 = require("../loan/loan.service");
 const notification_service_1 = require("../notification/notification.service");
 const fine_service_1 = require("../fine/fine.service");
+const company_service_1 = require("../company/company.service");
 let CronjobsService = CronjobsService_1 = class CronjobsService {
-    constructor(loanService, fineService, notificationService) {
+    constructor(loanService, fineService, notificationService, companyService) {
         this.loanService = loanService;
         this.fineService = fineService;
         this.notificationService = notificationService;
+        this.companyService = companyService;
         this.logger = new common_1.Logger(CronjobsService_1.name);
     }
     async updateLoanStatus() {
@@ -52,6 +54,16 @@ let CronjobsService = CronjobsService_1 = class CronjobsService {
         }
         this.logger.debug('Finished sending notifications.');
     }
+    async updateDynamicCode() {
+        this.logger.debug('Updating dynamic code...');
+        try {
+            await this.companyService.updateDynamicCode();
+        }
+        catch (err) {
+            this.logger.error(err);
+        }
+        this.logger.debug('Finished updating dynamic code.');
+    }
 };
 exports.CronjobsService = CronjobsService;
 __decorate([
@@ -72,10 +84,17 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], CronjobsService.prototype, "sendNotifications", null);
+__decorate([
+    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_5_MINUTES),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CronjobsService.prototype, "updateDynamicCode", null);
 exports.CronjobsService = CronjobsService = CronjobsService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [loan_service_1.LoanService,
         fine_service_1.FineService,
-        notification_service_1.NotificationService])
+        notification_service_1.NotificationService,
+        company_service_1.CompanyService])
 ], CronjobsService);
 //# sourceMappingURL=cronjobs.service.js.map

@@ -16,6 +16,8 @@ import { PhysicalBookNotAvailable } from '../exceptions/physicalBookNotAvailable
 import { MaximumLoansPerCollection } from '../exceptions/maximumLoansPerCollection.exception';
 import { NotificationService } from '../notification/notification.service';
 import { LoanAlreadyReturned } from '../exceptions/loanAlreadyReturned.exception';
+import { CompanyService } from '../company/company.service';
+import { CompanyDynamicCodeNotValid } from '../exceptions/companyDynamicInvalidCode.exception';
 
 export interface LoanWithPhysicalBook extends Loan {
   physical_book: PhyiscalBookWithRatings;
@@ -30,6 +32,7 @@ export class LoanService {
     private referenceService: ReferenceService,
     private inventoryService: InventoryService,
     private notificationService: NotificationService,
+    private companyService: CompanyService,
     private prisma: PrismaService,
   ) {}
 
@@ -172,8 +175,20 @@ export class LoanService {
     }
   }
 
-  async returnLoan(id: number): Promise<Loan> {
+  async returnLoan(
+    id: number,
+    companyID: string,
+    dynamicReturnCode: string,
+  ): Promise<Loan> {
     try {
+      const company = await this.companyService.company({
+        id: Number(companyID),
+      });
+
+      if (company?.dynamic_code_return !== dynamicReturnCode) {
+        throw new CompanyDynamicCodeNotValid();
+      }
+
       const loan = await this.loan({ id }, { Fine: true, physical_book: true });
 
       if (loan && loan.status === LoanStatus.returned) {

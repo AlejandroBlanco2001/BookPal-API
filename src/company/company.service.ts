@@ -4,10 +4,14 @@ import { Company, Prisma } from '@prisma/client';
 import { CompanyNotFound } from '../exceptions/companyNotFound.exception';
 import { GenericError } from '../exceptions/genericError.exception';
 import { Logger } from '@nestjs/common/services';
+import { SecurityService } from '../utils/security/security.service';
 @Injectable()
 export class CompanyService {
   private readonly logger = new Logger(CompanyService.name);
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private securityService: SecurityService,
+  ) {}
 
   async updateCompany(params: {
     where: Prisma.CompanyWhereUniqueInput;
@@ -41,6 +45,21 @@ export class CompanyService {
       return await this.prisma.company.findMany();
     } catch (error: any) {
       throw new GenericError('CompanyService', error.message, 'companies');
+    }
+  }
+
+  async updateDynamicCode() {
+    const companies = await this.prisma.company.findMany();
+    for (const company of companies) {
+      const dynamicCode = this.securityService.generateRandomDynamicCode();
+      await this.prisma.company.update({
+        data: {
+          dynamic_code_return: dynamicCode,
+        },
+        where: {
+          id: company.id,
+        },
+      });
     }
   }
 }

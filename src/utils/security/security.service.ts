@@ -13,4 +13,8 @@ export class SecurityService {
   ): Promise<boolean> {
     return await argon2.verify(hash, password);
   }
+
+  public generateRandomDynamicCode(): string {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
 }

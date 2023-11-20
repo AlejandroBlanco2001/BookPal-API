@@ -12,14 +12,16 @@ const company_controller_1 = require("./company.controller");
 const company_service_1 = require("./company.service");
 const prisma_module_1 = require("../prisma/prisma.module");
 const history_service_1 = require("../history/history.service");
+const security_module_1 = require("../utils/security/security.module");
 let CompanyModule = class CompanyModule {
 };
 exports.CompanyModule = CompanyModule;
 exports.CompanyModule = CompanyModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [prisma_module_1.PrismaModule, security_module_1.SecurityModule],
         controllers: [company_controller_1.CompanyController],
         providers: [company_service_1.CompanyService, history_service_1.HistoryService],
+        exports: [company_service_1.CompanyService],
     })
 ], CompanyModule);
 //# sourceMappingURL=company.module.js.map

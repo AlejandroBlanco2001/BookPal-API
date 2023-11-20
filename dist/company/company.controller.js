@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var CompanyController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CompanyController = void 0;
 const openapi = require("@nestjs/swagger");
@@ -21,10 +22,12 @@ const swagger_1 = require("@nestjs/swagger");
 const update_company_dto_1 = require("./dto/update-company-dto");
 const history_service_1 = require("../history/history.service");
 const custom_decorators_1 = require("../utils/custom_decorators");
-let CompanyController = class CompanyController {
+const qrcode = require("qrcode");
+let CompanyController = CompanyController_1 = class CompanyController {
     constructor(companyService, historyService) {
         this.companyService = companyService;
         this.historyService = historyService;
+        this.logger = new common_1.Logger(CompanyController_1.name);
     }
     async updateCompany(req, id, updateCompanyDto) {
         const company = await this.companyService.updateCompany({
@@ -50,6 +53,22 @@ let CompanyController = class CompanyController {
     }
     async getCompanies() {
         return await this.companyService.companies();
+    }
+    async getReturnCode(req) {
+        const company = await this.companyService.company({
+            id: req.user.company_id,
+        });
+        if (!company) {
+            throw new common_1.NotFoundException();
+        }
+        try {
+            const qrCodeDataURL = await qrcode.toDataURL(company.dynamic_code_return);
+            return `<img src="${qrCodeDataURL}" alt="QR Code" />`;
+        }
+        catch (e) {
+            this.logger.error(e);
+            throw new Error('Failed to generate QR code.');
+        }
     }
 };
 exports.CompanyController = CompanyController;
@@ -92,7 +111,17 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], CompanyController.prototype, "getCompanies", null);
-exports.CompanyController = CompanyController = __decorate([
+__decorate([
+    (0, common_1.Get)('return/code'),
+    (0, common_1.UseGuards)(company_guard_1.CompanyGuard),
+    (0, swagger_1.ApiOperation)({ summary: 'Return the dynamic code for returns' }),
+    openapi.ApiResponse({ status: 200, type: String }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CompanyController.prototype, "getReturnCode", null);
+exports.CompanyController = CompanyController = CompanyController_1 = __decorate([
     (0, swagger_1.ApiTags)('company'),
     (0, common_1.Controller)('company'),
     __metadata("design:paramtypes", [company_service_1.CompanyService,
